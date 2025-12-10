@@ -50,6 +50,7 @@
             border-radius: 10px;
             cursor: crosshair;
             background: #ecf0f1;
+            touch-action: none; /* 讓觸控不捲動畫面 */
         }
 
         /* 控制面板 */
@@ -320,6 +321,10 @@
         let measuredVoltages = [];
         let scanInterval = null;
 
+        // 讓滑動更絲滑的旗標與節流
+        let isDragging = false;
+        let lastUpdateTime = 0;
+
         // 初始化電極
         function initElectrodes() {
             electrodes = [];
@@ -405,7 +410,8 @@
                 // 座標標註
                 eitCtx.fillStyle = '#2c3e50';
                 eitCtx.font = 'bold 12px Arial';
-                eitCtx.fillText(`👆 (${touchPoint.x - CENTER_X}, ${touchPoint.y - CENTER_Y})`, 
+                eitCtx.textAlign = 'center';
+                eitCtx.fillText(`👆 (${Math.round(touchPoint.x - CENTER_X)}, ${Math.round(touchPoint.y - CENTER_Y)})`,
                                touchPoint.x, touchPoint.y - 50);
             }
         }
@@ -446,9 +452,6 @@
             const txElectrode = electrodes[currentTX - 1];
             measuredVoltages = electrodes.map((rxElectrode, idx) => {
                 if (rxElectrode.id === currentTX) return baselineVoltages[idx];
-
-                // 計算電極到觸控點的距離
-                const distToTouch = Math.hypot(touchPoint.x - rxElectrode.x, touchPoint.y - rxElectrode.y);
 
                 // 計算TX-觸控點-RX路徑的阻抗變化
                 const pathDistToTouch = calculatePathDistance(txElectrode, rxElectrode, touchPoint);
@@ -491,7 +494,7 @@
                     </td>
                     <td>
                         <div style="width: 100%; background: #ecf0f1; border-radius: 3px; overflow: hidden;">
-                            <div class="voltage-bar" style="width: ${Math.abs(changePercent)}%"></div>
+                            <div class="voltage-bar" style="width: ${Math.min(Math.abs(changePercent),100)}%"></div>
                         </div>
                         ${changePercent}%
                     </td>
@@ -555,9 +558,10 @@
                     const dy = y - height / 2;
                     const dist = Math.sqrt(dx * dx + dy * dy);
 
+                    const idx = (y * width + x) * 4;
+
                     if (dist > RADIUS * 0.92) {
                         // 邊界外
-                        const idx = (y * width + x) * 4;
                         imageData.data[idx] = 236;
                         imageData.data[idx + 1] = 240;
                         imageData.data[idx + 2] = 241;
@@ -576,7 +580,6 @@
 
                     // 熱圖顏色映射
                     const [r, g, b] = impedanceToColor(impedance);
-                    const idx = (y * width + x) * 4;
                     imageData.data[idx] = r;
                     imageData.data[idx + 1] = g;
                     imageData.data[idx + 2] = b;
@@ -641,18 +644,61 @@
             document.getElementById('accuracy').textContent = `${accuracy}% (誤差: ${error.toFixed(1)}mm)`;
         }
 
-        // 滑鼠點擊事件
-        eitCanvas.addEventListener('click', (e) => {
+        // ---- 丝滑拖动：滑鼠 / 觸控事件 ----
+        function handlePointerDown(e) {
+            stopScan(); // 拖動時關閉自動掃描，避免搶畫面
+            isDragging = true;
+            updateTouchFromEvent(e, true);
+        }
+
+        function handlePointerMove(e) {
+            if (!isDragging) return;
+            updateTouchFromEvent(e, false);
+        }
+
+        function handlePointerUp(e) {
+            isDragging = false;
+        }
+
+        function updateTouchFromEvent(e, force) {
+            const now = performance.now();
+            // 節流，約 60 FPS
+            if (!force && now - lastUpdateTime < 16) return;
+            lastUpdateTime = now;
+
             const rect = eitCanvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+            const x = clientX - rect.left;
+            const y = clientY - rect.top;
 
             const dist = Math.hypot(x - CENTER_X, y - CENTER_Y);
             if (dist <= RADIUS - 20) {
                 touchPoint = { x, y };
                 updateSimulation();
             }
-        });
+        }
+
+        // 綁定事件 (取代原本 click)
+        eitCanvas.addEventListener('mousedown', handlePointerDown);
+        window.addEventListener('mousemove', handlePointerMove);
+        window.addEventListener('mouseup', handlePointerUp);
+
+        eitCanvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            handlePointerDown(e);
+        }, { passive: false });
+        eitCanvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            handlePointerMove(e);
+        }, { passive: false });
+        eitCanvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            handlePointerUp(e);
+        }, { passive: false });
+
+        // ---- 其餘控制 ----
 
         // 更新模擬
         function updateSimulation() {
