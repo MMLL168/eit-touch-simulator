@@ -3,750 +3,558 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EIT觸控感測系統 - 動態模擬</title>
+    <title>EIT 響應式儀表板 (Auto-Scaling Charts)</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Microsoft JhengHei', Arial, sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            background: #1a1c23;
+            color: #e0e0e0;
             padding: 20px;
-            min-height: 100vh;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
         }
+
         .dashboard {
-            max-width: 1400px;
+            width: 100%;
+            height: 100%;
+            max-width: 1600px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        .panel {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-        .full-width {
-            grid-column: 1 / -1;
-        }
-        h2 {
-            color: #2c3e50;
-            margin-bottom: 15px;
-            font-size: 18px;
-            border-bottom: 3px solid #3498db;
-            padding-bottom: 10px;
+            grid-template-columns: 1.2fr 0.8fr;
+            grid-template-rows: 45% 1fr; /* 稍微調整比例讓下方空間更多 */
+            gap: 15px;
         }
 
-        /* EIT 感測區域 */
-        .eit-container {
+        .panel {
+            background: #252830;
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
             position: relative;
-            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        h2 {
+            color: #fff;
+            margin-bottom: 8px;
+            font-size: 1rem;
+            border-left: 4px solid #00d2ff;
+            padding-left: 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        /* 左側：物理感測區 */
+        .eit-section { grid-row: span 2; }
+        .eit-container { 
+            flex: 1; 
+            width: 100%; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            overflow: hidden; 
+            position: relative;
         }
         #eitCanvas {
-            border: 2px solid #34495e;
-            border-radius: 10px;
-            cursor: crosshair;
-            background: #ecf0f1;
-        }
-
-        /* 控制面板 */
-        .controls {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 10px;
-            margin-top: 15px;
-        }
-        button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: bold;
-            transition: all 0.3s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
-        }
-        button:active {
-            transform: translateY(0);
-        }
-        button.active {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        }
-
-        /* 訊號波形圖 */
-        #signalChart {
-            width: 100%;
-            height: 250px;
-            border: 1px solid #bdc3c7;
-            border-radius: 8px;
-            background: #f8f9fa;
-        }
-
-        /* 電壓變化表 */
-        .voltage-table {
-            max-height: 400px;
-            overflow-y: auto;
-            font-size: 13px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th {
-            background: #34495e;
-            color: white;
-            padding: 10px;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-        td {
-            padding: 8px;
-            border-bottom: 1px solid #ecf0f1;
-            text-align: center;
-        }
-        tr:hover {
-            background: #e8f4f8;
-        }
-        .voltage-bar {
-            height: 20px;
-            background: linear-gradient(90deg, #3498db, #2ecc71);
-            border-radius: 3px;
-            transition: width 0.3s;
-        }
-
-        /* 計算結果 */
-        .result-box {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 15px;
-            text-align: center;
-        }
-        .result-box h3 {
-            font-size: 16px;
-            margin-bottom: 10px;
-            opacity: 0.9;
-        }
-        .coordinates {
-            font-size: 32px;
-            font-weight: bold;
-            margin: 10px 0;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-        .accuracy {
-            font-size: 14px;
-            opacity: 0.85;
-        }
-
-        /* 熱圖 */
-        #heatmapCanvas {
-            border: 1px solid #bdc3c7;
-            border-radius: 8px;
-        }
-
-        /* 狀態指示器 */
-        .status {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 15px;
-            padding: 10px;
-            background: #ecf0f1;
-            border-radius: 8px;
-        }
-        .status-item {
-            text-align: center;
-        }
-        .status-label {
-            font-size: 12px;
-            color: #7f8c8d;
-            margin-bottom: 5px;
-        }
-        .status-value {
-            font-size: 20px;
-            font-weight: bold;
-            color: #2c3e50;
-        }
-        .status-value.active {
-            color: #e74c3c;
-            animation: blink 1s infinite;
-        }
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-
-        /* 圖例 */
-        .legend {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 10px;
-            font-size: 12px;
-        }
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .legend-color {
-            width: 20px;
-            height: 20px;
+            width: auto; height: auto;
+            max-width: 100%; max-height: 100%;
             border-radius: 50%;
-            border: 2px solid #2c3e50;
+            background: #1e2128;
+            box-shadow: 0 0 40px rgba(0, 210, 255, 0.05);
+            cursor: crosshair;
+        }
+
+        /* 右側上：數據分析 */
+        .analysis-section { 
+            display: grid; 
+            grid-template-columns: 180px 1fr; 
+            gap: 15px;
+        }
+        .heatmap-container {
+            display: flex; flex-direction: column; 
+            justify-content: center; align-items: center;
+        }
+        #heatmapCanvas {
+            width: 100%; aspect-ratio: 1;
+            border-radius: 8px; border: 1px solid #444; background: #000;
+        }
+        .data-panel {
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .data-card {
+            background: #2f343f; padding: 10px; border-radius: 6px; 
+            text-align: center; margin-bottom: 8px;
+        }
+        .data-label { font-size: 0.75rem; color: #888; margin-bottom: 2px;}
+        .data-value { font-size: 1.1rem; font-weight: bold; color: #00d2ff; }
+        .coord-value { font-size: 1.4rem; color: #ffeb3b; text-shadow: 0 0 10px rgba(255,235,59,0.2);}
+        
+        .controls { display: flex; gap: 8px; margin-top: auto;}
+        button {
+            flex: 1; padding: 8px 0; border: none; border-radius: 4px;
+            font-weight: bold; cursor: pointer; transition: 0.2s;
+            background: #3a3f4b; color: white; font-size: 0.85rem;
+        }
+        button:hover { background: #4a505e; }
+        button.primary { background: #00d2ff; color: #000; }
+        button.danger { background: #ff4757; color: white; }
+
+        /* 右側下：訊號與表格 */
+        .signal-section { min-height: 0; display: flex; flex-direction: column; }
+        
+        .chart-container {
+            flex-shrink: 0;
+            height: 140px; /* 增加圖表高度 */
+            width: 100%;
+            background: #1e2128;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            border: 1px solid #333;
+            position: relative; /* For scale text positioning */
+        }
+        #signalChart { width: 100%; height: 100%; }
+
+        .voltage-scroll {
+            flex: 1; overflow-y: auto;
+            border: 1px solid #333; border-radius: 4px; background: #1e2128;
+        }
+        .voltage-scroll::-webkit-scrollbar { width: 6px; }
+        .voltage-scroll::-webkit-scrollbar-thumb { background: #555; border-radius: 3px; }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+        th { background: #2f343f; padding: 6px; position: sticky; top: 0; color: #ccc; z-index: 2; }
+        td { padding: 4px; border-bottom: 1px solid #333; text-align: center; color: #ccc; }
+        .high-delta { color: #ff4757; font-weight: bold; }
+        .bar-container { width: 100%; height: 4px; background: #333; border-radius: 2px; }
+        .bar-fill { height: 100%; background: #00d2ff; }
+
+        @media (max-width: 1024px) {
+            body { overflow: auto; height: auto; }
+            .dashboard { display: flex; flex-direction: column; height: auto; }
+            .eit-section { height: 500px; }
+            .signal-section { height: 600px; }
         }
     </style>
 </head>
 <body>
-    <div class="dashboard">
-        <!-- EIT感測區域 -->
-        <div class="panel">
-            <h2>🎯 EIT觸控感測平面 (30cm)</h2>
-            <div class="eit-container">
-                <canvas id="eitCanvas" width="500" height="500"></canvas>
-            </div>
-            <div class="legend">
-                <div class="legend-item">
-                    <div class="legend-color" style="background: #3498db;"></div>
-                    <span>待機電極</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background: #e74c3c;"></div>
-                    <span>TX發射</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background: #2ecc71;"></div>
-                    <span>RX接收</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background: #f39c12;"></div>
-                    <span>手指觸控</span>
-                </div>
-            </div>
-            <div class="status">
-                <div class="status-item">
-                    <div class="status-label">TX電極</div>
-                    <div class="status-value" id="txStatus">-</div>
-                </div>
-                <div class="status-item">
-                    <div class="status-label">RX電極數</div>
-                    <div class="status-value" id="rxStatus">0</div>
-                </div>
-                <div class="status-item">
-                    <div class="status-label">測量頻率</div>
-                    <div class="status-value active">50kHz</div>
-                </div>
-                <div class="status-item">
-                    <div class="status-label">激勵電流</div>
-                    <div class="status-value">2.5mA</div>
-                </div>
-            </div>
-        </div>
 
-        <!-- 阻抗分布熱圖 -->
-        <div class="panel">
-            <h2>🔥 阻抗分布熱圖</h2>
-            <canvas id="heatmapCanvas" width="460" height="460"></canvas>
-            <div class="result-box">
-                <h3>📍 計算觸控位置 (加權質心法)</h3>
-                <div class="coordinates" id="touchCoords">等待觸控...</div>
-                <div class="accuracy">定位精度: <span id="accuracy">-</span></div>
-            </div>
+<div class="dashboard">
+    <div class="panel eit-section">
+        <h2>Physical Sensor (30cm)</h2>
+        <div class="eit-container">
+            <canvas id="eitCanvas" width="600" height="600"></canvas>
         </div>
-
-        <!-- RX電壓變化表 -->
-        <div class="panel">
-            <h2>📊 各電極電壓變化 (ΔV)</h2>
-            <div class="voltage-table">
-                <table id="voltageTable">
-                    <thead>
-                        <tr>
-                            <th>電極</th>
-                            <th>基準電壓 (V)</th>
-                            <th>測量電壓 (V)</th>
-                            <th>變化量 (mV)</th>
-                            <th>變化率</th>
-                        </tr>
-                    </thead>
-                    <tbody id="voltageBody"></tbody>
-                </table>
-            </div>
+        <div style="text-align: center; font-size: 0.8rem; color: #666; margin-top:5px;">
+            ● 紅色:TX | 藍色:RX | 黃色:計算位置
         </div>
+    </div>
 
-        <!-- 訊號波形圖 -->
-        <div class="panel">
-            <h2>📈 RX訊號強度分布</h2>
-            <canvas id="signalChart"></canvas>
+    <div class="panel analysis-section">
+        <div class="heatmap-container">
+            <canvas id="heatmapCanvas" width="200" height="200"></canvas>
+            <div style="font-size:0.7rem; color:#666; margin-top:5px;">Reconstruction</div>
+        </div>
+        <div class="data-panel">
+            <div>
+                <div class="data-card">
+                    <div class="data-label">Position (X, Y)</div>
+                    <div class="data-value coord-value" id="coordDisplay">-- , --</div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <div class="data-card">
+                        <div class="data-label">Accuracy</div>
+                        <div class="data-value" id="accDisplay">--%</div>
+                    </div>
+                    <div class="data-card">
+                        <div class="data-label">Peak ΔV</div>
+                        <div class="data-value" id="peakDisplay">0 mV</div>
+                    </div>
+                </div>
+            </div>
             <div class="controls">
-                <button onclick="startAutoScan()">自動掃描模式</button>
-                <button onclick="stopScan()">停止掃描</button>
-                <button onclick="clearTouch()">清除觸控</button>
-                <button onclick="exportData()">匯出數據</button>
+                <button class="primary" onclick="toggleAutoScan()" id="btnScan">Auto Scan</button>
+                <button class="danger" onclick="clearTouch()">Clear</button>
             </div>
         </div>
     </div>
 
-    <script>
-        // 系統參數
-        const NUM_ELECTRODES = 20;
-        const CENTER_X = 250;
-        const CENTER_Y = 250;
-        const RADIUS = 200;
-        const ELECTRODE_RADIUS = 10;
+    <div class="panel signal-section">
+        <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+            <h2>Signals (ΔV)</h2>
+            <span style="font-size:0.8rem; color:#888;">TX: <span id="txIndicator" style="color:#ff4757; font-weight:bold;">CH1</span></span>
+        </div>
+        
+        <div class="chart-container">
+            <canvas id="signalChart"></canvas>
+        </div>
+        
+        <div class="voltage-scroll">
+            <table id="voltageTable">
+                <thead>
+                    <tr>
+                        <th width="15%">CH</th>
+                        <th width="20%">Base</th>
+                        <th width="20%">Meas</th>
+                        <th width="20%">Δ(mV)</th>
+                        <th width="25%">Level</th>
+                    </tr>
+                </thead>
+                <tbody id="voltageBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
-        // Canvas 初始化
-        const eitCanvas = document.getElementById('eitCanvas');
-        const eitCtx = eitCanvas.getContext('2d');
-        const heatmapCanvas = document.getElementById('heatmapCanvas');
-        const heatmapCtx = heatmapCanvas.getContext('2d');
-        const signalCanvas = document.getElementById('signalChart');
-        const signalCtx = signalCanvas.getContext('2d');
+<script>
+    const CONFIG = {
+        electrodes: 20,
+        radius_outer: 250,
+        elec_width: 20,
+        gap_ratio: 0.25,
+        center_x: 300,
+        center_y: 300
+    };
 
-        // 電極數據
-        let electrodes = [];
-        let currentTX = 1;
-        let touchPoint = null;
-        let baselineVoltages = [];
-        let measuredVoltages = [];
-        let scanInterval = null;
+    let electrodes = [];
+    let currentTX = 0;
+    let touchPoint = null;
+    let isScanning = false;
+    let scanTimer = null;
+    
+    // UI Elements
+    const ctxEIT = document.getElementById('eitCanvas').getContext('2d');
+    const ctxHeat = document.getElementById('heatmapCanvas').getContext('2d');
+    const ctxSignal = document.getElementById('signalChart').getContext('2d');
 
-        // 初始化電極
-        function initElectrodes() {
-            electrodes = [];
-            for (let i = 0; i < NUM_ELECTRODES; i++) {
-                const angle = (i * 360 / NUM_ELECTRODES - 90) * Math.PI / 180;
-                electrodes.push({
-                    id: i + 1,
-                    x: CENTER_X + RADIUS * Math.cos(angle),
-                    y: CENTER_Y + RADIUS * Math.sin(angle),
-                    angle: angle
-                });
-            }
-            // 初始化基準電壓 (模擬)
-            baselineVoltages = Array(NUM_ELECTRODES).fill(0).map(() => 3.3 + (Math.random() - 0.5) * 0.1);
+    // Canvas Resize Handler
+    function resizeCharts() {
+        const container = document.querySelector('.chart-container');
+        const chart = document.getElementById('signalChart');
+        // 使用 clientWidth 確保填滿容器
+        chart.width = container.clientWidth;
+        chart.height = container.clientHeight;
+        drawSignals();
+    }
+    window.addEventListener('resize', resizeCharts);
+
+    function init() {
+        const stepAngle = (2 * Math.PI) / CONFIG.electrodes;
+        const gapAngle = stepAngle * CONFIG.gap_ratio;
+        const arcAngle = stepAngle - gapAngle;
+
+        for (let i = 0; i < CONFIG.electrodes; i++) {
+            const midAngle = (i * stepAngle) - (Math.PI / 2);
+            const startAngle = midAngle - (arcAngle / 2);
+            const endAngle = midAngle + (arcAngle / 2);
+            const centerR = CONFIG.radius_outer - (CONFIG.elec_width / 2);
+            
+            electrodes.push({
+                id: i + 1,
+                startAngle: startAngle,
+                endAngle: endAngle,
+                midAngle: midAngle,
+                cx: CONFIG.center_x + centerR * Math.cos(midAngle),
+                cy: CONFIG.center_y + centerR * Math.sin(midAngle),
+                baseV: 3.3,
+                currentV: 3.3
+            });
+        }
+        
+        resizeCharts();
+        requestAnimationFrame(animate);
+    }
+
+    function animate() {
+        simulatePhysics();
+        drawPhysicalView();
+        drawHeatmap();
+        drawSignals(); // 每一幀重繪
+        updateTable();
+        document.getElementById('txIndicator').innerText = `CH${currentTX+1}`;
+        requestAnimationFrame(animate);
+    }
+
+    function simulatePhysics() {
+        if (!touchPoint) {
+            electrodes.forEach(e => e.currentV = e.baseV);
+            return;
         }
 
-        // 繪製EIT感測平面
-        function drawEIT() {
-            eitCtx.clearRect(0, 0, eitCanvas.width, eitCanvas.height);
+        const txElec = electrodes[currentTX];
+        electrodes.forEach((rx, idx) => {
+            if (idx === currentTX) { rx.currentV = rx.baseV; return; }
 
-            // 感測區域
-            eitCtx.beginPath();
-            eitCtx.arc(CENTER_X, CENTER_Y, RADIUS, 0, 2 * Math.PI);
-            eitCtx.fillStyle = '#f0f4f8';
-            eitCtx.fill();
-            eitCtx.strokeStyle = '#34495e';
-            eitCtx.lineWidth = 2;
-            eitCtx.stroke();
+            const d_tx_rx = Math.hypot(txElec.cx - rx.cx, txElec.cy - rx.cy);
+            const d_finger_tx = Math.hypot(touchPoint.x - txElec.cx, touchPoint.y - txElec.cy);
+            const d_finger_rx = Math.hypot(touchPoint.x - rx.cx, touchPoint.y - rx.cy);
+            const ellipseFactor = (d_finger_tx + d_finger_rx) / d_tx_rx;
 
-            // 繪製電場線 (視覺化效果)
-            if (touchPoint) {
-                drawFieldLines();
+            let perturbation = 0;
+            // 模擬手指靠近時阻抗劇烈變化
+            if (ellipseFactor < 2.0) { 
+                // 指數衰減模擬電場強度
+                const strength = Math.exp(-(ellipseFactor - 1) * 3.5); 
+                // 擾動量 (最大 1.5V)
+                perturbation = strength * 1.5; 
+            }
+            rx.currentV = rx.baseV - perturbation + (Math.random()-0.5)*0.005; // 加一點雜訊
+        });
+        calculatePosition();
+    }
+
+    // --- 改進重點：自動縮放直條圖 ---
+    function drawSignals() {
+        const canvas = document.getElementById('signalChart');
+        const w = canvas.width;
+        const h = canvas.height;
+        const ctx = ctxSignal;
+
+        ctx.clearRect(0, 0, w, h);
+        
+        // 1. 找出當前所有電極中，最大的 ΔV (用來決定 Y 軸上限)
+        let maxDelta = 0.001; // 避免除以零
+        electrodes.forEach((e, i) => {
+            if (i === currentTX) return;
+            const d = Math.abs(e.baseV - e.currentV);
+            if (d > maxDelta) maxDelta = d;
+        });
+
+        // 2. 設定動態上限 (Ceiling)：最大值再多留 20% 緩衝
+        // 為了避免噪音造成圖表一直跳動，設定一個最小顯示範圍 (例如 0.5V)
+        const scaleCeiling = Math.max(0.5, maxDelta * 1.2); 
+
+        // 3. 繪製背景網格線 (Scale Lines)
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        // 50% 線
+        ctx.moveTo(0, h/2); ctx.lineTo(w, h/2);
+        ctx.stroke();
+
+        // 4. 繪製 Bar
+        const barW = w / CONFIG.electrodes;
+        electrodes.forEach((e, i) => {
+            const delta = Math.abs(e.baseV - e.currentV);
+            
+            // 核心公式：高度 = (當前值 / 上限值) * Canvas高度
+            let barHeight = (delta / scaleCeiling) * h;
+            
+            // 確保不超過 Canvas
+            if (barHeight > h) barHeight = h;
+
+            const x = i * barW;
+            const y = h - barHeight;
+            
+            // 顏色邏輯
+            if (i === currentTX) {
+                ctx.fillStyle = '#ff4757'; // TX
+            } else {
+                // 如果該 Bar 超過 70% 的 Scale，顯示黃色警告
+                const intensity = barHeight / h;
+                ctx.fillStyle = intensity > 0.7 ? '#ffeb3b' : '#00d2ff';
             }
 
-            // 繪製電極
-            electrodes.forEach((e, idx) => {
-                eitCtx.beginPath();
-                eitCtx.arc(e.x, e.y, ELECTRODE_RADIUS, 0, 2 * Math.PI);
+            ctx.fillRect(x + 1, y, barW - 2, barHeight);
+        });
 
-                if (e.id === currentTX) {
-                    eitCtx.fillStyle = '#e74c3c';
-                    eitCtx.strokeStyle = '#c0392b';
-                } else if (touchPoint) {
-                    eitCtx.fillStyle = '#2ecc71';
-                    eitCtx.strokeStyle = '#27ae60';
-                } else {
-                    eitCtx.fillStyle = '#3498db';
-                    eitCtx.strokeStyle = '#2980b9';
+        // 5. 在圖表左上角顯示目前的 Scale Range
+        ctx.fillStyle = '#666';
+        ctx.font = '10px Arial';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        ctx.fillText(`Scale: 0 ~ ${(scaleCeiling * 1000).toFixed(0)} mV`, 5, 5);
+    }
+
+    function drawPhysicalView() {
+        const ctx = ctxEIT;
+        const cx = CONFIG.center_x;
+        const cy = CONFIG.center_y;
+        const r_out = CONFIG.radius_outer;
+        const r_in = r_out - CONFIG.elec_width;
+
+        ctx.clearRect(0, 0, 600, 600);
+
+        ctx.beginPath(); ctx.arc(cx, cy, r_out + 10, 0, Math.PI*2);
+        ctx.strokeStyle = '#444'; ctx.lineWidth = 1; ctx.stroke();
+
+        ctx.beginPath(); ctx.arc(cx, cy, r_in, 0, Math.PI*2);
+        ctx.fillStyle = '#181b21'; ctx.fill();
+        ctx.strokeStyle = '#00d2ff'; ctx.lineWidth = 0.5; ctx.stroke();
+
+        if (touchPoint) {
+            const tx = electrodes[currentTX];
+            electrodes.forEach((rx, i) => {
+                if (i === currentTX) return;
+                const delta = Math.abs(rx.baseV - rx.currentV);
+                if (delta > 0.1) {
+                    ctx.beginPath();
+                    ctx.moveTo(tx.cx, tx.cy);
+                    const cpX = (tx.cx + rx.cx)/2 + (touchPoint.x - cx)*0.3;
+                    const cpY = (tx.cy + rx.cy)/2 + (touchPoint.y - cy)*0.3;
+                    ctx.quadraticCurveTo(cpX, cpY, rx.cx, rx.cy);
+                    ctx.strokeStyle = `rgba(0, 210, 255, ${Math.min(1, delta * 1.5)})`;
+                    ctx.lineWidth = 1; ctx.stroke();
                 }
-
-                eitCtx.lineWidth = 2;
-                eitCtx.fill();
-                eitCtx.stroke();
-
-                // 電極編號
-                eitCtx.fillStyle = 'white';
-                eitCtx.font = 'bold 11px Arial';
-                eitCtx.textAlign = 'center';
-                eitCtx.textBaseline = 'middle';
-                eitCtx.fillText(e.id, e.x, e.y);
-            });
-
-            // 繪製手指觸控點
-            if (touchPoint) {
-                // 手指圖形
-                eitCtx.beginPath();
-                eitCtx.arc(touchPoint.x, touchPoint.y, 15, 0, 2 * Math.PI);
-                eitCtx.fillStyle = 'rgba(243, 156, 18, 0.7)';
-                eitCtx.fill();
-                eitCtx.strokeStyle = '#e67e22';
-                eitCtx.lineWidth = 3;
-                eitCtx.stroke();
-
-                // 阻抗影響範圍
-                eitCtx.beginPath();
-                eitCtx.arc(touchPoint.x, touchPoint.y, 40, 0, 2 * Math.PI);
-                eitCtx.strokeStyle = 'rgba(231, 76, 60, 0.3)';
-                eitCtx.lineWidth = 2;
-                eitCtx.setLineDash([5, 5]);
-                eitCtx.stroke();
-                eitCtx.setLineDash([]);
-
-                // 座標標註
-                eitCtx.fillStyle = '#2c3e50';
-                eitCtx.font = 'bold 12px Arial';
-                eitCtx.fillText(`👆 (${touchPoint.x - CENTER_X}, ${touchPoint.y - CENTER_Y})`, 
-                               touchPoint.x, touchPoint.y - 50);
-            }
-        }
-
-        // 繪製電場線
-        function drawFieldLines() {
-            const txElectrode = electrodes[currentTX - 1];
-
-            electrodes.forEach(rxElectrode => {
-                if (rxElectrode.id === currentTX) return;
-
-                // 計算電場線受手指影響的彎曲
-                const distToTouch = Math.hypot(touchPoint.x - (txElectrode.x + rxElectrode.x) / 2,
-                                               touchPoint.y - (txElectrode.y + rxElectrode.y) / 2);
-                const influence = Math.max(0, 1 - distToTouch / 100);
-
-                eitCtx.beginPath();
-                eitCtx.moveTo(txElectrode.x, txElectrode.y);
-
-                // 貝茲曲線模擬電場線彎曲
-                const cpx = (txElectrode.x + rxElectrode.x) / 2 + (touchPoint.x - CENTER_X) * influence * 0.3;
-                const cpy = (txElectrode.y + rxElectrode.y) / 2 + (touchPoint.y - CENTER_Y) * influence * 0.3;
-
-                eitCtx.quadraticCurveTo(cpx, cpy, rxElectrode.x, rxElectrode.y);
-                eitCtx.strokeStyle = `rgba(52, 152, 219, ${0.1 + influence * 0.4})`;
-                eitCtx.lineWidth = 1 + influence * 2;
-                eitCtx.stroke();
             });
         }
 
-        // 計算測量電壓 (模擬阻抗變化)
-        function calculateVoltages() {
-            if (!touchPoint) {
-                measuredVoltages = [...baselineVoltages];
-                return;
-            }
+        electrodes.forEach((e, i) => {
+            ctx.beginPath();
+            ctx.arc(cx, cy, r_out, e.startAngle, e.endAngle);
+            ctx.arc(cx, cy, r_in, e.endAngle, e.startAngle, true);
+            ctx.closePath();
+            
+            ctx.fillStyle = (i === currentTX) ? '#ff4757' : '#eccc68';
+            if (i === currentTX) { ctx.shadowBlur = 10; ctx.shadowColor = '#ff4757'; }
+            else { ctx.shadowBlur = 0; }
+            
+            if (i !== currentTX && Math.abs(e.baseV - e.currentV) > 0.1) ctx.fillStyle = '#00d2ff';
 
-            const txElectrode = electrodes[currentTX - 1];
-            measuredVoltages = electrodes.map((rxElectrode, idx) => {
-                if (rxElectrode.id === currentTX) return baselineVoltages[idx];
+            ctx.fill(); ctx.stroke();
 
-                // 計算電極到觸控點的距離
-                const distToTouch = Math.hypot(touchPoint.x - rxElectrode.x, touchPoint.y - rxElectrode.y);
+            const labelR = r_in - 15;
+            const lx = cx + labelR * Math.cos(e.midAngle);
+            const ly = cy + labelR * Math.sin(e.midAngle);
+            ctx.fillStyle = '#aaa'; ctx.font = '10px Arial'; 
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText(e.id, lx, ly);
+        });
 
-                // 計算TX-觸控點-RX路徑的阻抗變化
-                const pathDistToTouch = calculatePathDistance(txElectrode, rxElectrode, touchPoint);
-
-                // 阻抗變化導致電壓衰減 (距離越近衰減越大)
-                const impedanceEffect = Math.exp(-pathDistToTouch / 60);
-                const voltageDrop = baselineVoltages[idx] * 0.3 * impedanceEffect;
-
-                return baselineVoltages[idx] - voltageDrop + (Math.random() - 0.5) * 0.01;
-            });
+        if (touchPoint) {
+            ctx.beginPath(); ctx.arc(touchPoint.x, touchPoint.y, 10, 0, Math.PI*2);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)'; ctx.fill();
+            ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.stroke();
         }
+    }
 
-        // 計算路徑距離
-        function calculatePathDistance(tx, rx, touch) {
-            const midX = (tx.x + rx.x) / 2;
-            const midY = (tx.y + rx.y) / 2;
-            return Math.hypot(touch.x - midX, touch.y - midY);
-        }
+    function drawHeatmap() {
+        const w = 200, h = 200;
+        ctxHeat.clearRect(0, 0, w, h);
+        if (!touchPoint) { ctxHeat.fillStyle = '#000'; ctxHeat.fillRect(0,0,w,h); return; }
 
-        // 更新電壓表
-        function updateVoltageTable() {
-            const tbody = document.getElementById('voltageBody');
-            tbody.innerHTML = '';
+        const imgData = ctxHeat.createImageData(w, h);
+        const data = imgData.data;
+        const scale = w / 600; 
+        const tx = touchPoint.x * scale;
+        const ty = touchPoint.y * scale;
 
-            electrodes.forEach((e, idx) => {
-                if (e.id === currentTX) return;
-
-                const baseV = baselineVoltages[idx];
-                const measV = measuredVoltages[idx];
-                const deltaV = (baseV - measV) * 1000; // 轉換為mV
-                const changePercent = ((deltaV / (baseV * 1000)) * 100).toFixed(2);
-
-                const row = tbody.insertRow();
-                row.innerHTML = `
-                    <td><strong>RX${e.id}</strong></td>
-                    <td>${baseV.toFixed(3)}</td>
-                    <td>${measV.toFixed(3)}</td>
-                    <td style="color: ${deltaV > 0 ? '#e74c3c' : '#2ecc71'}">
-                        <strong>${deltaV.toFixed(2)}</strong>
-                    </td>
-                    <td>
-                        <div style="width: 100%; background: #ecf0f1; border-radius: 3px; overflow: hidden;">
-                            <div class="voltage-bar" style="width: ${Math.abs(changePercent)}%"></div>
-                        </div>
-                        ${changePercent}%
-                    </td>
-                `;
-            });
-        }
-
-        // 繪製訊號強度圖
-        function drawSignalChart() {
-            const width = signalCanvas.width;
-            const height = signalCanvas.height;
-            signalCtx.clearRect(0, 0, width, height);
-
-            // 背景網格
-            signalCtx.strokeStyle = '#ecf0f1';
-            signalCtx.lineWidth = 1;
-            for (let i = 0; i <= 5; i++) {
-                const y = (height / 5) * i;
-                signalCtx.beginPath();
-                signalCtx.moveTo(0, y);
-                signalCtx.lineTo(width, y);
-                signalCtx.stroke();
-            }
-
-            // 繪製訊號條
-            const barWidth = width / NUM_ELECTRODES;
-            electrodes.forEach((e, idx) => {
-                if (e.id === currentTX) return;
-
-                const deltaV = Math.abs(baselineVoltages[idx] - measuredVoltages[idx]);
-                const barHeight = (deltaV / 0.5) * height * 0.8;
-
-                const x = idx * barWidth;
-                const y = height - barHeight;
-
-                // 漸層色
-                const gradient = signalCtx.createLinearGradient(x, y, x, height);
-                gradient.addColorStop(0, '#e74c3c');
-                gradient.addColorStop(1, '#3498db');
-
-                signalCtx.fillStyle = gradient;
-                signalCtx.fillRect(x, y, barWidth - 2, barHeight);
-
-                // 電極標籤
-                signalCtx.fillStyle = '#2c3e50';
-                signalCtx.font = '10px Arial';
-                signalCtx.textAlign = 'center';
-                signalCtx.fillText(e.id, x + barWidth / 2, height - 5);
-            });
-        }
-
-        // 繪製熱圖
-        function drawHeatmap() {
-            const width = heatmapCanvas.width;
-            const height = heatmapCanvas.height;
-            const imageData = heatmapCtx.createImageData(width, height);
-
-            for (let y = 0; y < height; y++) {
-                for (let x = 0; x < width; x++) {
-                    const dx = x - width / 2;
-                    const dy = y - height / 2;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-
-                    if (dist > RADIUS * 0.92) {
-                        // 邊界外
-                        const idx = (y * width + x) * 4;
-                        imageData.data[idx] = 236;
-                        imageData.data[idx + 1] = 240;
-                        imageData.data[idx + 2] = 241;
-                        imageData.data[idx + 3] = 255;
-                        continue;
-                    }
-
-                    // 計算該點的阻抗值 (基於觸控點距離)
-                    let impedance = 1.0;
-                    if (touchPoint) {
-                        const touchDx = x - (touchPoint.x - CENTER_X + width / 2);
-                        const touchDy = y - (touchPoint.y - CENTER_Y + height / 2);
-                        const touchDist = Math.sqrt(touchDx * touchDx + touchDy * touchDy);
-                        impedance = 1.0 - Math.exp(-touchDist / 40) * 0.8;
-                    }
-
-                    // 熱圖顏色映射
-                    const [r, g, b] = impedanceToColor(impedance);
-                    const idx = (y * width + x) * 4;
-                    imageData.data[idx] = r;
-                    imageData.data[idx + 1] = g;
-                    imageData.data[idx + 2] = b;
-                    imageData.data[idx + 3] = 255;
+        for (let y=0; y<h; y++) {
+            for (let x=0; x<w; x++) {
+                const dist = Math.hypot(x - tx, y - ty);
+                if (dist < 35) {
+                    const intensity = Math.max(0, 255 - dist * 6);
+                    const idx = (y * w + x) * 4;
+                    data[idx] = intensity; data[idx+1] = intensity * 0.8; data[idx+2] = 50; data[idx+3] = 255;
                 }
             }
-
-            heatmapCtx.putImageData(imageData, 0, 0);
-
-            // 繪製電極位置
-            electrodes.forEach(e => {
-                const hx = e.x - CENTER_X + width / 2;
-                const hy = e.y - CENTER_Y + height / 2;
-                heatmapCtx.beginPath();
-                heatmapCtx.arc(hx, hy, 6, 0, 2 * Math.PI);
-                heatmapCtx.fillStyle = e.id === currentTX ? '#e74c3c' : '#34495e';
-                heatmapCtx.fill();
-                heatmapCtx.strokeStyle = 'white';
-                heatmapCtx.lineWidth = 2;
-                heatmapCtx.stroke();
-            });
         }
+        ctxHeat.putImageData(imgData, 0, 0);
+    }
 
-        // 阻抗值轉顏色
-        function impedanceToColor(value) {
-            // 藍色(低阻抗) -> 紅色(高阻抗)
-            const r = Math.floor(value * 231 + 24);
-            const g = Math.floor((1 - value) * 152 + 108);
-            const b = Math.floor((1 - value) * 219 + 60);
-            return [r, g, b];
+    function calculatePosition() {
+        if(!touchPoint) return;
+        let sumX = 0, sumY = 0, totalWeight = 0, maxDelta = 0;
+
+        electrodes.forEach((e, i) => {
+            if (i === currentTX) return;
+            const delta = Math.abs(e.baseV - e.currentV);
+            if (delta > maxDelta) maxDelta = delta;
+            const weight = Math.pow(delta, 3);
+            sumX += e.cx * weight; sumY += e.cy * weight; totalWeight += weight;
+        });
+
+        if (totalWeight > 0.001) {
+            const dispX = Math.round(sumX / totalWeight - CONFIG.center_x);
+            const dispY = Math.round(sumY / totalWeight - CONFIG.center_y);
+            
+            document.getElementById('coordDisplay').innerText = `${dispX} , ${dispY}`;
+            document.getElementById('peakDisplay').innerText = (maxDelta * 1000).toFixed(0) + " mV";
+
+            const err = Math.hypot((touchPoint.x - CONFIG.center_x) - dispX, (touchPoint.y - CONFIG.center_y) - dispY);
+            document.getElementById('accDisplay').innerText = Math.max(0, 100 - err).toFixed(1) + "%";
         }
+    }
 
-        // 計算觸控位置 (加權質心法)
-        function calculateTouchPosition() {
-            if (!touchPoint) {
-                document.getElementById('touchCoords').textContent = '等待觸控...';
-                document.getElementById('accuracy').textContent = '-';
-                return;
-            }
-
-            let sumX = 0, sumY = 0, sumWeight = 0;
-
-            electrodes.forEach((e, idx) => {
-                if (e.id === currentTX) return;
-
-                const weight = Math.abs(baselineVoltages[idx] - measuredVoltages[idx]);
-                sumX += e.x * weight;
-                sumY += e.y * weight;
-                sumWeight += weight;
-            });
-
-            const calcX = Math.round(sumX / sumWeight - CENTER_X);
-            const calcY = Math.round(sumY / sumWeight - CENTER_Y);
-
-            // 計算誤差
-            const actualX = touchPoint.x - CENTER_X;
-            const actualY = touchPoint.y - CENTER_Y;
-            const error = Math.sqrt((calcX - actualX) ** 2 + (calcY - actualY) ** 2);
-            const accuracy = Math.max(0, 100 - error / 2).toFixed(1);
-
-            document.getElementById('touchCoords').textContent = `X: ${calcX}mm, Y: ${calcY}mm`;
-            document.getElementById('accuracy').textContent = `${accuracy}% (誤差: ${error.toFixed(1)}mm)`;
-        }
-
-        // 滑鼠點擊事件
-        eitCanvas.addEventListener('click', (e) => {
-            const rect = eitCanvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-
-            const dist = Math.hypot(x - CENTER_X, y - CENTER_Y);
-            if (dist <= RADIUS - 20) {
-                touchPoint = { x, y };
-                updateSimulation();
+    function updateTable() {
+        const tbody = document.getElementById('voltageBody');
+        let sorted = [...electrodes].sort((a, b) => a.id - b.id);
+        let html = '';
+        
+        // 用同樣的 Max Delta 來縮放表格進度條，保持視覺一致
+        let maxDelta = 0.001;
+        electrodes.forEach(e => {
+            if(e.id !== currentTX +1) {
+                const d = Math.abs(e.baseV - e.currentV);
+                if(d > maxDelta) maxDelta = d;
             }
         });
 
-        // 更新模擬
-        function updateSimulation() {
-            calculateVoltages();
-            drawEIT();
-            drawHeatmap();
-            updateVoltageTable();
-            drawSignalChart();
-            calculateTouchPosition();
-            updateStatus();
+        sorted.forEach(e => {
+            if (e.id === currentTX + 1) return;
+            const delta = (e.baseV - e.currentV) * 1000;
+            const absDelta = Math.abs(delta);
+            
+            // 表格內的 Bar 也跟隨動態比例
+            const width = (absDelta / (maxDelta * 1000)) * 100;
+            const isHigh = absDelta > 200;
+            
+            html += `<tr>
+                <td>CH${e.id}</td>
+                <td>${e.baseV.toFixed(2)}</td>
+                <td>${e.currentV.toFixed(2)}</td>
+                <td class="${isHigh ? 'high-delta' : ''}">${delta.toFixed(1)}</td>
+                <td><div class="bar-container"><div class="bar-fill" style="width:${width}%; background:${isHigh?'#ffeb3b':'#00d2ff'}"></div></div></td>
+            </tr>`;
+        });
+        tbody.innerHTML = html;
+    }
+
+    const canvas = document.getElementById('eitCanvas');
+    function getMousePos(evt) {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = 600 / rect.width;
+        const scaleY = 600 / rect.height;
+        const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+        const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+        return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
+    }
+    function handleInput(x, y) {
+        const dist = Math.hypot(x - CONFIG.center_x, y - CONFIG.center_y);
+        if (dist < CONFIG.radius_outer) { touchPoint = { x, y }; }
+    }
+    ['mousedown', 'mousemove'].forEach(evt => 
+        canvas.addEventListener(evt, e => { if(e.buttons===1 || evt==='mousedown') handleInput(getMousePos(e).x, getMousePos(e).y) })
+    );
+    ['touchstart', 'touchmove'].forEach(evt => 
+        canvas.addEventListener(evt, e => { e.preventDefault(); handleInput(getMousePos(e).x, getMousePos(e).y) }, {passive: false})
+    );
+
+    function clearTouch() {
+        touchPoint = null;
+        document.getElementById('coordDisplay').innerText = "-- , --";
+        document.getElementById('accDisplay').innerText = "--%";
+        document.getElementById('peakDisplay').innerText = "0 mV";
+    }
+
+    function toggleAutoScan() {
+        const btn = document.getElementById('btnScan');
+        if (isScanning) {
+            clearInterval(scanTimer); isScanning = false;
+            btn.innerText = "Auto Scan"; btn.classList.remove('danger');
+        } else {
+            isScanning = true;
+            btn.innerText = "Stop"; btn.classList.add('danger');
+            scanTimer = setInterval(() => { currentTX = (currentTX + 1) % CONFIG.electrodes; }, 200);
         }
+    }
 
-        // 更新狀態顯示
-        function updateStatus() {
-            document.getElementById('txStatus').textContent = `#${currentTX}`;
-            document.getElementById('rxStatus').textContent = NUM_ELECTRODES - 1;
-        }
-
-        // 自動掃描
-        function startAutoScan() {
-            if (scanInterval) return;
-
-            scanInterval = setInterval(() => {
-                currentTX = (currentTX % NUM_ELECTRODES) + 1;
-
-                // 隨機移動觸控點
-                if (touchPoint) {
-                    touchPoint.x += (Math.random() - 0.5) * 20;
-                    touchPoint.y += (Math.random() - 0.5) * 20;
-
-                    // 限制在圓內
-                    const dist = Math.hypot(touchPoint.x - CENTER_X, touchPoint.y - CENTER_Y);
-                    if (dist > RADIUS - 20) {
-                        const angle = Math.atan2(touchPoint.y - CENTER_Y, touchPoint.x - CENTER_X);
-                        touchPoint.x = CENTER_X + (RADIUS - 30) * Math.cos(angle);
-                        touchPoint.y = CENTER_Y + (RADIUS - 30) * Math.sin(angle);
-                    }
-                } else {
-                    // 隨機產生觸控點
-                    const angle = Math.random() * 2 * Math.PI;
-                    const r = Math.random() * (RADIUS - 50) + 30;
-                    touchPoint = {
-                        x: CENTER_X + r * Math.cos(angle),
-                        y: CENTER_Y + r * Math.sin(angle)
-                    };
-                }
-
-                updateSimulation();
-            }, 500);
-        }
-
-        // 停止掃描
-        function stopScan() {
-            if (scanInterval) {
-                clearInterval(scanInterval);
-                scanInterval = null;
-            }
-        }
-
-        // 清除觸控
-        function clearTouch() {
-            touchPoint = null;
-            updateSimulation();
-        }
-
-        // 匯出數據
-        function exportData() {
-            const data = {
-                timestamp: new Date().toISOString(),
-                txElectrode: currentTX,
-                touchPoint: touchPoint ? {
-                    x: Math.round(touchPoint.x - CENTER_X),
-                    y: Math.round(touchPoint.y - CENTER_Y)
-                } : null,
-                voltages: electrodes.map((e, idx) => ({
-                    electrode: e.id,
-                    baseline: baselineVoltages[idx].toFixed(4),
-                    measured: measuredVoltages[idx].toFixed(4),
-                    delta: (baselineVoltages[idx] - measuredVoltages[idx]).toFixed(4)
-                }))
-            };
-
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `eit_data_${Date.now()}.json`;
-            a.click();
-        }
-
-        // 初始化
-        initElectrodes();
-        currentTX = 1;
-        updateSimulation();
-    </script>
+    init();
+</script>
 </body>
 </html>
