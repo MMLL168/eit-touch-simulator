@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EIT 信號流程與理論原理 - 技術文件</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', 'Arial', sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 3px solid #3498db;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        h2 {
+            color: #2c3e50;
+            font-size: 2em;
+            margin-top: 50px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        h3 {
+            color: #34495e;
+            font-size: 1.5em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        h4 {
+            color: #555;
+            font-size: 1.2em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .formula {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #3498db;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            overflow-x: auto;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .comparison-item {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s;
+        }
+
+        .comparison-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .comparison-item h4 {
+            color: #3498db;
+            margin-top: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: white;
+        }
+
+        table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .advantage-item {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .advantage-item h4 {
+            color: #667eea;
+            margin-top: 0;
+        }
+
+        /* Pattern Selector Styles */
+        .pattern-selector {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .pattern-btn {
+            background: white;
+            color: #3498db;
+            border: 2px solid #3498db;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .pattern-btn:hover {
+            background: #3498db;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .pattern-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        /* Canvas Container */
+        .canvas-container {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        #patternCanvas {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            background: white;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .pattern-description {
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+        }
+
+        /* Timeline Styles */
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+            margin: 40px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: #3498db;
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin: 30px 0;
+            padding: 20px;
+            width: 45%;
+            background: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #3498db;
+            border: 4px solid white;
+            border-radius: 50%;
+            top: 25px;
+            box-shadow: 0 0 0 3px #3498db;
+        }
+
+        .timeline-item:nth-child(odd) {
+            left: 0;
+        }
+
+        .timeline-item:nth-child(odd)::before {
+            right: -60px;
+        }
+
+        .timeline-item:nth-child(even) {
+            left: 55%;
+        }
+
+        .timeline-item:nth-child(even)::before {
+            left: -60px;
+        }
+
+        .timeline-item h4 {
+            color: #3498db;
+            margin-top: 0;
+        }
+
+        /* Noise Analysis Grid */
+        .noise-analysis {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .noise-item {
+            background: linear-gradient(135deg, #f093fb15 0%, #f5576c15 100%);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #f093fb;
+            transition: all 0.3s;
+        }
+
+        .noise-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(240, 147, 251, 0.3);
+        }
+
+        .noise-item h4 {
+            color: #f5576c;
+            margin-top: 0;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border-left: 4px solid #2196f3;
+        }
+
+        .warning-box {
+            background: #fff3e0;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border-left: 4px solid #ff9800;
+        }
+
+        ul, ol {
+            margin: 15px 0 15px 30px;
+        }
+
+        li {
+            margin: 10px 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline::before {
+                left: 30px;
+            }
+
+            .timeline-item {
+                width: calc(100% - 60px);
+                left: 60px !important;
+            }
+
+            .timeline-item::before {
+                left: -48px !important;
+            }
+
+            .pattern-selector {
+                flex-direction: column;
+            }
+
+            .pattern-btn {
+                width: 100%;
+            }
+        }
+
+        /* Navigation */
+        nav {
+            background: #2c3e50;
+            padding: 15px 0;
+            margin: -40px -40px 40px -40px;
+            border-radius: 15px 15px 0 0;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 0;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <ul>
+                <li><a href="../index.html">🏠 首頁</a></li>
+                <li><a href="theory.html">📚 理論原理</a></li>
+            </ul>
+        </nav>
+
+        <header>
+            <h1>EIT 信號流程與理論原理</h1>
+            <p class="subtitle">Electrical Impedance Tomography - Signal Processing & Theory</p>
+        </header>
+
+        <!-- Section 1: EIT Fundamentals -->
+        <section id="eit-fundamentals">
+            <h2>1. EIT 基礎原理深度解析</h2>
+
+            <h3>1.1 歐姆定律與電阻抗</h3>
+            <p>電阻抗成像（Electrical Impedance Tomography, EIT）的核心基礎是歐姆定律，它描述了電壓、電流與阻抗之間的關係：</p>
+            
+            <div class="formula">
+                V = I × Z<br>
+                其中：<br>
+                V = 電壓 (Voltage)<br>
+                I = 電流 (Current)<br>
+                Z = 阻抗 (Impedance)
+            </div>
+
+            <p>在 EIT 系統中，我們通過測量已知電流下的電壓變化來推算阻抗分佈。對於交流信號，阻抗為複數：</p>
+
+            <div class="formula">
+                Z = R + jX<br>
+                |Z| = √(R² + X²)<br>
+                其中：<br>
+                R = 電阻 (Resistance)<br>
+                X = 電抗 (Reactance)<br>
+                j = 虛數單位
+            </div>
+
+            <h3>1.2 拉普拉斯方程與電位分佈</h3>
+            <p>在導電介質中，電位φ的分佈遵循拉普拉斯方程：</p>
+
+            <div class="formula">
+                ∇ · (σ∇φ) = 0<br>
+                其中：<br>
+                σ = 電導率 (Conductivity)<br>
+                φ = 電位 (Electric Potential)<br>
+                ∇ = 梯度算子
+            </div>
+
+            <p>這個偏微分方程描述了在沒有電流源的區域內，電位如何隨空間分佈。求解此方程是 EIT 正向問題的核心。</p>
+
+            <h3>1.3 觸控物理機制</h3>
+            <p>當手指觸摸到 EIT 感測表面時，局部電導率會發生變化：</p>
+
+            <div class="comparison-grid">
+                <div class="comparison-item">
+                    <h4>🔵 無觸控狀態</h4>
+                    <ul>
+                        <li>電流路徑：均勻分佈</li>
+                        <li>電位分佈：對稱且平滑</li>
+                        <li>電極電壓：基準值 V₀</li>
+                        <li>阻抗：σ₀（基準電導率）</li>
+                    </ul>
+                </div>
+                <div class="comparison-item">
+                    <h4>🔴 觸控狀態</h4>
+                    <ul>
+                        <li>電流路徑：繞過觸控點</li>
+                        <li>電位分佈：產生局部擾動</li>
+                        <li>電極電壓：V₀ + ΔV</li>
+                        <li>阻抗：σ₀ + Δσ（電導率降低）</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>1.4 信號變化量分析</h3>
+            <p>手指觸控引起的電壓變化量通常非常微小：</p>
+
+            <div class="formula">
+                ΔV/V₀ ≈ 1% ~ 5%<br>
+                典型值：V₀ = 10 mV, ΔV = 0.1 ~ 0.5 mV
+            </div>
+
+            <div class="warning-box">
+                <strong>⚠️ 檢測挑戰：</strong>
+                <ul>
+                    <li>信號變化極小（1-5%），需要高精度 ADC（≥16 bit）</li>
+                    <li>噪訊干擾可能超過信號變化（SNR 挑戰）</li>
+                    <li>需要精密的差分測量與數位濾波</li>
+                    <li>基準電壓漂移必須小於 0.1%</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Section 2: SEEIT Technology -->
+        <section id="seeit-technology">
+            <h2>2. SEEIT 技術創新詳解</h2>
+
+            <h3>2.1 定義與核心概念</h3>
+            <p><strong>SEEIT (Single-Ended Electrical Impedance Tomography)</strong> 是一種創新的 EIT 測量方法，相較於傳統的差分 EIT，SEEIT 採用單端測量策略，大幅降低硬體複雜度。</p>
+
+            <div class="info-box">
+                <strong>💡 核心理念：</strong> 傳統 EIT 需要測量所有電極對之間的電壓差（N(N-1)/2 組），而 SEEIT 只測量每個電極相對於參考地的電壓（N 組），將測量通道數降低一個數量級。
+            </div>
+
+            <h3>2.2 詳細技術對比</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>比較項目</th>
+                        <th>傳統 EIT</th>
+                        <th>SEEIT</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>測量方式</strong></td>
+                        <td>差分測量（電極對之間）</td>
+                        <td>單端測量（相對參考地）</td>
+                    </tr>
+                    <tr>
+                        <td><strong>16 電極系統</strong></td>
+                        <td>120 組測量 (16×15/2)</td>
+                        <td>15 組測量 (16-1)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>20 電極系統</strong></td>
+                        <td>190 組測量 (20×19/2)</td>
+                        <td>19 組測量 (20-1)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>硬體複雜度</strong></td>
+                        <td>多路選擇器（複雜）</td>
+                        <td>單通道掃描（簡單）</td>
+                    </tr>
+                    <tr>
+                        <td><strong>測量速度</strong></td>
+                        <td>慢（需切換多次）</td>
+                        <td>快（順序掃描）</td>
+                    </tr>
+                    <tr>
+                        <td><strong>成本</strong></td>
+                        <td>高</td>
+                        <td>低（降低 70%）</td>
+                    </tr>
+                    <tr>
+                        <td><strong>共模抑制</strong></td>
+                        <td>依賴硬體 CMRR</td>
+                        <td>參考地設計</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>2.3 四大核心優勢</h3>
+
+            <div class="advantage-item">
+                <h4>🔧 1. 硬體精簡化</h4>
+                <p>傳統 EIT 需要複雜的多路選擇器來切換電極對，SEEIT 只需簡單的順序掃描電路。對於 20 電極系統：</p>
+                <ul>
+                    <li>傳統方式：需要 190 次切換與測量</li>
+                    <li>SEEIT：只需 19 次順序測量</li>
+                    <li>硬體減少：約 90% 的開關與佈線</li>
+                </ul>
+            </div>
+
+            <div class="advantage-item">
+                <h4>⚡ 2. 測量速度提升</h4>
+                <p>測量通道數的大幅減少直接轉化為速度優勢：</p>
+                <div class="formula">
+                    幀率提升 ≈ (N(N-1)/2) / (N-1) = N/2<br>
+                    對於 20 電極：幀率提升 ≈ 10 倍
+                </div>
+            </div>
+
+            <div class="advantage-item">
+                <h4>🎯 3. 校正簡化</h4>
+                <p>SEEIT 的單端測量特性使得校正過程更加簡單：</p>
+                <ul>
+                    <li>只需校正 N 個通道（而非 N(N-1)/2 個電極對）</li>
+                    <li>校正矩陣維度降低：從 O(N²) 到 O(N)</li>
+                    <li>自動化校正更容易實現</li>
+                </ul>
+            </div>
+
+            <div class="advantage-item">
+                <h4>🔬 4. 信號處理優化</h4>
+                <p>更簡單的數據結構帶來更高效的處理：</p>
+                <ul>
+                    <li>數據維度降低，計算複雜度從 O(N²) 降至 O(N)</li>
+                    <li>實時處理更容易實現</li>
+                    <li>算法優化空間更大</li>
+                </ul>
+            </div>
+
+            <h3>2.4 實際效益</h3>
+            <p>在實際應用中，SEEIT 技術使得：</p>
+            <ul>
+                <li><span class="highlight">幀率</span>：從 5-10 fps 提升到 50-100 fps（10 倍提升）</li>
+                <li><span class="highlight">延遲</span>：從 100 ms 降低到 10-20 ms</li>
+                <li><span class="highlight">成本</span>：硬體成本降低約 70%</li>
+                <li><span class="highlight">功耗</span>：降低約 60%（更少的開關操作）</li>
+            </ul>
+        </section>
+
+        <!-- Section 3: Excitation Patterns -->
+        <section id="excitation-patterns">
+            <h2>3. 互動式激勵模式視覺化</h2>
+
+            <h3>3.1 三種激勵模式</h3>
+            <p>EIT 系統通過不同的激勵模式來優化空間覆蓋與測量靈敏度：</p>
+
+            <div class="pattern-selector">
+                <button class="pattern-btn active" onclick="switchPattern('adjacent')">
+                    📍 相鄰模式 (Adjacent)
+                </button>
+                <button class="pattern-btn" onclick="switchPattern('opposite')">
+                    ↔️ 對向模式 (Opposite)
+                </button>
+                <button class="pattern-btn" onclick="switchPattern('rotating')">
+                    🔄 旋轉掃描 (Rotating)
+                </button>
+            </div>
+
+            <div class="canvas-container">
+                <canvas id="patternCanvas" width="500" height="500"></canvas>
+                <div class="pattern-description" id="patternDescription">
+                    <h4>相鄰模式 (Adjacent Pattern)</h4>
+                    <p>在相鄰的兩個電極之間注入電流，其餘電極測量電壓。此模式對邊緣區域靈敏度高，但中心區域靈敏度較低。</p>
+                </div>
+            </div>
+
+            <h3>3.2 模式詳細對比</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>激勵模式</th>
+                        <th>描述</th>
+                        <th>優點</th>
+                        <th>缺點</th>
+                        <th>適用場景</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>相鄰模式</strong></td>
+                        <td>電流在相鄰電極對注入</td>
+                        <td>邊緣靈敏度高、實施簡單</td>
+                        <td>中心盲區較大</td>
+                        <td>邊緣觸控檢測</td>
+                    </tr>
+                    <tr>
+                        <td><strong>對向模式</strong></td>
+                        <td>電流在直徑對向電極注入</td>
+                        <td>中心穿透力強、均勻性好</td>
+                        <td>需要精確對準</td>
+                        <td>全域觸控、深度檢測</td>
+                    </tr>
+                    <tr>
+                        <td><strong>旋轉掃描</strong></td>
+                        <td>激勵電極對依序旋轉</td>
+                        <td>空間覆蓋完整、數據豐富</td>
+                        <td>測量時間較長</td>
+                        <td>高精度成像</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>3.3 激勵頻率選擇</h3>
+            <p>本系統採用 <span class="highlight">50 kHz</span> 作為激勵頻率，原因如下：</p>
+
+            <div class="info-box">
+                <strong>為何選擇 10-100 kHz 範圍？</strong>
+                <ul>
+                    <li><strong>低於 10 kHz：</strong> 電極極化效應嚴重，接觸阻抗不穩定</li>
+                    <li><strong>10-100 kHz：</strong> 平衡電極極化與電容耦合，最佳工作區</li>
+                    <li><strong>高於 100 kHz：</strong> 電容耦合增強，寄生電容影響測量精度</li>
+                    <li><strong>50 kHz 特點：</strong> 避開電源頻率（50/60 Hz）諧波，信號穩定</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Section 4: Signal Flow Timeline -->
+        <section id="signal-flow">
+            <h2>4. 完整信號流程時序圖</h2>
+
+            <h3>4.1 單次測量時序分析</h3>
+            <p>從電極切換到數據輸出，每次測量包含以下步驟：</p>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h4>⚡ 步驟 1：電極切換</h4>
+                    <p><strong>時間：~1 µs</strong></p>
+                    <p>多工器切換到下一對電極，類比開關穩定。</p>
+                </div>
+
+                <div class="timeline-item">
+                    <h4>⏱️ 步驟 2：穩定延遲</h4>
+                    <p><strong>時間：~10 µs</strong></p>
+                    <p>等待電流路徑穩定，消除暫態響應。</p>
+                </div>
+
+                <div class="timeline-item">
+                    <h4>📡 步驟 3：電流注入</h4>
+                    <p><strong>頻率：50 kHz | 電流：100 µA</strong></p>
+                    <p>恆流源通過選定電極對注入交流電流。</p>
+                </div>
+
+                <div class="timeline-item">
+                    <h4>📊 步驟 4：電壓測量</h4>
+                    <p><strong>時間：~5 µs</strong></p>
+                    <p>ADC 採樣所有非激勵電極的電壓（16-bit 解析度）。</p>
+                </div>
+
+                <div class="timeline-item">
+                    <h4>💻 步驟 5：數據處理</h4>
+                    <p><strong>時間：~10 µs</strong></p>
+                    <p>數位濾波、差分計算、特徵提取。</p>
+                </div>
+
+                <div class="timeline-item">
+                    <h4>🔄 步驟 6：重複掃描</h4>
+                    <p><strong>完整掃描：19 次測量（20 電極 SEEIT）</strong></p>
+                    <p>循環所有電極組合，完成一幀數據採集。</p>
+                </div>
+            </div>
+
+            <h3>4.2 系統性能估算</h3>
+            <div class="formula">
+                單次測量時間：T_single = 1 + 10 + 5 + 10 = 26 µs（保守估計：30 µs）<br>
+                完整掃描時間（SEEIT，20 電極）：T_frame = 30 µs × 19 = 570 µs<br>
+                理論最大幀率：f_max = 1 / T_frame = 1754 fps<br>
+                實際幀率：f_actual = 50-100 fps（考慮處理開銷與重建算法）
+            </div>
+
+            <div class="warning-box">
+                <strong>⚠️ 性能瓶頸分析：</strong>
+                <ul>
+                    <li>硬體測量速度：1754 fps（足夠快）</li>
+                    <li>實際限制：影像重建算法（Jacobian 矩陣運算）</li>
+                    <li>優化方向：使用 GPU 加速或查表法提升重建速度</li>
+                </ul>
+            </div>
+
+            <h3>4.3 數據處理流程</h3>
+            <div class="comparison-grid">
+                <div class="comparison-item">
+                    <h4>🔢 原始數據</h4>
+                    <p>ADC 輸出 → 16-bit 數位值 → 電壓轉換</p>
+                </div>
+                <div class="comparison-item">
+                    <h4>🧹 濾波處理</h4>
+                    <p>移動平均 → 帶通濾波 → 陷波器（50/60 Hz）</p>
+                </div>
+                <div class="comparison-item">
+                    <h4>📉 差分計算</h4>
+                    <p>當前幀 - 基準幀 → 得到 ΔV（變化量）</p>
+                </div>
+                <div class="comparison-item">
+                    <h4>🎯 特徵提取</h4>
+                    <p>Jacobian 矩陣 → 逆問題求解 → 阻抗分佈</p>
+                </div>
+                <div class="comparison-item">
+                    <h4>🖼️ 影像重建</h4>
+                    <p>正則化反投影 → 2D 阻抗圖</p>
+                </div>
+                <div class="comparison-item">
+                    <h4>📍 座標輸出</h4>
+                    <p>峰值檢測 → 質心計算 → (x, y) 座標</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: Noise Analysis -->
+        <section id="noise-analysis">
+            <h2>5. 六大噪訊來源與抑制策略</h2>
+
+            <h3>5.1 主要噪訊類型</h3>
+
+            <div class="noise-analysis">
+                <div class="noise-item">
+                    <h4>🌡️ 1. 熱噪聲 (Johnson-Nyquist Noise)</h4>
+                    <p><strong>來源：</strong>電阻元件的熱擾動</p>
+                    <div class="formula" style="background: white; font-size: 0.9em;">
+                        V_n = √(4kTRΔf)<br>
+                        k = 1.38×10⁻²³ J/K（波茲曼常數）
+                    </div>
+                    <p><strong>抑制：</strong>低溫設計、高輸入阻抗放大器</p>
+                </div>
+
+                <div class="noise-item">
+                    <h4>⚡ 2. 電極極化噪聲</h4>
+                    <p><strong>來源：</strong>電極與皮膚接觸界面的電化學反應</p>
+                    <p><strong>特徵：</strong>低頻 1/f 噪聲，隨頻率降低而增強</p>
+                    <p><strong>抑制：</strong>使用 ≥10 kHz 激勵頻率、Ag/AgCl 電極、導電膠</p>
+                </div>
+
+                <div class="noise-item">
+                    <h4>🔌 3. 共模干擾 (50/60 Hz)</h4>
+                    <p><strong>來源：</strong>電源線耦合、大地迴路</p>
+                    <p><strong>影響：</strong>可能達到數十 mV（遠超信號變化量）</p>
+                    <p><strong>抑制：</strong>差分放大器（CMRR > 80 dB）、陷波濾波器、屏蔽線</p>
+                </div>
+
+                <div class="noise-item">
+                    <h4>📊 4. 量化噪聲 (ADC)</h4>
+                    <p><strong>來源：</strong>類比數位轉換的離散化誤差</p>
+                    <div class="formula" style="background: white; font-size: 0.9em;">
+                        SNR = 6.02n + 1.76 dB<br>
+                        (n = ADC 位元數)
+                    </div>
+                    <p><strong>抑制：</strong>使用 ≥16-bit ADC、過採樣、平均化</p>
+                </div>
+
+                <div class="noise-item">
+                    <h4>🔀 5. 串擾 (Crosstalk)</h4>
+                    <p><strong>來源：</strong>電極之間的電容/電感耦合</p>
+                    <p><strong>影響：</strong>測量通道間相互干擾，降低空間解析度</p>
+                    <p><strong>抑制：</strong>屏蔽設計、驅動線保護、物理間隔</p>
+                </div>
+
+                <div class="noise-item">
+                    <h4>🏃 6. 運動偽影 (Motion Artifacts)</h4>
+                    <p><strong>來源：</strong>電極移動、接觸阻抗變化</p>
+                    <p><strong>特徵：</strong>緩慢漂移或突跳</p>
+                    <p><strong>抑制：</strong>高幀率採集、運動補償算法、穩定固定結構</p>
+                </div>
+            </div>
+
+            <h3>5.2 綜合 SNR 優化策略</h3>
+            <div class="info-box">
+                <strong>🛡️ 五層防護機制：</strong>
+                <ol>
+                    <li><strong>硬體層：</strong>低噪聲放大器（LNA）、高 CMRR 設計</li>
+                    <li><strong>屏蔽層：</strong>接地環、驅動線保護、法拉第籠</li>
+                    <li><strong>濾波層：</strong>帶通濾波器（10-100 kHz）、陷波器（50/60 Hz）</li>
+                    <li><strong>數位層：</strong>過採樣、移動平均、中位數濾波</li>
+                    <li><strong>算法層：</strong>基準幀差分、時間域濾波、異常值剔除</li>
+                </ol>
+            </div>
+
+            <div class="formula">
+                目標 SNR：> 60 dB（1000:1）<br>
+                實際可達：40-50 dB（100-300:1）
+            </div>
+        </section>
+
+        <!-- Section 6: Sensitivity Analysis -->
+        <section id="sensitivity-analysis">
+            <h2>6. 靈敏度分析與空間解析度</h2>
+
+            <h3>6.1 Jacobian 矩陣與靈敏度</h3>
+            <p>靈敏度定義為電壓測量值對電導率變化的偏微分：</p>
+
+            <div class="formula">
+                J_ij = ∂V_i / ∂σ_j<br>
+                其中：<br>
+                J = Jacobian 矩陣（靈敏度矩陣）<br>
+                V_i = 第 i 個測量電極的電壓<br>
+                σ_j = 第 j 個像素的電導率
+            </div>
+
+            <p>Jacobian 矩陣的元素大小直接反映了該空間位置對測量的貢獻程度。</p>
+
+            <h3>6.2 中心 vs 邊緣區域對比</h3>
+            <div class="comparison-grid">
+                <div class="comparison-item">
+                    <h4>🎯 中心區域</h4>
+                    <ul>
+                        <li><strong>靈敏度：</strong>低（距離所有電極都遠）</li>
+                        <li><strong>解析度：</strong>約 5-10 mm（模糊）</li>
+                        <li><strong>改善方法：</strong>
+                            <ul>
+                                <li>使用對向激勵模式</li>
+                                <li>增加電極數量</li>
+                                <li>多頻激勵</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div class="comparison-item">
+                    <h4>🔵 邊緣區域</h4>
+                    <ul>
+                        <li><strong>靈敏度：</strong>高（靠近電極）</li>
+                        <li><strong>解析度：</strong>約 2-3 mm（清晰）</li>
+                        <li><strong>優勢：</strong>
+                            <ul>
+                                <li>電流路徑短</li>
+                                <li>信號變化大</li>
+                                <li>SNR 較高</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>6.3 影響空間解析度的五大因素</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>因素</th>
+                        <th>影響機制</th>
+                        <th>量化指標</th>
+                        <th>優化方向</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>電極數量</strong></td>
+                        <td>更多電極 → 更多測量組合 → 更豐富的空間訊息</td>
+                        <td>16 電極：~5mm<br>32 電極：~3mm</td>
+                        <td>增加至 32 或 64 電極</td>
+                    </tr>
+                    <tr>
+                        <td><strong>測量 SNR</strong></td>
+                        <td>噪訊掩蓋微小阻抗變化</td>
+                        <td>SNR > 60 dB 理想</td>
+                        <td>多次平均、濾波設計</td>
+                    </tr>
+                    <tr>
+                        <td><strong>激勵模式</strong></td>
+                        <td>不同模式對不同區域靈敏度不同</td>
+                        <td>對向模式中心增強 50%</td>
+                        <td>自適應模式切換</td>
+                    </tr>
+                    <tr>
+                        <td><strong>正則化參數</strong></td>
+                        <td>平衡解的穩定性與解析度</td>
+                        <td>λ = 0.01 ~ 0.1</td>
+                        <td>自適應正則化</td>
+                    </tr>
+                    <tr>
+                        <td><strong>重建算法</strong></td>
+                        <td>逆問題求解的準確性</td>
+                        <td>迭代法優於直接法</td>
+                        <td>深度學習重建</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>6.4 深度靈敏度限制</h3>
+            <p>EIT 對深度方向的靈敏度呈指數衰減：</p>
+
+            <div class="formula">
+                S(z) ∝ exp(-z/δ)<br>
+                其中：<br>
+                z = 深度<br>
+                δ = 穿透深度（約為電極間距的 1/3）
+            </div>
+
+            <div class="warning-box">
+                <strong>⚠️ EIT 固有限制：</strong>
+                <ul>
+                    <li>只能檢測表面附近（< 10 mm）的阻抗變化</li>
+                    <li>深度解析度遠低於平面解析度</li>
+                    <li>3D 成像需要多層電極陣列</li>
+                    <li>本系統設計為 2D 平面觸控，不涉及深度</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer style="margin-top: 60px; padding-top: 30px; border-top: 2px solid #e0e0e0; text-align: center; color: #7f8c8d;">
+            <p><strong>EIT Touch Simulator - Technical Documentation</strong></p>
+            <p>© 2024 | 電阻抗成像觸控系統 | 詳細理論與實作文件</p>
+        </footer>
+    </div>
+
+    <script>
+        // Global variables
+        let currentPattern = 'adjacent';
+        const canvas = document.getElementById('patternCanvas');
+        const ctx = canvas.getContext('2d');
+        const numElectrodes = 20;
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const radius = 180;
+        const electrodeRadius = 15;
+
+        // Pattern descriptions
+        const patternDescriptions = {
+            adjacent: {
+                title: '相鄰模式 (Adjacent Pattern)',
+                description: '在相鄰的兩個電極之間注入電流，其餘電極測量電壓。此模式對邊緣區域靈敏度高，但中心區域靈敏度較低。適用於邊緣觸控檢測。'
+            },
+            opposite: {
+                title: '對向模式 (Opposite Pattern)',
+                description: '電流在直徑對向的兩個電極之間注入。此模式對中心區域穿透力強，電流路徑穿過中心，靈敏度分佈較均勻。適用於全域觸控和深度檢測。'
+            },
+            rotating: {
+                title: '旋轉掃描 (Rotating Pattern)',
+                description: '激勵電極對依序旋轉，依次測量所有可能的激勵組合。此模式提供最完整的空間覆蓋和最豐富的測量數據，但測量時間較長。適用於高精度成像。'
+            }
+        };
+
+        // Switch pattern function
+        function switchPattern(pattern) {
+            currentPattern = pattern;
+            
+            // Update button states
+            const buttons = document.querySelectorAll('.pattern-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update description
+            const desc = patternDescriptions[pattern];
+            document.getElementById('patternDescription').innerHTML = `
+                <h4>${desc.title}</h4>
+                <p>${desc.description}</p>
+            `;
+            
+            // Redraw canvas
+            drawPattern();
+        }
+
+        // Draw pattern on canvas
+        function drawPattern() {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw background circle
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius + 30, 0, 2 * Math.PI);
+            ctx.fillStyle = '#f0f0f0';
+            ctx.fill();
+            ctx.strokeStyle = '#ccc';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Calculate electrode positions
+            const electrodes = [];
+            for (let i = 0; i < numElectrodes; i++) {
+                const angle = (i / numElectrodes) * 2 * Math.PI - Math.PI / 2;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+                electrodes.push({ x, y, angle, index: i });
+            }
+            
+            // Determine TX and RX electrodes based on pattern
+            let txElectrodes = [];
+            let rxElectrodes = [];
+            
+            if (currentPattern === 'adjacent') {
+                txElectrodes = [0, 1];
+            } else if (currentPattern === 'opposite') {
+                txElectrodes = [0, numElectrodes / 2];
+            } else if (currentPattern === 'rotating') {
+                txElectrodes = [0, 5];
+            }
+            
+            // Draw current flow paths
+            if (txElectrodes.length === 2) {
+                drawCurrentFlow(ctx, centerX, centerY, radius, txElectrodes[0], txElectrodes[1]);
+            }
+            
+            // Draw electrodes
+            electrodes.forEach((electrode, i) => {
+                ctx.beginPath();
+                ctx.arc(electrode.x, electrode.y, electrodeRadius, 0, 2 * Math.PI);
+                
+                // Color based on role
+                if (txElectrodes.includes(i)) {
+                    ctx.fillStyle = '#e74c3c'; // TX - Red
+                    ctx.strokeStyle = '#c0392b';
+                } else {
+                    ctx.fillStyle = '#95a5a6'; // Inactive - Gray
+                    ctx.strokeStyle = '#7f8c8d';
+                }
+                
+                ctx.lineWidth = 2;
+                ctx.fill();
+                ctx.stroke();
+                
+                // Draw electrode number
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 12px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(i + 1, electrode.x, electrode.y);
+            });
+            
+            // Draw legend
+            drawLegend();
+        }
+
+        // Draw current flow between electrodes
+        function drawCurrentFlow(ctx, centerX, centerY, radius, tx1, tx2) {
+            const angle1 = (tx1 / numElectrodes) * 2 * Math.PI - Math.PI / 2;
+            const angle2 = (tx2 / numElectrodes) * 2 * Math.PI - Math.PI / 2;
+            
+            const x1 = centerX + radius * Math.cos(angle1);
+            const y1 = centerY + radius * Math.sin(angle1);
+            const x2 = centerX + radius * Math.cos(angle2);
+            const y2 = centerY + radius * Math.sin(angle2);
+            
+            // Draw curved path
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            
+            // Control point for curve (through center)
+            const cpX = centerX;
+            const cpY = centerY;
+            
+            ctx.quadraticCurveTo(cpX, cpY, x2, y2);
+            ctx.strokeStyle = '#3498db';
+            ctx.lineWidth = 3;
+            ctx.setLineDash([5, 5]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // Draw arrow in the middle
+            const midX = (x1 + cpX + x2) / 3;
+            const midY = (y1 + cpY + y2) / 3;
+            
+            const arrowAngle = Math.atan2(cpY - y1, cpX - x1);
+            drawArrow(ctx, midX, midY, arrowAngle);
+        }
+
+        // Draw arrow
+        function drawArrow(ctx, x, y, angle) {
+            const arrowSize = 10;
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle);
+            
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(-arrowSize, -arrowSize / 2);
+            ctx.lineTo(-arrowSize, arrowSize / 2);
+            ctx.closePath();
+            
+            ctx.fillStyle = '#3498db';
+            ctx.fill();
+            ctx.restore();
+        }
+
+        // Draw legend
+        function drawLegend() {
+            const legendX = 30;
+            const legendY = canvas.height - 80;
+            
+            // TX electrode
+            ctx.beginPath();
+            ctx.arc(legendX, legendY, 8, 0, 2 * Math.PI);
+            ctx.fillStyle = '#e74c3c';
+            ctx.fill();
+            ctx.fillStyle = '#333';
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText('TX (電流注入)', legendX + 15, legendY + 5);
+            
+            // Inactive electrode
+            ctx.beginPath();
+            ctx.arc(legendX, legendY + 30, 8, 0, 2 * Math.PI);
+            ctx.fillStyle = '#95a5a6';
+            ctx.fill();
+            ctx.fillStyle = '#333';
+            ctx.fillText('未使用', legendX + 15, legendY + 35);
+        }
+
+        // Initialize on page load
+        window.onload = function() {
+            drawPattern();
+        };
+    </script>
+</body>
+</html>
