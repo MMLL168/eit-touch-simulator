@@ -136,7 +136,7 @@
         }
 
         .advantage-item {
-            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
             padding: 20px;
             margin: 15px 0;
             border-radius: 10px;
@@ -277,7 +277,7 @@
         }
 
         .noise-item {
-            background: linear-gradient(135deg, #f093fb15 0%, #f5576c15 100%);
+            background: linear-gradient(135deg, rgba(240, 147, 251, 0.08) 0%, rgba(245, 87, 108, 0.08) 100%);
             padding: 20px;
             border-radius: 10px;
             border: 2px solid #f093fb;
@@ -991,14 +991,24 @@
 
         // Switch pattern function
         function switchPattern(pattern) {
+            // Validate pattern parameter
+            if (!patternDescriptions[pattern]) {
+                console.error('Invalid pattern:', pattern);
+                return;
+            }
+            
             currentPattern = pattern;
             
             // Update button states
             const buttons = document.querySelectorAll('.pattern-btn');
             buttons.forEach(btn => {
                 btn.classList.remove('active');
+                // Check if button corresponds to current pattern
+                const btnPattern = btn.getAttribute('onclick')?.match(/switchPattern\('(\w+)'\)/)?.[1];
+                if (btnPattern === pattern) {
+                    btn.classList.add('active');
+                }
             });
-            event.target.classList.add('active');
             
             // Update description
             const desc = patternDescriptions[pattern];
