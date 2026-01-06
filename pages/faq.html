@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="EIT 觸控感測系統常見問題與技術比喻">
+    <title>FAQ - EIT Touch Simulator</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/navigation.css">
+    <style>
+        .faq-item {
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .faq-question {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .faq-question:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+        .faq-answer {
+            padding: 20px;
+            display: none;
+            line-height: 1.8;
+        }
+        .faq-answer.active {
+            display: block;
+        }
+        .analogy-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 5px solid #3498db;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="nav-brand">
+                <img src="../assets/images/logo.svg" alt="EIT Logo" class="nav-logo">
+                <span>EIT Touch Simulator</span>
+            </a>
+            <button class="nav-toggle" aria-label="Toggle navigation">
+                <span class="icon"></span><span class="icon"></span><span class="icon"></span>
+            </button>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="../index.html" class="nav-link">首頁</a></li>
+                <li class="nav-item"><a href="./hardware.html" class="nav-link">硬體架構</a></li>
+                <li class="nav-item"><a href="./theory.html" class="nav-link">理論原理</a></li>
+                <li class="nav-item"><a href="./modeling.html" class="nav-link">數學建模</a></li>
+                <li class="nav-item"><a href="./deeplearning.html" class="nav-link">深度學習</a></li>
+                <li class="nav-item"><a href="./simulation.html" class="nav-link">互動模擬</a></li>
+                <li class="nav-item"><a href="./applications.html" class="nav-link">應用案例</a></li>
+                <li class="nav-item"><a href="./faq.html" class="nav-link active">FAQ</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 60px 20px; text-align: center;">
+        <div class="container">
+            <h1>❓ FAQ & 技術比喻</h1>
+            <p>Frequently Asked Questions & Technical Analogies</p>
+        </div>
+    </section>
+
+    <div class="page-content">
+        <div class="container">
+            <section class="content-section">
+                <h2>🎭 技術比喻：用生活例子理解 EIT</h2>
+                
+                <div class="analogy-card">
+                    <h3>🏊 池塘漣漪比喻</h3>
+                    <p><strong>情境：</strong>想像一個圓形池塘，邊緣有 20 個漣漪偵測器。</p>
+                    <p><strong>對應：</strong></p>
+                    <ul>
+                        <li><strong>池塘 =</strong> EIT 感測平面</li>
+                        <li><strong>漣漪偵測器 =</strong> 電極</li>
+                        <li><strong>丟石頭 =</strong> 手指觸控</li>
+                        <li><strong>漣漪波形 =</strong> 電壓變化</li>
+                    </ul>
+                    <p>當你在池塘某處丟石頭，邊緣的偵測器會感測到不同強度的漣漪。
+                    距離石頭越近的偵測器，感測到的波動越大。透過分析所有偵測器的數據，
+                    可以反推石頭落點位置——這就是 EIT 的基本原理！</p>
+                </div>
+
+                <div class="analogy-card">
+                    <h3>🔦 手電筒與影子比喻</h3>
+                    <p><strong>情境：</strong>在黑暗房間中，用手電筒照射牆壁。</p>
+                    <p><strong>對應：</strong></p>
+                    <ul>
+                        <li><strong>手電筒 =</strong> TX 電極（發射電流）</li>
+                        <li><strong>牆壁 =</strong> 感測平面</li>
+                        <li><strong>障礙物 =</strong> 手指（改變阻抗）</li>
+                        <li><strong>影子 =</strong> 電壓變化模式</li>
+                    </ul>
+                    <p>當你在手電筒前放置手指，牆上會出現影子。移動不同位置的手電筒，
+                    影子的形狀和位置會改變。透過多個角度的影子資訊，可以重建物體的形狀和位置。</p>
+                </div>
+
+                <div class="analogy-card">
+                    <h3>🎵 音叉共振比喻</h3>
+                    <p><strong>情境：</strong>一排音叉被敲響，彼此會互相影響共振。</p>
+                    <p><strong>對應：</strong></p>
+                    <ul>
+                        <li><strong>音叉 =</strong> 電極</li>
+                        <li><strong>空氣 =</strong> 導電層</li>
+                        <li><strong>阻尼材料 =</strong> 手指（吸收振動）</li>
+                    </ul>
+                    <p>當你在某處放置阻尼材料，會影響周圍音叉的共振強度。
+                    越靠近阻尼的音叉，振幅衰減越明顯。這類似於觸控改變電場分布的效果。</p>
+                </div>
+            </section>
+
+            <section class="content-section">
+                <h2>💬 常見問題 (FAQ)</h2>
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Q1: EIT 觸控和電容式觸控有什麼區別？</span>
+                        <span>▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p><strong>A:</strong> 主要區別在於感測原理：</p>
+                        <ul>
+                            <li><strong>電容式：</strong>偵測手指引起的電容變化，需要導電物體（手指）</li>
+                            <li><strong>EIT：</strong>偵測阻抗變化，可識別任何接觸物體</li>
+                        </ul>
+                        <p>EIT 的優勢是可以戴手套操作、大面積成本低、抗環境干擾能力強。</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Q2: 為什麼選擇 50kHz 作為激勵頻率？</span>
+                        <span>▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p><strong>A:</strong> 50kHz 是經過權衡的最佳選擇：</p>
+                        <ul>
+                            <li><strong>太低 (< 1kHz)：</strong>會產生電極極化效應，導致測量失準</li>
+                            <li><strong>太高 (> 500kHz)：</strong>寄生電容影響增大，穿透深度降低</li>
+                            <li><strong>50kHz：</strong>避免極化、良好穿透、易於實現</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Q3: 可以同時偵測多個觸控點嗎？</span>
+                        <span>▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p><strong>A:</strong> 可以！EIT 天生支援多點觸控。</p>
+                        <p>由於每次掃描會獲得完整的阻抗分布影像，可以同時識別多個高阻抗區域（觸控點）。
+                        理論上支援的觸控點數量取決於影像重建解析度，通常可達 5-10 個點。</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Q4: 定位精度受哪些因素影響？</span>
+                        <span>▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p><strong>A:</strong> 主要影響因素包括：</p>
+                        <ol>
+                            <li><strong>電極數量：</strong>越多越好，但成本增加</li>
+                            <li><strong>雜訊水準：</strong>需要良好的信號處理</li>
+                            <li><strong>重建演算法：</strong>深度學習優於傳統方法</li>
+                            <li><strong>觸控位置：</strong>中心區域精度高於邊緣</li>
+                            <li><strong>校準品質：</strong>定期校準基準電壓</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Q5: 為什麼模擬器使用加權質心法而非完整重建？</span>
+                        <span>▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p><strong>A:</strong> 純瀏覽器環境的考量：</p>
+                        <ul>
+                            <li><strong>計算速度：</strong>質心法僅需簡單加權求和，< 1ms</li>
+                            <li><strong>實作簡單：</strong>無需 FEM 網格或深度學習模型</li>
+                            <li><strong>展示效果：</strong>足以展示 EIT 觸控的基本原理</li>
+                        </ul>
+                        <p>實際產品會使用完整的影像重建演算法，提供更高精度和多點觸控支援。</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Q6: EIT 技術有哪些限制？</span>
+                        <span>▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p><strong>A:</strong> 主要限制包括：</p>
+                        <ul>
+                            <li><strong>空間解析度：</strong>受電極數量限制，不如光學方案</li>
+                            <li><strong>邊緣效應：</strong>邊緣區域靈敏度較低</li>
+                            <li><strong>計算需求：</strong>完整重建需要較高計算能力</li>
+                            <li><strong>校準需求：</strong>環境變化需要重新校準</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Q7: 可以用於水下或惡劣環境嗎？</span>
+                        <span>▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p><strong>A:</strong> 可以！這是 EIT 的主要優勢之一。</p>
+                        <p>由於電極可以完全密封在防水層下，EIT 觸控面板可以達到 IP67 甚至更高防護等級。
+                        已成功應用於戶外自助終端機、船舶導航系統、水下控制面板等場景。</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>Q8: 如何開始開發自己的 EIT 觸控系統？</span>
+                        <span>▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p><strong>A:</strong> 建議的學習路徑：</p>
+                        <ol>
+                            <li><strong>理解原理：</strong>學習本網站的理論原理章節</li>
+                            <li><strong>模擬實驗：</strong>使用互動模擬器熟悉信號特性</li>
+                            <li><strong>硬體原型：</strong>使用 Arduino + AD8226 製作簡易原型</li>
+                            <li><strong>演算法開發：</strong>實作加權質心法或 Newton-Raphson</li>
+                            <li><strong>深度學習：</strong>收集數據，訓練 UNet 模型</li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+
+            <section class="content-section">
+                <h2>📖 術語詞典</h2>
+                <table class="spec-table">
+                    <tr>
+                        <th>術語</th>
+                        <th>說明</th>
+                    </tr>
+                    <tr>
+                        <td><strong>EIT</strong></td>
+                        <td>Electrical Impedance Tomography，電阻抗斷層掃描</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SEEIT</strong></td>
+                        <td>Single Electrode EIT，單電極激勵模式</td>
+                    </tr>
+                    <tr>
+                        <td><strong>TX</strong></td>
+                        <td>Transmitter，發射電極（注入電流）</td>
+                    </tr>
+                    <tr>
+                        <td><strong>RX</strong></td>
+                        <td>Receiver，接收電極（測量電壓）</td>
+                    </tr>
+                    <tr>
+                        <td><strong>FEM</strong></td>
+                        <td>Finite Element Method，有限元素法</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Jacobian</strong></td>
+                        <td>雅可比矩陣，描述電壓對阻抗的靈敏度</td>
+                    </tr>
+                    <tr>
+                        <td><strong>正則化</strong></td>
+                        <td>Regularization，防止逆問題過擬合的數學技術</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ITO</strong></td>
+                        <td>Indium Tin Oxide，氧化銦錫，透明導電材料</td>
+                    </tr>
+                </table>
+            </section>
+
+            <section class="content-section">
+                <h2>📚 參考資料</h2>
+                <h3>書籍</h3>
+                <ol>
+                    <li>Holder, D. S. (2004). <em>Electrical Impedance Tomography: Methods, History and Applications</em>. CRC Press.</li>
+                    <li>Bayford, R., & Tizzard, A. (2012). <em>Bioimpedance Tomography</em>. Annual Review of Biomedical Engineering.</li>
+                </ol>
+                
+                <h3>論文</h3>
+                <ol>
+                    <li>Adler, A., & Holder, D. (2021). "Electrical Impedance Tomography: Tissue Properties to Image Measures". <em>IEEE TBME</em>.</li>
+                    <li>Hamilton, S. J., & Hauptmann, A. (2018). "Deep D-Bar: Real-Time EIT Imaging with Deep Neural Networks". <em>IEEE TMI</em>.</li>
+                </ol>
+                
+                <h3>線上資源</h3>
+                <ul>
+                    <li><a href="https://eit.org" target="_blank">EIT 國際協會</a></li>
+                    <li><a href="https://github.com/eitcom" target="_blank">開源 EIT 專案</a></li>
+                </ul>
+            </section>
+
+            <section class="content-section">
+                <h2>🔗 相關章節</h2>
+                <div class="nav-cards">
+                    <a href="../index.html" class="nav-card">
+                        <div class="nav-card-icon">🏠</div>
+                        <h3>返回首頁</h3>
+                        <p>回到系統總覽</p>
+                    </a>
+                    <a href="./simulation.html" class="nav-card">
+                        <div class="nav-card-icon">🎮</div>
+                        <h3>互動模擬</h3>
+                        <p>動手體驗 EIT 技術</p>
+                    </a>
+                    <a href="./applications.html" class="nav-card">
+                        <div class="nav-card-icon">🚀</div>
+                        <h3>應用案例</h3>
+                        <p>探索實際應用</p>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 EIT Touch Simulator Project. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../assets/js/common.js"></script>
+    <script src="../assets/js/navigation.js"></script>
+    <script>
+        function toggleFaq(element) {
+            const answer = element.nextElementSibling;
+            const icon = element.querySelector('span:last-child');
+            
+            // 切換當前 FAQ
+            answer.classList.toggle('active');
+            icon.textContent = answer.classList.contains('active') ? '▲' : '▼';
+        }
+    </script>
+</body>
+</html>

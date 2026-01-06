@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="EIT 觸控感測系統硬體架構 - 四層結構設計與電極配置">
+    <title>硬體架構 - EIT Touch Simulator</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/navigation.css">
+    <style>
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+        }
+        
+        .page-header h1 {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+        
+        .page-header p {
+            font-size: 1.2em;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .content-section {
+            background: white;
+            padding: 40px;
+            margin: 20px auto;
+            max-width: 1200px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .layer-diagram {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 20px;
+            margin: 30px 0;
+            align-items: center;
+        }
+        
+        .layer-item {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #3498db;
+        }
+        
+        .layer-item h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .layer-item p {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        
+        .electrode-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .spec-table {
+            width: 100%;
+            margin: 20px 0;
+            border-collapse: collapse;
+        }
+        
+        .spec-table th {
+            background: #34495e;
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+        
+        .spec-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        
+        .spec-table tr:hover {
+            background: #e8f4f8;
+        }
+    </style>
+</head>
+<body>
+    <!-- 導航列 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="nav-brand">
+                <img src="../assets/images/logo.svg" alt="EIT Logo" class="nav-logo">
+                <span>EIT Touch Simulator</span>
+            </a>
+            
+            <button class="nav-toggle" aria-label="Toggle navigation">
+                <span class="icon"></span>
+                <span class="icon"></span>
+                <span class="icon"></span>
+            </button>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="../index.html" class="nav-link">首頁</a>
+                </li>
+                <li class="nav-item">
+                    <a href="./hardware.html" class="nav-link active">硬體架構</a>
+                </li>
+                <li class="nav-item">
+                    <a href="./theory.html" class="nav-link">理論原理</a>
+                </li>
+                <li class="nav-item">
+                    <a href="./modeling.html" class="nav-link">數學建模</a>
+                </li>
+                <li class="nav-item">
+                    <a href="./deeplearning.html" class="nav-link">深度學習</a>
+                </li>
+                <li class="nav-item">
+                    <a href="./simulation.html" class="nav-link">互動模擬</a>
+                </li>
+                <li class="nav-item">
+                    <a href="./applications.html" class="nav-link">應用案例</a>
+                </li>
+                <li class="nav-item">
+                    <a href="./faq.html" class="nav-link">FAQ</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 頁面標題 -->
+    <section class="page-header">
+        <div class="container">
+            <h1>🔩 硬體架構與設計</h1>
+            <p>Four-Layer Structure Design & Electrode Configuration</p>
+        </div>
+    </section>
+
+    <div class="page-content">
+        <div class="container">
+            <!-- 四層結構 -->
+            <section class="content-section">
+                <h2>📐 四層結構剖面圖</h2>
+                <p>EIT 觸控感測系統採用精密的四層堆疊設計，每層具有特定功能，確保準確的阻抗測量與觸控定位。</p>
+                
+                <div class="layer-diagram">
+                    <div class="layer-item">
+                        <h4>第一層：觸控表面</h4>
+                        <p>厚度: 2-5mm</p>
+                    </div>
+                    <div>
+                        <p><strong>材料：</strong>壓克力 (PMMA) 或玻璃</p>
+                        <p><strong>功能：</strong>提供平滑的觸控介面，保護內部結構</p>
+                        <p><strong>特性：</strong>絕緣、透明、耐磨損</p>
+                    </div>
+                    
+                    <div class="layer-item">
+                        <h4>第二層：導電層</h4>
+                        <p>厚度: 0.1-0.5mm</p>
+                    </div>
+                    <div>
+                        <p><strong>材料：</strong>ITO (Indium Tin Oxide) 或銅箔</p>
+                        <p><strong>功能：</strong>形成均勻的電場分布</p>
+                        <p><strong>特性：</strong>高導電性、透明度 (ITO)、柔韌性</p>
+                    </div>
+                    
+                    <div class="layer-item">
+                        <h4>第三層：電極陣列</h4>
+                        <p>厚度: 1-2mm</p>
+                    </div>
+                    <div>
+                        <p><strong>材料：</strong>銀膠 (Ag/AgCl) 或銅電極</p>
+                        <p><strong>功能：</strong>電流注入與電壓測量</p>
+                        <p><strong>特性：</strong>低接觸阻抗、穩定性高</p>
+                    </div>
+                    
+                    <div class="layer-item">
+                        <h4>第四層：基板</h4>
+                        <p>厚度: 3-5mm</p>
+                    </div>
+                    <div>
+                        <p><strong>材料：</strong>FR4 PCB 或壓克力</p>
+                        <p><strong>功能：</strong>結構支撐與電路佈線</p>
+                        <p><strong>特性：</strong>機械強度、絕緣性、穩定性</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 電極配置 -->
+            <section class="content-section">
+                <h2>⚡ 電極配置與佈局</h2>
+                <p>系統採用圓形陣列配置，20 個電極均勻分布於 30cm 直徑的感測平面邊緣。</p>
+                
+                <div class="electrode-grid">
+                    <div class="card">
+                        <h3>🎯 圓形陣列</h3>
+                        <p><strong>電極數量：</strong>20 個</p>
+                        <p><strong>直徑：</strong>300mm</p>
+                        <p><strong>間距：</strong>18° (均勻分布)</p>
+                        <p><strong>優點：</strong>對稱性佳、覆蓋範圍廣</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>🔌 電極規格</h3>
+                        <p><strong>尺寸：</strong>10mm 直徑</p>
+                        <p><strong>材料：</strong>Ag/AgCl</p>
+                        <p><strong>接觸阻抗：</strong>< 100Ω</p>
+                        <p><strong>耐久性：</strong>> 100,000 次觸控</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>🔧 連接方式</h3>
+                        <p><strong>佈線：</strong>PCB 走線</p>
+                        <p><strong>接口：</strong>FPC 排線</p>
+                        <p><strong>遮蔽：</strong>雙層屏蔽設計</p>
+                        <p><strong>抗干擾：</strong>差分信號傳輸</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 硬體規格表 -->
+            <section class="content-section">
+                <h2>📊 硬體規格總覽</h2>
+                
+                <h3>🎛️ 電氣規格</h3>
+                <table class="spec-table">
+                    <thead>
+                        <tr>
+                            <th>參數</th>
+                            <th>規格</th>
+                            <th>說明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>激勵頻率</strong></td>
+                            <td>50 kHz</td>
+                            <td>避免電極極化效應</td>
+                        </tr>
+                        <tr>
+                            <td><strong>激勵電流</strong></td>
+                            <td>2.5 mA (RMS)</td>
+                            <td>確保安全性與訊噪比</td>
+                        </tr>
+                        <tr>
+                            <td><strong>電壓範圍</strong></td>
+                            <td>0 - 5V</td>
+                            <td>差分測量電壓</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ADC 解析度</strong></td>
+                            <td>16-bit</td>
+                            <td>高精度電壓採樣</td>
+                        </tr>
+                        <tr>
+                            <td><strong>採樣率</strong></td>
+                            <td>1 MSPS</td>
+                            <td>支援即時處理</td>
+                        </tr>
+                        <tr>
+                            <td><strong>訊噪比 (SNR)</strong></td>
+                            <td>> 60 dB</td>
+                            <td>確保信號品質</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3 class="mt-4">🏗️ 機械規格</h3>
+                <table class="spec-table">
+                    <thead>
+                        <tr>
+                            <th>參數</th>
+                            <th>規格</th>
+                            <th>說明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>感測面積</strong></td>
+                            <td>Ø 300mm (圓形)</td>
+                            <td>有效觸控區域</td>
+                        </tr>
+                        <tr>
+                            <td><strong>總厚度</strong></td>
+                            <td>8-12mm</td>
+                            <td>四層結構總和</td>
+                        </tr>
+                        <tr>
+                            <td><strong>重量</strong></td>
+                            <td>約 500g</td>
+                            <td>含所有層級與電路</td>
+                        </tr>
+                        <tr>
+                            <td><strong>工作溫度</strong></td>
+                            <td>-10°C ~ 60°C</td>
+                            <td>寬溫度範圍運作</td>
+                        </tr>
+                        <tr>
+                            <td><strong>防護等級</strong></td>
+                            <td>IP54</td>
+                            <td>防塵防水濺</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- 材料特性 -->
+            <section class="content-section">
+                <h2>🧪 材料特性分析</h2>
+                
+                <div class="grid-2">
+                    <div class="card">
+                        <h3>導電材料</h3>
+                        <h4>ITO (Indium Tin Oxide)</h4>
+                        <ul>
+                            <li><strong>電阻率：</strong>10<sup>-4</sup> Ω·cm</li>
+                            <li><strong>透光率：</strong>> 85%</li>
+                            <li><strong>應用：</strong>透明觸控面板</li>
+                            <li><strong>優點：</strong>可見光透明、導電性佳</li>
+                            <li><strong>缺點：</strong>柔韌性較差、成本較高</li>
+                        </ul>
+                        
+                        <h4 class="mt-3">銀膠 (Ag/AgCl)</h4>
+                        <ul>
+                            <li><strong>電阻率：</strong>10<sup>-6</sup> Ω·cm</li>
+                            <li><strong>接觸阻抗：</strong>< 100Ω</li>
+                            <li><strong>應用：</strong>電極材料</li>
+                            <li><strong>優點：</strong>低阻抗、生物相容性</li>
+                            <li><strong>缺點：</strong>成本較高</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>絕緣材料</h3>
+                        <h4>壓克力 (PMMA)</h4>
+                        <ul>
+                            <li><strong>介電常數：</strong>3.0</li>
+                            <li><strong>絕緣阻抗：</strong>> 10<sup>14</sup> Ω</li>
+                            <li><strong>應用：</strong>觸控表面、基板</li>
+                            <li><strong>優點：</strong>透明、耐候、易加工</li>
+                            <li><strong>缺點：</strong>易刮傷</li>
+                        </ul>
+                        
+                        <h4 class="mt-3">FR4 (玻璃纖維)</h4>
+                        <ul>
+                            <li><strong>介電常數：</strong>4.5</li>
+                            <li><strong>絕緣阻抗：</strong>> 10<sup>13</sup> Ω</li>
+                            <li><strong>應用：</strong>PCB 基板</li>
+                            <li><strong>優點：</strong>機械強度高、耐熱</li>
+                            <li><strong>缺點：</strong>不透明</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 組裝流程 -->
+            <section class="content-section">
+                <h2>🔨 組裝與製造流程</h2>
+                <ol style="line-height: 2;">
+                    <li><strong>基板製作：</strong>FR4 PCB 雕刻與鑽孔，佈置電極連接走線</li>
+                    <li><strong>電極安裝：</strong>使用導電膠或焊接固定 20 個電極於指定位置</li>
+                    <li><strong>導電層鍍膜：</strong>濺鍍 ITO 薄膜或黏貼銅箔於絕緣層</li>
+                    <li><strong>絕緣層組裝：</strong>壓克力板與導電層疊合，確保無氣泡</li>
+                    <li><strong>電路連接：</strong>FPC 排線連接電極與主控板</li>
+                    <li><strong>功能測試：</strong>阻抗測試、訊號品質驗證、觸控響應測試</li>
+                    <li><strong>封裝與標定：</strong>邊緣密封、校準基準電壓、性能驗證</li>
+                </ol>
+            </section>
+
+            <!-- 相關連結 -->
+            <section class="content-section">
+                <h2>🔗 相關章節</h2>
+                <div class="nav-cards">
+                    <a href="./theory.html" class="nav-card">
+                        <div class="nav-card-icon">⚙️</div>
+                        <h3>理論原理</h3>
+                        <p>了解 EIT 技術的工作原理與信號處理</p>
+                    </a>
+                    <a href="./modeling.html" class="nav-card">
+                        <div class="nav-card-icon">📐</div>
+                        <h3>數學建模</h3>
+                        <p>深入探討有限元素法與影像重建</p>
+                    </a>
+                    <a href="./simulation.html" class="nav-card">
+                        <div class="nav-card-icon">🎮</div>
+                        <h3>互動模擬</h3>
+                        <p>透過模擬器體驗硬體系統運作</p>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- 頁尾 -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 EIT Touch Simulator Project. All rights reserved.</p>
+            <p>Electrical Impedance Tomography for Touch Sensing Applications</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="../assets/js/common.js"></script>
+    <script src="../assets/js/navigation.js"></script>
+</body>
+</html>
