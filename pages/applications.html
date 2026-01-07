@@ -1,12 +1,10 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>應用案例 - EIT 觸控模擬器</title>
     <link rel="stylesheet" href="../styles/main.css">
-    <link rel="stylesheet" href="../styles/applications.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <nav class="navbar">
@@ -17,13 +15,13 @@
                     <a href="../index.html" class="nav-link">首頁</a>
                 </li>
                 <li class="nav-item">
-                    <a href="simulator.html" class="nav-link">模擬器</a>
-                </li>
-                <li class="nav-item">
                     <a href="theory.html" class="nav-link">理論</a>
                 </li>
                 <li class="nav-item">
-                    <a href="applications.html" class="nav-link active">應用</a>
+                    <a href="simulator.html" class="nav-link">模擬器</a>
+                </li>
+                <li class="nav-item">
+                    <a href="applications.html" class="nav-link active">應用案例</a>
                 </li>
                 <li class="nav-item">
                     <a href="about.html" class="nav-link">關於</a>
@@ -33,486 +31,209 @@
     </nav>
 
     <main class="main-content">
-        <section class="hero-section">
-            <div class="container">
-                <h1>電阻抗斷層成像應用</h1>
-                <p class="subtitle">探索 EIT 技術在各個領域的實際應用</p>
-            </div>
+        <section class="hero-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 60px 20px; text-align: center; color: white;">
+            <h1 style="font-size: 2.5em; margin-bottom: 20px;">電阻抗層析成像（EIT）應用案例</h1>
+            <p style="font-size: 1.2em; max-width: 800px; margin: 0 auto;">探索 EIT 技術在觸控感測及其他領域的實際應用</p>
         </section>
 
-        <section class="applications-overview">
-            <div class="container">
-                <div class="section-header">
-                    <h2>應用領域</h2>
-                    <p>電阻抗斷層成像技術在多個領域有著廣泛的應用</p>
+        <section style="max-width: 1200px; margin: 40px auto; padding: 0 20px;">
+            <div style="background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 40px; margin-bottom: 30px;">
+                <h2 style="color: #333; border-bottom: 3px solid #667eea; padding-bottom: 10px; margin-bottom: 30px;">觸控感測應用</h2>
+                
+                <div style="margin-bottom: 30px;">
+                    <h3 style="color: #667eea; margin-bottom: 15px;">多點觸控螢幕</h3>
+                    <p style="line-height: 1.8; color: #555;">
+                        EIT 技術可實現先進的多點觸控感測系統。與傳統電容式觸控螢幕不同，EIT 能夠：
+                    </p>
+                    <ul style="line-height: 2; color: #555; margin-left: 20px;">
+                        <li>偵測無限多個同時觸控點</li>
+                        <li>提供觸控壓力資訊</li>
+                        <li>識別觸控物體的近似大小和形狀</li>
+                        <li>在彎曲或柔性表面上運作</li>
+                    </ul>
                 </div>
 
-                <div class="application-grid">
-                    <div class="application-card">
-                        <div class="card-icon">🏥</div>
-                        <h3>醫學成像</h3>
-                        <p>用於肺功能監測、心臟成像和癌症檢測</p>
-                        <a href="#medical" class="card-link">了解更多 →</a>
-                    </div>
-
-                    <div class="application-card">
-                        <div class="card-icon">🏭</div>
-                        <h3>工業流程</h3>
-                        <p>監控多相流、混合過程和管道檢測</p>
-                        <a href="#industrial" class="card-link">了解更多 →</a>
-                    </div>
-
-                    <div class="application-card">
-                        <div class="card-icon">🌍</div>
-                        <h3>環境監測</h3>
-                        <p>土壤分析、地下水監測和污染檢測</p>
-                        <a href="#environmental" class="card-link">了解更多 →</a>
-                    </div>
-
-                    <div class="application-card">
-                        <div class="card-icon">📱</div>
-                        <h3>觸控技術</h3>
-                        <p>先進的觸控感應和人機互動介面</p>
-                        <a href="#touch" class="card-link">了解更多 →</a>
-                    </div>
+                <div style="margin-bottom: 30px;">
+                    <h3 style="color: #667eea; margin-bottom: 15px;">智慧型織物與穿戴裝置</h3>
+                    <p style="line-height: 1.8; color: #555;">
+                        將導電纖維整合到織物中，EIT 能夠創造具備觸控感測功能的智慧型織物，應用於：
+                    </p>
+                    <ul style="line-height: 2; color: #555; margin-left: 20px;">
+                        <li>互動式服裝與時尚科技</li>
+                        <li>醫療監測與健康照護</li>
+                        <li>運動表現追蹤</li>
+                        <li>遊戲與娛樂介面</li>
+                    </ul>
                 </div>
-            </div>
-        </section>
 
-        <section id="medical" class="detail-section">
-            <div class="container">
-                <div class="section-content">
-                    <div class="content-text">
-                        <h2>醫學成像</h2>
-                        <p>電阻抗斷層成像在醫學領域提供了一種非侵入性、無輻射的成像方法，對患者安全且可持續監測。</p>
-                        
-                        <h3>主要應用</h3>
-                        <ul class="feature-list">
-                            <li>
-                                <strong>肺功能監測：</strong>
-                                即時可視化通氣分佈，協助機械通氣管理
-                            </li>
-                            <li>
-                                <strong>心臟成像：</strong>
-                                監測心臟功能和血流動態
-                            </li>
-                            <li>
-                                <strong>乳房癌症檢測：</strong>
-                                早期發現腫瘤組織，作為乳房攝影的輔助工具
-                            </li>
-                            <li>
-                                <strong>腦部監測：</strong>
-                                檢測腦損傷、出血和水腫
-                            </li>
-                        </ul>
-
-                        <h3>優勢</h3>
-                        <div class="advantages">
-                            <span class="advantage-tag">無輻射</span>
-                            <span class="advantage-tag">攜帶式</span>
-                            <span class="advantage-tag">即時監測</span>
-                            <span class="advantage-tag">成本效益</span>
-                        </div>
-                    </div>
-                    <div class="content-visual">
-                        <div class="chart-container">
-                            <canvas id="medicalChart"></canvas>
-                        </div>
-                        <p class="chart-caption">不同組織類型的電導率範圍</p>
-                    </div>
+                <div style="margin-bottom: 30px;">
+                    <h3 style="color: #667eea; margin-bottom: 15px;">機器人皮膚</h3>
+                    <p style="line-height: 1.8; color: #555;">
+                        EIT 可為機器人提供類似人類的觸覺感知，使其能夠：
+                    </p>
+                    <ul style="line-height: 2; color: #555; margin-left: 20px;">
+                        <li>偵測與定位表面接觸</li>
+                        <li>測量接觸力量與壓力分布</li>
+                        <li>實現安全的人機互動</li>
+                        <li>改善物體抓取與操作</li>
+                    </ul>
                 </div>
             </div>
-        </section>
 
-        <section id="industrial" class="detail-section alt-bg">
-            <div class="container">
-                <div class="section-content reverse">
-                    <div class="content-visual">
-                        <div class="chart-container">
-                            <canvas id="industrialChart"></canvas>
-                        </div>
-                        <p class="chart-caption">工業流程監測應用分佈</p>
-                    </div>
-                    <div class="content-text">
-                        <h2>工業流程監測</h2>
-                        <p>EIT 技術在工業環境中提供非侵入性流程監測，提高效率並確保產品品質。</p>
-                        
-                        <h3>應用案例</h3>
-                        <ul class="feature-list">
-                            <li>
-                                <strong>多相流監測：</strong>
-                                可視化油氣管道中的流體分佈
-                            </li>
-                            <li>
-                                <strong>混合過程：</strong>
-                                確保化學反應器中的均勻混合
-                            </li>
-                            <li>
-                                <strong>管道檢測：</strong>
-                                檢測腐蝕、沉積和流量異常
-                            </li>
-                            <li>
-                                <strong>品質控制：</strong>
-                                監測製造過程中的材料分佈
-                            </li>
-                        </ul>
+            <div style="background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 40px; margin-bottom: 30px;">
+                <h2 style="color: #333; border-bottom: 3px solid #764ba2; padding-bottom: 10px; margin-bottom: 30px;">醫學應用</h2>
+                
+                <div style="margin-bottom: 30px;">
+                    <h3 style="color: #764ba2; margin-bottom: 15px;">肺功能監測</h3>
+                    <p style="line-height: 1.8; color: #555;">
+                        EIT 在醫療領域最成熟的應用之一是即時監測肺功能：
+                    </p>
+                    <ul style="line-height: 2; color: #555; margin-left: 20px;">
+                        <li>非侵入性、無輻射的連續監測</li>
+                        <li>視覺化區域肺通氣分布</li>
+                        <li>偵測肺塌陷或過度充氣</li>
+                        <li>指導呼吸器設定與治療</li>
+                    </ul>
+                </div>
 
-                        <h3>產業效益</h3>
-                        <div class="benefits-grid">
-                            <div class="benefit-item">
-                                <div class="benefit-number">30%</div>
-                                <div class="benefit-label">效率提升</div>
-                            </div>
-                            <div class="benefit-item">
-                                <div class="benefit-number">25%</div>
-                                <div class="benefit-label">成本降低</div>
-                            </div>
-                            <div class="benefit-item">
-                                <div class="benefit-number">40%</div>
-                                <div class="benefit-label">停機時間減少</div>
-                            </div>
-                        </div>
-                    </div>
+                <div style="margin-bottom: 30px;">
+                    <h3 style="color: #764ba2; margin-bottom: 15px;">心臟監測</h3>
+                    <p style="line-height: 1.8; color: #555;">
+                        EIT 可以視覺化心臟活動與血流：
+                    </p>
+                    <ul style="line-height: 2; color: #555; margin-left: 20px;">
+                        <li>監測心臟輸出量</li>
+                        <li>偵測心律不整</li>
+                        <li>評估周邊灌流</li>
+                        <li>非侵入性血流動力學評估</li>
+                    </ul>
+                </div>
+
+                <div style="margin-bottom: 30px;">
+                    <h3 style="color: #764ba2; margin-bottom: 15px;">腦部成像</h3>
+                    <p style="line-height: 1.8; color: #555;">
+                        研究人員正在探索 EIT 在神經監測中的應用：
+                    </p>
+                    <ul style="line-height: 2; color: #555; margin-left: 20px;">
+                        <li>偵測中風與腦出血</li>
+                        <li>監測癲癇活動</li>
+                        <li>評估腦損傷</li>
+                        <li>在床邊進行功能性腦成像</li>
+                    </ul>
                 </div>
             </div>
-        </section>
 
-        <section id="environmental" class="detail-section">
-            <div class="container">
-                <div class="section-content">
-                    <div class="content-text">
-                        <h2>環境監測</h2>
-                        <p>EIT 技術為環境科學家和工程師提供了一種監測和分析地下環境的強大工具。</p>
-                        
-                        <h3>監測應用</h3>
-                        <ul class="feature-list">
-                            <li>
-                                <strong>土壤特性分析：</strong>
-                                測量土壤濕度、鹽度和結構
-                            </li>
-                            <li>
-                                <strong>地下水監測：</strong>
-                                追蹤地下水位和污染物擴散
-                            </li>
-                            <li>
-                                <strong>污染檢測：</strong>
-                                識別污染羽流和污染物遷移路徑
-                            </li>
-                            <li>
-                                <strong>碳封存監測：</strong>
-                                監測 CO2 注入和儲存場地
-                            </li>
-                        </ul>
+            <div style="background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 40px; margin-bottom: 30px;">
+                <h2 style="color: #333; border-bottom: 3px solid #f093fb; padding-bottom: 10px; margin-bottom: 30px;">工業應用</h2>
+                
+                <div style="margin-bottom: 30px;">
+                    <h3 style="color: #f093fb; margin-bottom: 15px;">製程監控</h3>
+                    <p style="line-height: 1.8; color: #555;">
+                        EIT 可以監測工業製程中的材料分布與流動：
+                    </p>
+                    <ul style="line-height: 2; color: #555; margin-left: 20px;">
+                        <li>混合與分離製程</li>
+                        <li>多相流監測</li>
+                        <li>化學反應監控</li>
+                        <li>品質控制與檢測</li>
+                    </ul>
+                </div>
 
-                        <div class="info-box">
-                            <h4>環境影響</h4>
-                            <p>EIT 技術使環境監測更加：</p>
-                            <ul>
-                                <li>非破壞性且環保</li>
-                                <li>能夠進行長期連續監測</li>
-                                <li>提供高時間解析度的數據</li>
-                                <li>成本效益比傳統鑽孔方法更優</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="content-visual">
-                        <div class="comparison-table">
-                            <h4>監測方法比較</h4>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>特性</th>
-                                        <th>EIT</th>
-                                        <th>傳統方法</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>侵入性</td>
-                                        <td class="positive">非侵入性</td>
-                                        <td class="negative">高度侵入性</td>
-                                    </tr>
-                                    <tr>
-                                        <td>監測頻率</td>
-                                        <td class="positive">連續</td>
-                                        <td class="negative">間歇性</td>
-                                    </tr>
-                                    <tr>
-                                        <td>覆蓋範圍</td>
-                                        <td class="positive">大面積</td>
-                                        <td class="negative">點測量</td>
-                                    </tr>
-                                    <tr>
-                                        <td>成本</td>
-                                        <td class="positive">較低</td>
-                                        <td class="negative">較高</td>
-                                    </tr>
-                                    <tr>
-                                        <td>即時數據</td>
-                                        <td class="positive">是</td>
-                                        <td class="negative">延遲</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                <div style="margin-bottom: 30px;">
+                    <h3 style="color: #f093fb; margin-bottom: 15px;">地質監測</h3>
+                    <p style="line-height: 1.8; color: #555;">
+                        EIT 用於地下成像與監測：
+                    </p>
+                    <ul style="line-height: 2; color: #555; margin-left: 20px;">
+                        <li>地下水監測</li>
+                        <li>汙染物追蹤</li>
+                        <li>礦產探勘</li>
+                        <li>結構健康監測</li>
+                    </ul>
+                </div>
+
+                <div style="margin-bottom: 30px;">
+                    <h3 style="color: #f093fb; margin-bottom: 15px;">管道檢測</h3>
+                    <p style="line-height: 1.8; color: #555;">
+                        EIT 可以在不中斷流動的情況下檢測管道：
+                    </p>
+                    <ul style="line-height: 2; color: #555; margin-left: 20px;">
+                        <li>偵測腐蝕與缺陷</li>
+                        <li>監測流體組成</li>
+                        <li>識別阻塞與沉積</li>
+                        <li>測量流量分布</li>
+                    </ul>
                 </div>
             </div>
-        </section>
 
-        <section id="touch" class="detail-section alt-bg">
-            <div class="container">
-                <div class="section-content reverse">
-                    <div class="content-visual">
-                        <div class="touch-demo">
-                            <div class="demo-placeholder">
-                                <span class="demo-icon">👆</span>
-                                <p>互動觸控示範</p>
-                            </div>
-                        </div>
-                        <p class="chart-caption">基於 EIT 的觸控感應技術</p>
-                    </div>
-                    <div class="content-text">
-                        <h2>觸控感應技術</h2>
-                        <p>電阻抗斷層成像為下一代觸控介面提供了獨特的功能，實現了超越傳統觸控螢幕的功能。</p>
-                        
-                        <h3>技術特點</h3>
-                        <ul class="feature-list">
-                            <li>
-                                <strong>多點觸控：</strong>
-                                同時檢測多個觸控點及其位置
-                            </li>
-                            <li>
-                                <strong>壓力感應：</strong>
-                                測量觸控壓力和接觸面積
-                            </li>
-                            <li>
-                                <strong>懸浮手勢：</strong>
-                                檢測表面上方的手勢而無需物理接觸
-                            </li>
-                            <li>
-                                <strong>材料靈活性：</strong>
-                                可在各種表面和形狀上實施
-                            </li>
-                        </ul>
-
-                        <h3>創新應用</h3>
-                        <div class="innovation-grid">
-                            <div class="innovation-item">
-                                <div class="innovation-icon">🎮</div>
-                                <h4>遊戲控制器</h4>
-                                <p>壓力感應的互動遊戲表面</p>
-                            </div>
-                            <div class="innovation-item">
-                                <div class="innovation-icon">🚗</div>
-                                <h4>車用介面</h4>
-                                <p>用於車輛的靈活觸控控制</p>
-                            </div>
-                            <div class="innovation-item">
-                                <div class="innovation-icon">🏠</div>
-                                <h4>智慧家居</h4>
-                                <p>整合於家具和牆面的觸控控制</p>
-                            </div>
-                            <div class="innovation-item">
-                                <div class="innovation-icon">♿</div>
-                                <h4>無障礙輔助</h4>
-                                <p>為殘障使用者提供的適應性介面</p>
-                            </div>
-                        </div>
-                    </div>
+            <div style="background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 40px; margin-bottom: 30px;">
+                <h2 style="color: #333; border-bottom: 3px solid #4facfe; padding-bottom: 10px; margin-bottom: 30px;">比較表：EIT vs. 傳統觸控技術</h2>
+                
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                        <thead>
+                            <tr style="background: #f8f9fa;">
+                                <th style="padding: 15px; text-align: left; border: 1px solid #dee2e6;">特性</th>
+                                <th style="padding: 15px; text-align: left; border: 1px solid #dee2e6;">EIT 觸控</th>
+                                <th style="padding: 15px; text-align: left; border: 1px solid #dee2e6;">電容式觸控</th>
+                                <th style="padding: 15px; text-align: left; border: 1px solid #dee2e6;">電阻式觸控</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 12px; border: 1px solid #dee2e6;"><strong>多點觸控</strong></td>
+                                <td style="padding: 12px; border: 1px solid #dee2e6;">無限制</td>
+                                <td style="padding: 12px; border: 1px solid #dee2e6;">有限（通常 10 點）</td>
+                                <td style="padding: 12px; border: 1px solid #dee2e6;">單點</td>
+                            </tr>
+                            <tr style="background: #f8f9fa;">
+                                <td style="padding: 12px; border: 1px solid #dee2e6;"><strong>壓力感測</strong></td>
+                                <td style="padding: 12px; border: 1px solid #dee2e6;">是</td>
+                                <td style="padding: 12px; border: 1px solid #dee2e6;">否</td>
+                                <td style="padding: 12px; border: 1px solid #dee2e6;">是</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 12px; border: 1px solid #dee2e6;"><strong>柔性表面</strong></td>
+                                <td style="padding: 12px; border: 1px solid #dee2e6;">優秀</td>
+                                <td style="padding: 12px; border: 1px solid #dee2e6;">有限</td>
+                                <td style="padding: 12px; border: 1px solid #dee2e6;">良好</td>
+                            </tr>
+                            <tr style="background: #f8f9fa;">
+                                <td style="padding: 12px; border: 1px solid #dee2e6;"><strong>耐用性</strong></td>
+                                <td style="padding: 12px; border: 1px solid #dee2e6;">非常高</td>
+                                <td style="padding: 12px; border: 1px solid #dee2e6;">高</td>
+                                <td style="padding: 12px; border: 1px solid #dee2e6;">中</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 12px; border: 1px solid #dee2e6;"><strong>成本</strong></td>
+                                <td style="padding: 12px; border: 1px solid #dee2e6;">中</td>
+                                <td style="padding: 12px; border: 1px solid #dee2e6;">中-高</td>
+                                <td style="padding: 12px; border: 1px solid #dee2e6;">低</td>
+                            </tr>
+                            <tr style="background: #f8f9fa;">
+                                <td style="padding: 12px; border: 1px solid #dee2e6;"><strong>透明度</strong></td>
+                                <td style="padding: 12px; border: 1px solid #dee2e6;">高（邊緣電極）</td>
+                                <td style="padding: 12px; border: 1px solid #dee2e6;">高</td>
+                                <td style="padding: 12px; border: 1px solid #dee2e6;">中</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        </section>
 
-        <section class="case-studies">
-            <div class="container">
-                <div class="section-header">
-                    <h2>成功案例研究</h2>
-                    <p>來自世界各地的真實實施案例</p>
-                </div>
-
-                <div class="studies-grid">
-                    <div class="study-card">
-                        <div class="study-header">
-                            <span class="study-category">醫療</span>
-                            <span class="study-location">🇬🇧 英國</span>
-                        </div>
-                        <h3>重症監護病房肺功能監測</h3>
-                        <p>一家倫敦的主要醫院實施了 EIT 系統用於 COVID-19 患者的即時肺功能監測，使通氣管理得到改善，患者治療結果顯著提升。</p>
-                        <div class="study-metrics">
-                            <div class="metric">
-                                <span class="metric-value">35%</span>
-                                <span class="metric-label">通氣時間縮短</span>
-                            </div>
-                            <div class="metric">
-                                <span class="metric-value">28%</span>
-                                <span class="metric-label">併發症減少</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="study-card">
-                        <div class="study-header">
-                            <span class="study-category">工業</span>
-                            <span class="study-location">🇳🇴 挪威</span>
-                        </div>
-                        <h3>海上石油管道監測</h3>
-                        <p>一家石油公司在海底管道上部署了 EIT 感測器，實現了油氣分離的即時監測，最佳化了生產並減少了停機時間。</p>
-                        <div class="study-metrics">
-                            <div class="metric">
-                                <span class="metric-value">€2M</span>
-                                <span class="metric-label">年度節省</span>
-                            </div>
-                            <div class="metric">
-                                <span class="metric-value">45%</span>
-                                <span class="metric-label">檢測效率提升</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="study-card">
-                        <div class="study-header">
-                            <span class="study-category">環境</span>
-                            <span class="study-location">🇩🇪 德國</span>
-                        </div>
-                        <h3>污染場地修復</h3>
-                        <p>環境顧問使用 EIT 技術監測前工業場地的污染物去除，提供持續評估修復進度的數據。</p>
-                        <div class="study-metrics">
-                            <div class="metric">
-                                <span class="metric-value">60%</span>
-                                <span class="metric-label">監測成本降低</span>
-                            </div>
-                            <div class="metric">
-                                <span class="metric-value">3個月</span>
-                                <span class="metric-label">專案時間縮短</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="research-section">
-            <div class="container">
-                <div class="section-header">
-                    <h2>研究與發展</h2>
-                    <p>EIT 技術的最新進展和未來方向</p>
-                </div>
-
-                <div class="research-content">
-                    <div class="research-topics">
-                        <h3>當前研究領域</h3>
-                        <div class="topics-list">
-                            <div class="topic-item">
-                                <div class="topic-icon">🧠</div>
-                                <div class="topic-content">
-                                    <h4>機器學習整合</h4>
-                                    <p>利用 AI 演算法改善影像重建和異常檢測</p>
-                                </div>
-                            </div>
-                            <div class="topic-item">
-                                <div class="topic-icon">📡</div>
-                                <div class="topic-content">
-                                    <h4>無線 EIT 系統</h4>
-                                    <p>開發遠端監測的無線感測器網路</p>
-                                </div>
-                            </div>
-                            <div class="topic-item">
-                                <div class="topic-icon">⚡</div>
-                                <div class="topic-content">
-                                    <h4>高速成像</h4>
-                                    <p>提高時間解析度以捕捉快速動態過程</p>
-                                </div>
-                            </div>
-                            <div class="topic-item">
-                                <div class="topic-icon">🔬</div>
-                                <div class="topic-content">
-                                    <h4>奈米級應用</h4>
-                                    <p>將 EIT 原理應用於微觀尺度成像</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="research-stats">
-                        <h3>全球研究統計</h3>
-                        <div class="stats-grid">
-                            <div class="stat-box">
-                                <div class="stat-number">1,200+</div>
-                                <div class="stat-label">每年發表的論文</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="stat-number">50+</div>
-                                <div class="stat-label">活躍研究機構</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="stat-number">$150M</div>
-                                <div class="stat-label">年度研發資金</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="stat-number">30+</div>
-                                <div class="stat-label">國家參與</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="cta-section">
-            <div class="container">
-                <div class="cta-content">
-                    <h2>探索 EIT 技術</h2>
-                    <p>使用我們的互動模擬器親自體驗電阻抗斷層成像</p>
-                    <div class="cta-buttons">
-                        <a href="simulator.html" class="btn btn-primary">開始模擬</a>
-                        <a href="theory.html" class="btn btn-secondary">學習理論</a>
-                    </div>
-                </div>
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; padding: 40px; text-align: center; color: white;">
+                <h2 style="margin-bottom: 20px;">準備好探索 EIT 了嗎？</h2>
+                <p style="font-size: 1.1em; margin-bottom: 30px;">使用我們的互動式模擬器親自體驗電阻抗層析成像技術</p>
+                <a href="simulator.html" style="display: inline-block; background: white; color: #667eea; padding: 15px 40px; border-radius: 25px; text-decoration: none; font-weight: bold; transition: transform 0.3s;">前往模擬器</a>
             </div>
         </section>
     </main>
 
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>EIT 觸控模擬器</h3>
-                    <p>用於電阻抗斷層成像教育和研究的互動學習平台。</p>
-                </div>
-                <div class="footer-section">
-                    <h4>快速連結</h4>
-                    <ul>
-                        <li><a href="../index.html">首頁</a></li>
-                        <li><a href="simulator.html">模擬器</a></li>
-                        <li><a href="theory.html">理論</a></li>
-                        <li><a href="applications.html">應用</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>資源</h4>
-                    <ul>
-                        <li><a href="about.html">關於</a></li>
-                        <li><a href="#documentation">文件</a></li>
-                        <li><a href="#research">研究</a></li>
-                        <li><a href="#contact">聯絡我們</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>聯絡方式</h4>
-                    <ul>
-                        <li>📧 info@eit-simulator.com</li>
-                        <li>🐙 GitHub</li>
-                        <li>📚 文件</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 EIT 觸控模擬器。保留所有權利。</p>
-            </div>
+    <footer style="background: #2c3e50; color: white; padding: 30px 20px; text-align: center; margin-top: 60px;">
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <p>&copy; 2024 EIT 觸控模擬器。保留所有權利。</p>
+            <p style="margin-top: 10px; color: #bdc3c7;">教育用途專案</p>
         </div>
     </footer>
-
-    <script src="../scripts/applications.js"></script>
 </body>
 </html>
