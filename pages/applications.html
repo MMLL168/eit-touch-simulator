@@ -4,236 +4,981 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>應用案例 - EIT 觸控模擬器</title>
-    <link rel="stylesheet" href="../styles/main.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        .nav-links a.active {
+            color: #667eea;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+            padding: 2rem 0;
+        }
+
+        .page-header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .page-header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+
+        .content-section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            font-size: 2rem;
+            color: #667eea;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .subsection-title {
+            font-size: 1.5rem;
+            color: #764ba2;
+            margin: 2rem 0 1rem 0;
+        }
+
+        .application-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .application-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 2rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .application-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+
+        .card-subtitle {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-content {
+            color: #555;
+            line-height: 1.8;
+        }
+
+        .card-content ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .card-content li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .card-content li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border-left: 4px solid #667eea;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1.5rem 0;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .comparison-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .comparison-table tbody tr:hover {
+            background: #f5f7fa;
+        }
+
+        .comparison-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .tech-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin: 0.2rem;
+        }
+
+        .badge-excellent {
+            background: #4caf50;
+            color: white;
+        }
+
+        .badge-good {
+            background: #2196f3;
+            color: white;
+        }
+
+        .badge-moderate {
+            background: #ff9800;
+            color: white;
+        }
+
+        .badge-limited {
+            background: #f44336;
+            color: white;
+        }
+
+        .benchmark-chart {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+
+        .chart-bar {
+            display: flex;
+            align-items: center;
+            margin: 1rem 0;
+        }
+
+        .chart-label {
+            width: 150px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .chart-value {
+            flex: 1;
+            height: 30px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            padding: 0 1rem;
+            color: white;
+            font-weight: bold;
+            transition: width 0.5s;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .feature-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 3px solid #667eea;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+
+        .feature-item strong {
+            color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .application-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-label {
+                width: 100px;
+                font-size: 0.9rem;
+            }
+
+            .comparison-table {
+                font-size: 0.85rem;
+            }
+
+            .comparison-table th,
+            .comparison-table td {
+                padding: 0.5rem;
+            }
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem;
+            border-radius: 20px;
+            text-align: center;
+            margin: 3rem 0;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: bold;
+            margin-top: 1rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        footer {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        footer p {
+            color: #666;
+        }
+
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
 </head>
 <body>
+    <!-- Navigation Bar -->
     <nav class="navbar">
         <div class="nav-container">
-            <a href="../index.html" class="nav-logo">EIT 觸控模擬器</a>
-            <ul class="nav-menu">
-                <li class="nav-item">
-                    <a href="../index.html" class="nav-link">首頁</a>
-                </li>
-                <li class="nav-item">
-                    <a href="theory.html" class="nav-link">理論</a>
-                </li>
-                <li class="nav-item">
-                    <a href="simulator.html" class="nav-link">模擬器</a>
-                </li>
-                <li class="nav-item">
-                    <a href="applications.html" class="nav-link active">應用案例</a>
-                </li>
-                <li class="nav-item">
-                    <a href="about.html" class="nav-link">關於</a>
-                </li>
+            <div class="logo">⚡ EIT 觸控模擬器</div>
+            <ul class="nav-links">
+                <li><a href="../index.html">首頁</a></li>
+                <li><a href="tech.html">技術文件</a></li>
+                <li><a href="applications.html" class="active">應用案例</a></li>
+                <li><a href="demo.html">展示</a></li>
+                <li><a href="contact.html">聯絡</a></li>
             </ul>
         </div>
     </nav>
 
-    <main class="main-content">
-        <section class="hero-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 60px 20px; text-align: center; color: white;">
-            <h1 style="font-size: 2.5em; margin-bottom: 20px;">電阻抗層析成像（EIT）應用案例</h1>
-            <p style="font-size: 1.2em; max-width: 800px; margin: 0 auto;">探索 EIT 技術在觸控感測及其他領域的實際應用</p>
-        </section>
-
-        <section style="max-width: 1200px; margin: 40px auto; padding: 0 20px;">
-            <div style="background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 40px; margin-bottom: 30px;">
-                <h2 style="color: #333; border-bottom: 3px solid #667eea; padding-bottom: 10px; margin-bottom: 30px;">觸控感測應用</h2>
-                
-                <div style="margin-bottom: 30px;">
-                    <h3 style="color: #667eea; margin-bottom: 15px;">多點觸控螢幕</h3>
-                    <p style="line-height: 1.8; color: #555;">
-                        EIT 技術可實現先進的多點觸控感測系統。與傳統電容式觸控螢幕不同，EIT 能夠：
-                    </p>
-                    <ul style="line-height: 2; color: #555; margin-left: 20px;">
-                        <li>偵測無限多個同時觸控點</li>
-                        <li>提供觸控壓力資訊</li>
-                        <li>識別觸控物體的近似大小和形狀</li>
-                        <li>在彎曲或柔性表面上運作</li>
-                    </ul>
-                </div>
-
-                <div style="margin-bottom: 30px;">
-                    <h3 style="color: #667eea; margin-bottom: 15px;">智慧型織物與穿戴裝置</h3>
-                    <p style="line-height: 1.8; color: #555;">
-                        將導電纖維整合到織物中，EIT 能夠創造具備觸控感測功能的智慧型織物，應用於：
-                    </p>
-                    <ul style="line-height: 2; color: #555; margin-left: 20px;">
-                        <li>互動式服裝與時尚科技</li>
-                        <li>醫療監測與健康照護</li>
-                        <li>運動表現追蹤</li>
-                        <li>遊戲與娛樂介面</li>
-                    </ul>
-                </div>
-
-                <div style="margin-bottom: 30px;">
-                    <h3 style="color: #667eea; margin-bottom: 15px;">機器人皮膚</h3>
-                    <p style="line-height: 1.8; color: #555;">
-                        EIT 可為機器人提供類似人類的觸覺感知，使其能夠：
-                    </p>
-                    <ul style="line-height: 2; color: #555; margin-left: 20px;">
-                        <li>偵測與定位表面接觸</li>
-                        <li>測量接觸力量與壓力分布</li>
-                        <li>實現安全的人機互動</li>
-                        <li>改善物體抓取與操作</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div style="background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 40px; margin-bottom: 30px;">
-                <h2 style="color: #333; border-bottom: 3px solid #764ba2; padding-bottom: 10px; margin-bottom: 30px;">醫學應用</h2>
-                
-                <div style="margin-bottom: 30px;">
-                    <h3 style="color: #764ba2; margin-bottom: 15px;">肺功能監測</h3>
-                    <p style="line-height: 1.8; color: #555;">
-                        EIT 在醫療領域最成熟的應用之一是即時監測肺功能：
-                    </p>
-                    <ul style="line-height: 2; color: #555; margin-left: 20px;">
-                        <li>非侵入性、無輻射的連續監測</li>
-                        <li>視覺化區域肺通氣分布</li>
-                        <li>偵測肺塌陷或過度充氣</li>
-                        <li>指導呼吸器設定與治療</li>
-                    </ul>
-                </div>
-
-                <div style="margin-bottom: 30px;">
-                    <h3 style="color: #764ba2; margin-bottom: 15px;">心臟監測</h3>
-                    <p style="line-height: 1.8; color: #555;">
-                        EIT 可以視覺化心臟活動與血流：
-                    </p>
-                    <ul style="line-height: 2; color: #555; margin-left: 20px;">
-                        <li>監測心臟輸出量</li>
-                        <li>偵測心律不整</li>
-                        <li>評估周邊灌流</li>
-                        <li>非侵入性血流動力學評估</li>
-                    </ul>
-                </div>
-
-                <div style="margin-bottom: 30px;">
-                    <h3 style="color: #764ba2; margin-bottom: 15px;">腦部成像</h3>
-                    <p style="line-height: 1.8; color: #555;">
-                        研究人員正在探索 EIT 在神經監測中的應用：
-                    </p>
-                    <ul style="line-height: 2; color: #555; margin-left: 20px;">
-                        <li>偵測中風與腦出血</li>
-                        <li>監測癲癇活動</li>
-                        <li>評估腦損傷</li>
-                        <li>在床邊進行功能性腦成像</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div style="background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 40px; margin-bottom: 30px;">
-                <h2 style="color: #333; border-bottom: 3px solid #f093fb; padding-bottom: 10px; margin-bottom: 30px;">工業應用</h2>
-                
-                <div style="margin-bottom: 30px;">
-                    <h3 style="color: #f093fb; margin-bottom: 15px;">製程監控</h3>
-                    <p style="line-height: 1.8; color: #555;">
-                        EIT 可以監測工業製程中的材料分布與流動：
-                    </p>
-                    <ul style="line-height: 2; color: #555; margin-left: 20px;">
-                        <li>混合與分離製程</li>
-                        <li>多相流監測</li>
-                        <li>化學反應監控</li>
-                        <li>品質控制與檢測</li>
-                    </ul>
-                </div>
-
-                <div style="margin-bottom: 30px;">
-                    <h3 style="color: #f093fb; margin-bottom: 15px;">地質監測</h3>
-                    <p style="line-height: 1.8; color: #555;">
-                        EIT 用於地下成像與監測：
-                    </p>
-                    <ul style="line-height: 2; color: #555; margin-left: 20px;">
-                        <li>地下水監測</li>
-                        <li>汙染物追蹤</li>
-                        <li>礦產探勘</li>
-                        <li>結構健康監測</li>
-                    </ul>
-                </div>
-
-                <div style="margin-bottom: 30px;">
-                    <h3 style="color: #f093fb; margin-bottom: 15px;">管道檢測</h3>
-                    <p style="line-height: 1.8; color: #555;">
-                        EIT 可以在不中斷流動的情況下檢測管道：
-                    </p>
-                    <ul style="line-height: 2; color: #555; margin-left: 20px;">
-                        <li>偵測腐蝕與缺陷</li>
-                        <li>監測流體組成</li>
-                        <li>識別阻塞與沉積</li>
-                        <li>測量流量分布</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div style="background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 40px; margin-bottom: 30px;">
-                <h2 style="color: #333; border-bottom: 3px solid #4facfe; padding-bottom: 10px; margin-bottom: 30px;">比較表：EIT vs. 傳統觸控技術</h2>
-                
-                <div style="overflow-x: auto;">
-                    <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-                        <thead>
-                            <tr style="background: #f8f9fa;">
-                                <th style="padding: 15px; text-align: left; border: 1px solid #dee2e6;">特性</th>
-                                <th style="padding: 15px; text-align: left; border: 1px solid #dee2e6;">EIT 觸控</th>
-                                <th style="padding: 15px; text-align: left; border: 1px solid #dee2e6;">電容式觸控</th>
-                                <th style="padding: 15px; text-align: left; border: 1px solid #dee2e6;">電阻式觸控</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td style="padding: 12px; border: 1px solid #dee2e6;"><strong>多點觸控</strong></td>
-                                <td style="padding: 12px; border: 1px solid #dee2e6;">無限制</td>
-                                <td style="padding: 12px; border: 1px solid #dee2e6;">有限（通常 10 點）</td>
-                                <td style="padding: 12px; border: 1px solid #dee2e6;">單點</td>
-                            </tr>
-                            <tr style="background: #f8f9fa;">
-                                <td style="padding: 12px; border: 1px solid #dee2e6;"><strong>壓力感測</strong></td>
-                                <td style="padding: 12px; border: 1px solid #dee2e6;">是</td>
-                                <td style="padding: 12px; border: 1px solid #dee2e6;">否</td>
-                                <td style="padding: 12px; border: 1px solid #dee2e6;">是</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 12px; border: 1px solid #dee2e6;"><strong>柔性表面</strong></td>
-                                <td style="padding: 12px; border: 1px solid #dee2e6;">優秀</td>
-                                <td style="padding: 12px; border: 1px solid #dee2e6;">有限</td>
-                                <td style="padding: 12px; border: 1px solid #dee2e6;">良好</td>
-                            </tr>
-                            <tr style="background: #f8f9fa;">
-                                <td style="padding: 12px; border: 1px solid #dee2e6;"><strong>耐用性</strong></td>
-                                <td style="padding: 12px; border: 1px solid #dee2e6;">非常高</td>
-                                <td style="padding: 12px; border: 1px solid #dee2e6;">高</td>
-                                <td style="padding: 12px; border: 1px solid #dee2e6;">中</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 12px; border: 1px solid #dee2e6;"><strong>成本</strong></td>
-                                <td style="padding: 12px; border: 1px solid #dee2e6;">中</td>
-                                <td style="padding: 12px; border: 1px solid #dee2e6;">中-高</td>
-                                <td style="padding: 12px; border: 1px solid #dee2e6;">低</td>
-                            </tr>
-                            <tr style="background: #f8f9fa;">
-                                <td style="padding: 12px; border: 1px solid #dee2e6;"><strong>透明度</strong></td>
-                                <td style="padding: 12px; border: 1px solid #dee2e6;">高（邊緣電極）</td>
-                                <td style="padding: 12px; border: 1px solid #dee2e6;">高</td>
-                                <td style="padding: 12px; border: 1px solid #dee2e6;">中</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; padding: 40px; text-align: center; color: white;">
-                <h2 style="margin-bottom: 20px;">準備好探索 EIT 了嗎？</h2>
-                <p style="font-size: 1.1em; margin-bottom: 30px;">使用我們的互動式模擬器親自體驗電阻抗層析成像技術</p>
-                <a href="simulator.html" style="display: inline-block; background: white; color: #667eea; padding: 15px 40px; border-radius: 25px; text-decoration: none; font-weight: bold; transition: transform 0.3s;">前往模擬器</a>
-            </div>
-        </section>
-    </main>
-
-    <footer style="background: #2c3e50; color: white; padding: 30px 20px; text-align: center; margin-top: 60px;">
-        <div style="max-width: 1200px; margin: 0 auto;">
-            <p>&copy; 2024 EIT 觸控模擬器。保留所有權利。</p>
-            <p style="margin-top: 10px; color: #bdc3c7;">教育用途專案</p>
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>🎯 EIT 觸控技術應用案例</h1>
+            <p>實際應用、技術比較與效能基準的完整指南</p>
         </div>
+
+        <!-- Overview Section -->
+        <div class="content-section">
+            <h2 class="section-title">📋 概覽</h2>
+            <p style="font-size: 1.1rem; color: #555; line-height: 1.8;">
+                電阻抗斷層掃描（EIT）觸控感測技術代表了透明、柔性和成本效益觸控技術的突破。本頁探討六大應用領域及其技術優勢。
+            </p>
+        </div>
+
+        <!-- Major Applications -->
+        <div class="content-section">
+            <h2 class="section-title">🏭 主要應用案例</h2>
+            
+            <div class="application-grid">
+                <!-- Industrial Applications -->
+                <div class="application-card">
+                    <div class="card-title">🏭 工業應用</div>
+                    <div class="card-content">
+                        <p class="card-subtitle">核心優勢：耐用性、環境抗性、大面積覆蓋</p>
+                        <p><strong>應用場景：</strong></p>
+                        <ul>
+                            <li><strong>製造業控制面板：</strong>適用於嚴苛環境的堅固觸控介面</li>
+                            <li><strong>流程監控：</strong>具備觸控功能的大型顯示器</li>
+                            <li><strong>設備介面：</strong>機械設備上的透明覆蓋層</li>
+                            <li><strong>安全系統：</strong>關鍵應用中的可靠觸控偵測</li>
+                        </ul>
+                        <p class="card-subtitle" style="margin-top: 1rem;">優勢：</p>
+                        <ul>
+                            <li>抗塵、油和化學物質</li>
+                            <li>可配戴手套和防護裝備操作</li>
+                            <li>低功耗</li>
+                            <li>寬廣的工作溫度範圍（-40°C 至 85°C）</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Medical Devices -->
+                <div class="application-card">
+                    <div class="card-title">🏥 醫療設備</div>
+                    <div class="card-content">
+                        <p class="card-subtitle">核心優勢：衛生、易清潔、手套相容</p>
+                        <p><strong>應用場景：</strong></p>
+                        <ul>
+                            <li><strong>診斷設備：</strong>超音波機、病患監測儀</li>
+                            <li><strong>手術設備：</strong>無菌環境觸控介面</li>
+                            <li><strong>實驗室儀器：</strong>化學抗性觸控螢幕</li>
+                            <li><strong>病患照護系統：</strong>床邊監測器和控制面板</li>
+                        </ul>
+                        <p class="card-subtitle" style="margin-top: 1rem;">優勢：</p>
+                        <ul>
+                            <li>可使用醫療級手套操作</li>
+                            <li>可使用消毒劑清潔</li>
+                            <li>平整表面易於清潔</li>
+                            <li>符合醫療安全標準</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Educational Technology -->
+                <div class="application-card">
+                    <div class="card-title">📚 教育科技</div>
+                    <div class="card-content">
+                        <p class="card-subtitle">核心優勢：大尺寸能力、成本效益、耐用性</p>
+                        <p><strong>應用場景：</strong></p>
+                        <ul>
+                            <li><strong>互動式白板：</strong>教室協作系統</li>
+                            <li><strong>學習工作站：</strong>學生互動式顯示器</li>
+                            <li><strong>展覽展示：</strong>博物館和圖書館資訊站</li>
+                            <li><strong>訓練模擬器：</strong>職業培訓系統</li>
+                        </ul>
+                        <p class="card-subtitle" style="margin-top: 1rem;">優勢：</p>
+                        <ul>
+                            <li>可擴展至超大尺寸（100吋以上）</li>
+                            <li>與其他技術相比成本較低</li>
+                            <li>適合頻繁使用的耐用性</li>
+                            <li>多點觸控能力</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Automotive Interfaces -->
+                <div class="application-card">
+                    <div class="card-title">🚗 車用介面</div>
+                    <div class="card-content">
+                        <p class="card-subtitle">核心優勢：透明度、耐用性、柔性整合</p>
+                        <p><strong>應用場景：</strong></p>
+                        <ul>
+                            <li><strong>中控台顯示器：</strong>資訊娛樂系統</li>
+                            <li><strong>儀表板疊層：</strong>互動式儀表板</li>
+                            <li><strong>後座娛樂：</strong>乘客控制面板</li>
+                            <li><strong>智慧車窗：</strong>整合觸控控制</li>
+                        </ul>
+                        <p class="card-subtitle" style="margin-top: 1rem;">優勢：</p>
+                        <ul>
+                            <li>抗震動和衝擊</li>
+                            <li>寬廣的工作溫度範圍</li>
+                            <li>可整合到曲面上</li>
+                            <li>抗眩光和陽光</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Outdoor & Rugged -->
+                <div class="application-card">
+                    <div class="card-title">🌤️ 戶外與堅固型應用</div>
+                    <div class="card-content">
+                        <p class="card-subtitle">核心優勢：環境抗性、可見度、耐用性</p>
+                        <p><strong>應用場景：</strong></p>
+                        <ul>
+                            <li><strong>戶外資訊站：</strong>公共資訊顯示器</li>
+                            <li><strong>軍事設備：</strong>戰術顯示器和控制</li>
+                            <li><strong>海事系統：</strong>船舶導航和控制</li>
+                            <li><strong>建築設備：</strong>工地控制面板</li>
+                        </ul>
+                        <p class="card-subtitle" style="margin-top: 1rem;">優勢：</p>
+                        <ul>
+                            <li>防水防塵（可達 IP68）</li>
+                            <li>可在潮濕條件下操作</li>
+                            <li>陽光下可讀</li>
+                            <li>耐極端溫度</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Gaming & Entertainment -->
+                <div class="application-card">
+                    <div class="card-title">🎮 遊戲與娛樂</div>
+                    <div class="card-content">
+                        <p class="card-subtitle">核心優勢：大面積、多點觸控、創新應用</p>
+                        <p><strong>應用場景：</strong></p>
+                        <ul>
+                            <li><strong>互動式遊戲桌：</strong>多玩家遊戲表面</li>
+                            <li><strong>街機系統：</strong>堅固的遊戲介面</li>
+                            <li><strong>虛擬實境介面：</strong>觸覺回饋系統</li>
+                            <li><strong>娛樂展示：</strong>主題公園互動</li>
+                        </ul>
+                        <p class="card-subtitle" style="margin-top: 1rem;">優勢：</p>
+                        <ul>
+                            <li>支援多點同時觸控</li>
+                            <li>大面積覆蓋</li>
+                            <li>快速回應時間</li>
+                            <li>公共使用的耐用性</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technology Comparison -->
+        <div class="content-section">
+            <h2 class="section-title">⚖️ 技術比較</h2>
+            <p style="margin-bottom: 2rem; color: #555;">EIT 與其他觸控技術的比較：</p>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>特性</th>
+                        <th>EIT</th>
+                        <th>電容式</th>
+                        <th>電阻式</th>
+                        <th>紅外線</th>
+                        <th>聲波</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>透明度</strong></td>
+                        <td><span class="tech-badge badge-excellent">優秀（>90%）</span></td>
+                        <td><span class="tech-badge badge-good">良好（85-90%）</span></td>
+                        <td><span class="tech-badge badge-moderate">中等（75-85%）</span></td>
+                        <td><span class="tech-badge badge-excellent">優秀（>95%）</span></td>
+                        <td><span class="tech-badge badge-excellent">優秀（>95%）</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>耐用性</strong></td>
+                        <td><span class="tech-badge badge-excellent">優秀</span></td>
+                        <td><span class="tech-badge badge-good">良好</span></td>
+                        <td><span class="tech-badge badge-moderate">中等</span></td>
+                        <td><span class="tech-badge badge-good">良好</span></td>
+                        <td><span class="tech-badge badge-moderate">中等</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>手套操作</strong></td>
+                        <td><span class="tech-badge badge-excellent">是</span></td>
+                        <td><span class="tech-badge badge-limited">有限</span></td>
+                        <td><span class="tech-badge badge-excellent">是</span></td>
+                        <td><span class="tech-badge badge-excellent">是</span></td>
+                        <td><span class="tech-badge badge-limited">否</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>潮濕條件</strong></td>
+                        <td><span class="tech-badge badge-excellent">優秀</span></td>
+                        <td><span class="tech-badge badge-limited">差</span></td>
+                        <td><span class="tech-badge badge-moderate">中等</span></td>
+                        <td><span class="tech-badge badge-good">良好</span></td>
+                        <td><span class="tech-badge badge-limited">差</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>大尺寸擴展</strong></td>
+                        <td><span class="tech-badge badge-excellent">優秀</span></td>
+                        <td><span class="tech-badge badge-moderate">中等</span></td>
+                        <td><span class="tech-badge badge-good">良好</span></td>
+                        <td><span class="tech-badge badge-excellent">優秀</span></td>
+                        <td><span class="tech-badge badge-good">良好</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>功耗</strong></td>
+                        <td><span class="tech-badge badge-excellent">非常低</span></td>
+                        <td><span class="tech-badge badge-good">低</span></td>
+                        <td><span class="tech-badge badge-excellent">非常低</span></td>
+                        <td><span class="tech-badge badge-moderate">中等</span></td>
+                        <td><span class="tech-badge badge-good">低</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>成本</strong></td>
+                        <td><span class="tech-badge badge-good">中等</span></td>
+                        <td><span class="tech-badge badge-moderate">高</span></td>
+                        <td><span class="tech-badge badge-good">低</span></td>
+                        <td><span class="tech-badge badge-moderate">高</span></td>
+                        <td><span class="tech-badge badge-moderate">高</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>多點觸控</strong></td>
+                        <td><span class="tech-badge badge-excellent">是（無限制）</span></td>
+                        <td><span class="tech-badge badge-excellent">是（10+）</span></td>
+                        <td><span class="tech-badge badge-limited">有限（1-2）</span></td>
+                        <td><span class="tech-badge badge-good">是（有限）</span></td>
+                        <td><span class="tech-badge badge-good">是（有限）</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Performance Benchmarks -->
+        <div class="content-section">
+            <h2 class="section-title">📊 效能基準</h2>
+            
+            <h3 class="subsection-title">回應時間比較</h3>
+            <div class="benchmark-chart">
+                <div class="chart-bar">
+                    <div class="chart-label">EIT</div>
+                    <div class="chart-value" style="width: 85%;">10-20 毫秒</div>
+                </div>
+                <div class="chart-bar">
+                    <div class="chart-label">電容式</div>
+                    <div class="chart-value" style="width: 95%;">5-10 毫秒</div>
+                </div>
+                <div class="chart-bar">
+                    <div class="chart-label">電阻式</div>
+                    <div class="chart-value" style="width: 75%;">10-30 毫秒</div>
+                </div>
+                <div class="chart-bar">
+                    <div class="chart-label">紅外線</div>
+                    <div class="chart-value" style="width: 80%;">15-25 毫秒</div>
+                </div>
+                <div class="chart-bar">
+                    <div class="chart-label">聲波</div>
+                    <div class="chart-value" style="width: 70%;">20-40 毫秒</div>
+                </div>
+            </div>
+
+            <h3 class="subsection-title">準確度指標</h3>
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-value">±2mm</div>
+                    <div class="stat-label">位置準確度</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">99.5%</div>
+                    <div class="stat-label">偵測可靠度</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">無限</div>
+                    <div class="stat-label">同時觸控點</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">100+吋</div>
+                    <div class="stat-label">最大尺寸</div>
+                </div>
+            </div>
+
+            <h3 class="subsection-title">環境性能</h3>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <strong>溫度範圍：</strong> -40°C 至 85°C
+                </div>
+                <div class="feature-item">
+                    <strong>濕度：</strong> 0-100% RH（非冷凝）
+                </div>
+                <div class="feature-item">
+                    <strong>防護等級：</strong> IP65-IP68（取決於實作）
+                </div>
+                <div class="feature-item">
+                    <strong>抗震性：</strong> 20G 加速度
+                </div>
+                <div class="feature-item">
+                    <strong>化學抗性：</strong> 抗大多數清潔劑
+                </div>
+                <div class="feature-item">
+                    <strong>使用壽命：</strong> >100 百萬次觸控
+                </div>
+            </div>
+        </div>
+
+        <!-- Implementation Considerations -->
+        <div class="content-section">
+            <h2 class="section-title">🔧 實施考量</h2>
+            
+            <div class="highlight-box">
+                <h3 style="color: #667eea; margin-bottom: 1rem;">選擇 EIT 觸控技術時的關鍵因素：</h3>
+                
+                <div style="margin: 1.5rem 0;">
+                    <h4 style="color: #764ba2;">1. 尺寸要求</h4>
+                    <ul style="margin-left: 1.5rem; color: #555;">
+                        <li>EIT 對於大面積（>20吋）特別有效</li>
+                        <li>可擴展至超大尺寸，成本增加最小</li>
+                        <li>適合牆面裝置和超大顯示器</li>
+                    </ul>
+                </div>
+
+                <div style="margin: 1.5rem 0;">
+                    <h4 style="color: #764ba2;">2. 環境條件</h4>
+                    <ul style="margin-left: 1.5rem; color: #555;">
+                        <li>評估溫度範圍和濕度水平</li>
+                        <li>考慮污染物（灰塵、油、化學物質）</li>
+                        <li>決定必要的防護等級</li>
+                    </ul>
+                </div>
+
+                <div style="margin: 1.5rem 0;">
+                    <h4 style="color: #764ba2;">3. 使用者互動</h4>
+                    <ul style="margin-left: 1.5rem; color: #555;">
+                        <li>手套或裸手操作</li>
+                        <li>單點觸控或多點觸控需求</li>
+                        <li>所需回應時間和準確度</li>
+                    </ul>
+                </div>
+
+                <div style="margin: 1.5rem 0;">
+                    <h4 style="color: #764ba2;">4. 整合需求</h4>
+                    <ul style="margin-left: 1.5rem; color: #555;">
+                        <li>與現有顯示器技術相容</li>
+                        <li>功耗限制</li>
+                        <li>機械整合挑戰</li>
+                        <li>軟體和韌體需求</li>
+                    </ul>
+                </div>
+
+                <div style="margin: 1.5rem 0;">
+                    <h4 style="color: #764ba2;">5. 成本考量</h4>
+                    <ul style="margin-left: 1.5rem; color: #555;">
+                        <li>初期投資 vs. 長期節省</li>
+                        <li>維護和更換成本</li>
+                        <li>擴展和定制成本</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Case Studies -->
+        <div class="content-section">
+            <h2 class="section-title">📖 案例研究</h2>
+            
+            <div style="display: grid; gap: 2rem;">
+                <div class="highlight-box">
+                    <h3 style="color: #667eea;">案例 1：工業控制面板</h3>
+                    <p><strong>挑戰：</strong>製造廠需要耐用、可戴手套操作的觸控介面，可在塵土飛揚的高溫環境中工作。</p>
+                    <p><strong>解決方案：</strong>實施 24 吋 EIT 觸控螢幕，防護等級 IP65，工作溫度範圍 -20°C 至 70°C。</p>
+                    <p><strong>成果：</strong></p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>停機時間減少 40%，改善介面互動</li>
+                        <li>維護成本因堅固結構減少</li>
+                        <li>操作員滿意度因手套相容性提升</li>
+                    </ul>
+                </div>
+
+                <div class="highlight-box">
+                    <h3 style="color: #667eea;">案例 2：互動式教室</h3>
+                    <p><strong>挑戰：</strong>學校需要經濟實惠的大型互動式顯示器供多個學生同時使用。</p>
+                    <p><strong>解決方案：</strong>部署 86 吋 EIT 互動式白板，支援無限多點觸控。</p>
+                    <p><strong>成果：</strong></p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>與電容式解決方案相比節省 30% 成本</li>
+                        <li>增強學生參與互動學習</li>
+                        <li>2 年重度使用後零維護問題</li>
+                    </ul>
+                </div>
+
+                <div class="highlight-box">
+                    <h3 style="color: #667eea;">案例 3：醫療診斷設備</h3>
+                    <p><strong>挑戰：</strong>醫院需要可使用醫療級手套操作且能定期消毒的超音波機介面。</p>
+                    <p><strong>解決方案：</strong>整合 15 吋 EIT 觸控面板，具有化學抗性塗層。</p>
+                    <p><strong>成果：</strong></p>
+                    <ul style="margin-left: 1.5rem;">
+                        <li>完全手套相容性，無回應降低</li>
+                        <li>使用刺激性消毒劑後無退化</li>
+                        <li>直觀操作改善工作流程效率</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Future Trends -->
+        <div class="content-section">
+            <h2 class="section-title">🚀 未來趨勢</h2>
+            
+            <div class="application-grid">
+                <div class="application-card">
+                    <div class="card-title">🧬 材料進步</div>
+                    <div class="card-content">
+                        <ul>
+                            <li>奈米材料提升靈敏度</li>
+                            <li>柔性基板用於可彎曲顯示器</li>
+                            <li>自修復塗層延長使用壽命</li>
+                            <li>改善透明導電材料</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="application-card">
+                    <div class="card-title">🤖 AI 整合</div>
+                    <div class="card-content">
+                        <ul>
+                            <li>機器學習改善觸控偵測</li>
+                            <li>預測性維護演算法</li>
+                            <li>適應性校準系統</li>
+                            <li>手勢辨識增強</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="application-card">
+                    <div class="card-title">🌐 新興應用</div>
+                    <div class="card-content">
+                        <ul>
+                            <li>擴增實境整合</li>
+                            <li>智慧家居介面</li>
+                            <li>車用抬頭顯示器</li>
+                            <li>穿戴式觸控表面</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="application-card">
+                    <div class="card-title">⚡ 效能增強</div>
+                    <div class="card-content">
+                        <ul>
+                            <li>更快的處理演算法</li>
+                            <li>降低延遲（<5毫秒目標）</li>
+                            <li>提高空間解析度</li>
+                            <li>增強多點觸控追蹤</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="cta-section">
+            <h2 style="font-size: 2rem; margin-bottom: 1rem;">準備好實施 EIT 觸控技術了嗎？</h2>
+            <p style="font-size: 1.1rem; margin-bottom: 2rem;">
+                探索我們的互動式模擬器，或聯絡我們的團隊討論您的特定應用需求。
+            </p>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a href="demo.html" class="cta-button">試用模擬器</a>
+                <a href="tech.html" class="cta-button">技術文件</a>
+                <a href="contact.html" class="cta-button">聯絡我們</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 EIT 觸控模擬器。保留所有權利。</p>
+        <p>開發者：<a href="https://github.com/MMLL168">MMLL168</a></p>
     </footer>
+
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Animate stats on scroll
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'fadeInUp 0.6s ease-out';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.stat-card, .application-card, .feature-item').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Add animation keyframes
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Animate chart bars on scroll
+        const chartObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const bars = entry.target.querySelectorAll('.chart-value');
+                    bars.forEach((bar, index) => {
+                        const width = bar.style.width;
+                        bar.style.width = '0';
+                        setTimeout(() => {
+                            bar.style.width = width;
+                        }, index * 100);
+                    });
+                    chartObserver.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.benchmark-chart').forEach(chart => {
+            chartObserver.observe(chart);
+        });
+
+        // Add hover effect to table rows
+        document.querySelectorAll('.comparison-table tbody tr').forEach(row => {
+            row.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.01)';
+                this.style.transition = 'transform 0.2s';
+            });
+            row.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+    </script>
 </body>
 </html>
