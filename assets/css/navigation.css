@@ -1,0 +1,229 @@
+/* ===================================
+   Navigation Bar Styles
+   響應式導航列
+   =================================== */
+
+/* 導航容器 */
+.navbar {
+    background: rgba(30, 60, 114, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    padding: 0;
+}
+
+.nav-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+/* Logo / 品牌 */
+.nav-brand {
+    display: flex;
+    align-items: center;
+    padding: 15px 0;
+    color: white;
+    font-size: 1.5em;
+    font-weight: bold;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.nav-brand:hover {
+    color: #3498db;
+    text-decoration: none;
+}
+
+.nav-logo {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+    border-radius: 50%;
+}
+
+/* 導航選單 */
+.nav-menu {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+}
+
+.nav-item {
+    position: relative;
+}
+
+.nav-link {
+    display: block;
+    color: white;
+    padding: 20px 18px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s;
+    position: relative;
+}
+
+.nav-link:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #3498db;
+    text-decoration: none;
+}
+
+/* 當前頁面高亮 */
+.nav-link.active {
+    background: rgba(52, 152, 219, 0.2);
+    color: #3498db;
+    font-weight: bold;
+}
+
+.nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #3498db;
+}
+
+/* 漢堡選單按鈕 (行動版) */
+.nav-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5em;
+    cursor: pointer;
+    padding: 10px;
+    transition: all 0.3s;
+}
+
+.nav-toggle:hover {
+    color: #3498db;
+}
+
+.nav-toggle .icon {
+    display: block;
+    width: 25px;
+    height: 3px;
+    background: white;
+    margin: 5px 0;
+    transition: all 0.3s;
+}
+
+/* 響應式設計 - 平板 */
+@media (max-width: 768px) {
+    .nav-toggle {
+        display: block;
+    }
+    
+    .nav-menu {
+        position: fixed;
+        left: -100%;
+        top: 70px;
+        flex-direction: column;
+        background: rgba(30, 60, 114, 0.98);
+        width: 100%;
+        text-align: center;
+        transition: left 0.3s;
+        box-shadow: 0 10px 27px rgba(0,0,0,0.3);
+        align-items: stretch;
+        max-height: calc(100vh - 70px);
+        overflow-y: auto;
+    }
+    
+    .nav-menu.active {
+        left: 0;
+    }
+    
+    .nav-item {
+        margin: 0;
+    }
+    
+    .nav-link {
+        padding: 20px;
+        width: 100%;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .nav-link.active::after {
+        height: 0;
+    }
+    
+    .nav-link.active {
+        background: rgba(52, 152, 219, 0.3);
+        border-left: 4px solid #3498db;
+    }
+}
+
+/* 響應式設計 - 手機 */
+@media (max-width: 480px) {
+    .nav-brand {
+        font-size: 1.2em;
+    }
+    
+    .nav-logo {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .nav-container {
+        padding: 0 10px;
+    }
+}
+
+/* 導航動畫效果 */
+@keyframes slideDown {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.navbar {
+    animation: slideDown 0.5s ease-out;
+}
+
+/* 下拉選單 (預留功能) */
+.dropdown {
+    position: relative;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: rgba(30, 60, 114, 0.98);
+    min-width: 200px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+    border-radius: 0 0 8px 8px;
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+.dropdown-item {
+    padding: 12px 20px;
+    color: white;
+    text-decoration: none;
+    display: block;
+    transition: all 0.3s;
+}
+
+.dropdown-item:hover {
+    background: rgba(52, 152, 219, 0.2);
+    padding-left: 25px;
+}

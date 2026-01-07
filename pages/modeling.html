@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="EIT 數學建模與影像重建 - 有限元素法與 Jacobian 矩陣">
+    <title>數學建模 - EIT Touch Simulator</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/navigation.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        .page-header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+        }
+        
+        .page-header h1 {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+        
+        .content-section {
+            background: white;
+            padding: 40px;
+            margin: 20px auto;
+            max-width: 1200px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .formula-box {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid #3498db;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        
+        .algorithm-step {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 5px solid #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <!-- 導航列 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="nav-brand">
+                <img src="../assets/images/logo.svg" alt="EIT Logo" class="nav-logo">
+                <span>EIT Touch Simulator</span>
+            </a>
+            
+            <button class="nav-toggle" aria-label="Toggle navigation">
+                <span class="icon"></span>
+                <span class="icon"></span>
+                <span class="icon"></span>
+            </button>
+            
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="../index.html" class="nav-link">首頁</a></li>
+                <li class="nav-item"><a href="./hardware.html" class="nav-link">硬體架構</a></li>
+                <li class="nav-item"><a href="./theory.html" class="nav-link">理論原理</a></li>
+                <li class="nav-item"><a href="./modeling.html" class="nav-link active">數學建模</a></li>
+                <li class="nav-item"><a href="./deeplearning.html" class="nav-link">深度學習</a></li>
+                <li class="nav-item"><a href="./simulation.html" class="nav-link">互動模擬</a></li>
+                <li class="nav-item"><a href="./applications.html" class="nav-link">應用案例</a></li>
+                <li class="nav-item"><a href="./faq.html" class="nav-link">FAQ</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 頁面標題 -->
+    <section class="page-header">
+        <div class="container">
+            <h1>📐 數學建模與影像重建</h1>
+            <p>Finite Element Method & Jacobian Matrix Analysis</p>
+        </div>
+    </section>
+
+    <div class="page-content">
+        <div class="container">
+            <!-- 正向問題 -->
+            <section class="content-section">
+                <h2>🔄 正向問題 (Forward Problem)</h2>
+                <p>正向問題是指：給定阻抗分布 σ(x,y)，計算邊界電壓 V。</p>
+                
+                <div class="formula-box">
+                    <h4>泊松方程 (Poisson's Equation)</h4>
+                    <p>$$\nabla \cdot (\sigma(x,y) \nabla \phi(x,y)) = 0$$</p>
+                    <p>其中：</p>
+                    <ul>
+                        <li>σ(x,y): 導電率分布</li>
+                        <li>φ(x,y): 電位分布</li>
+                        <li>∇: 梯度算子</li>
+                    </ul>
+                </div>
+                
+                <h3>有限元素法 (FEM) 離散化</h3>
+                <div class="formula-box">
+                    <p>將感測區域劃分為 N 個三角形網格元素，電位可表示為：</p>
+                    <p>$$\phi(x,y) = \sum_{i=1}^{N} \phi_i N_i(x,y)$$</p>
+                    <p>其中 N<sub>i</sub>(x,y) 為形狀函數 (Shape Function)</p>
+                </div>
+            </section>
+
+            <!-- 逆向問題 -->
+            <section class="content-section">
+                <h2>🔙 逆向問題 (Inverse Problem)</h2>
+                <p>逆向問題是指：給定邊界電壓測量 V，反推內部阻抗分布 σ(x,y)。</p>
+                
+                <div class="formula-box">
+                    <h4>目標函數</h4>
+                    <p>$$\min_{\sigma} ||V_{測量} - V_{計算}(\sigma)||^2 + \lambda R(\sigma)$$</p>
+                    <p>其中：</p>
+                    <ul>
+                        <li>第一項：數據擬合項</li>
+                        <li>第二項：正則化項 (避免過擬合)</li>
+                        <li>λ: 正則化參數</li>
+                    </ul>
+                </div>
+                
+                <h3>Newton-Raphson 迭代法</h3>
+                <div class="algorithm-step">
+                    <h4>步驟 1: 初始化</h4>
+                    <p>設定初始阻抗分布 σ<sub>0</sub> (通常為均勻分布)</p>
+                </div>
+                <div class="algorithm-step">
+                    <h4>步驟 2: 計算 Jacobian 矩陣</h4>
+                    <p>$$J_{ij} = \frac{\partial V_i}{\partial \sigma_j}$$</p>
+                </div>
+                <div class="algorithm-step">
+                    <h4>步驟 3: 更新阻抗</h4>
+                    <p>$$\sigma_{k+1} = \sigma_k + (J^T J + \lambda I)^{-1} J^T (V_{測量} - V_k)$$</p>
+                </div>
+                <div class="algorithm-step">
+                    <h4>步驟 4: 收斂判斷</h4>
+                    <p>若 ||V<sub>測量</sub> - V<sub>k</sub>|| < ε，則停止；否則回到步驟 2</p>
+                </div>
+            </section>
+
+            <!-- Jacobian 矩陣 -->
+            <section class="content-section">
+                <h2>📊 Jacobian 矩陣視覺化</h2>
+                <p>Jacobian 矩陣描述了每個網格元素的阻抗變化如何影響各電極的電壓測量。</p>
+                
+                <div class="grid-2">
+                    <div class="card">
+                        <h3>矩陣維度</h3>
+                        <p><strong>行數：</strong>電壓測量數 (380)</p>
+                        <p><strong>列數：</strong>網格元素數 (1024)</p>
+                        <p><strong>意義：</strong>J[i][j] 表示第 j 個元素對第 i 個電壓的靈敏度</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>特性</h3>
+                        <ul>
+                            <li><strong>稀疏性：</strong>大部分元素接近零</li>
+                            <li><strong>病態性：</strong>條件數很大，需要正則化</li>
+                            <li><strong>對稱性：</strong>部分對稱結構</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 正則化方法 -->
+            <section class="content-section">
+                <h2>🔧 正則化方法</h2>
+                
+                <div class="grid-3">
+                    <div class="card">
+                        <h3>Tikhonov 正則化</h3>
+                        <p>$$R(\sigma) = ||\sigma - \sigma_0||^2$$</p>
+                        <p>最常用，平滑解</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>Total Variation</h3>
+                        <p>$$R(\sigma) = \int |\nabla \sigma| dx dy$$</p>
+                        <p>保留邊緣特徵</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>NOSER</h3>
+                        <p>$$R(\sigma) = ||D\sigma||^2$$</p>
+                        <p>加權空間變化</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 加權質心法 -->
+            <section class="content-section">
+                <h2>🎯 簡化方法：加權質心演算法</h2>
+                <p>針對單點觸控的快速定位，可使用加權質心法直接計算座標：</p>
+                
+                <div class="formula-box">
+                    <h4>質心公式</h4>
+                    <p>$$x_{touch} = \frac{\sum_{i=1}^{20} w_i x_i}{\sum_{i=1}^{20} w_i}$$</p>
+                    <p>$$y_{touch} = \frac{\sum_{i=1}^{20} w_i y_i}{\sum_{i=1}^{20} w_i}$$</p>
+                    <p>其中權重定義為：</p>
+                    <p>$$w_i = |\Delta V_i| = |V_{測量,i} - V_{基準,i}|$$</p>
+                </div>
+                
+                <div class="card">
+                    <h3>優點</h3>
+                    <ul>
+                        <li>計算速度快 (< 1ms)</li>
+                        <li>不需要 FEM 網格</li>
+                        <li>適合即時應用</li>
+                    </ul>
+                    <h3>缺點</h3>
+                    <ul>
+                        <li>僅適用單點觸控</li>
+                        <li>精度略低於完整重建</li>
+                        <li>無法提供阻抗分布影像</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- 相關連結 -->
+            <section class="content-section">
+                <h2>🔗 相關章節</h2>
+                <div class="nav-cards">
+                    <a href="./theory.html" class="nav-card">
+                        <div class="nav-card-icon">⚙️</div>
+                        <h3>理論原理</h3>
+                        <p>回顧 SEEIT 掃描模式與信號處理</p>
+                    </a>
+                    <a href="./deeplearning.html" class="nav-card">
+                        <div class="nav-card-icon">🧠</div>
+                        <h3>深度學習</h3>
+                        <p>使用神經網路加速重建過程</p>
+                    </a>
+                    <a href="./simulation.html" class="nav-card">
+                        <div class="nav-card-icon">🎮</div>
+                        <h3>互動模擬</h3>
+                        <p>體驗加權質心演算法的實際效果</p>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- 頁尾 -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 EIT Touch Simulator Project. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="../assets/js/common.js"></script>
+    <script src="../assets/js/navigation.js"></script>
+</body>
+</html>

@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Applications - EIT Touch Simulator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Navigation */
+        nav {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover, nav a.active {
+            color: #667eea;
+        }
+
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 3rem 0;
+            text-align: center;
+            margin-top: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            color: #666;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Main Content */
+        main {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 3rem;
+            margin-top: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        h2 {
+            color: #667eea;
+            font-size: 2rem;
+            margin: 2rem 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #667eea;
+        }
+
+        h3 {
+            color: #764ba2;
+            font-size: 1.5rem;
+            margin: 1.5rem 0 1rem 0;
+        }
+
+        h4 {
+            color: #667eea;
+            font-size: 1.2rem;
+            margin: 1rem 0 0.5rem 0;
+        }
+
+        /* Application Cards */
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .app-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .app-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .app-card h3 {
+            color: #667eea;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .app-icon {
+            font-size: 2rem;
+        }
+
+        .app-card ul {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
+        }
+
+        .app-card li {
+            margin: 0.5rem 0;
+        }
+
+        .highlight-box {
+            background: #fff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            margin: 1rem 0;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            margin: 2rem 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        tr:hover {
+            background: #f5f7fa;
+        }
+
+        .rating {
+            color: #ffa500;
+            font-weight: bold;
+        }
+
+        /* Charts */
+        .chart-container {
+            margin: 2rem 0;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto !important;
+        }
+
+        /* Performance Metrics */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 0.5rem 0;
+        }
+
+        .metric-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        /* Cost Analysis */
+        .cost-section {
+            background: #f9f9f9;
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+        }
+
+        .cost-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .cost-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .cost-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        /* Download Resources */
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .resource-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .resource-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        .download-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-top: 1rem;
+            transition: opacity 0.3s;
+        }
+
+        .download-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Citation */
+        .citation-box {
+            background: #f5f5f5;
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .copy-btn:hover {
+            background: #764ba2;
+        }
+
+        /* Summary Highlights */
+        .summary-highlights {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+        }
+
+        .highlights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .highlight-item {
+            text-align: center;
+        }
+
+        .highlight-item .value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav .container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            header h1 {
+                font-size: 2rem;
+            }
+
+            main {
+                padding: 1.5rem;
+            }
+
+            .app-grid {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+
+            th, td {
+                padding: 0.5rem;
+            }
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(255, 255, 255, 0.95);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <a href="../index.html" class="logo">⚡ EIT Touch Simulator</a>
+            <ul>
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="documentation.html">Documentation</a></li>
+                <li><a href="applications.html" class="active">Applications</a></li>
+                <li><a href="demo.html">Demo</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <div class="container">
+        <header>
+            <h1>🎯 EIT Touch Technology Applications</h1>
+            <p>Comprehensive guide to real-world applications, technical comparisons, and performance benchmarks</p>
+        </header>
+
+        <!-- Main Content -->
+        <main>
+            <!-- Introduction -->
+            <section id="introduction">
+                <h2>Overview</h2>
+                <p>Electrical Impedance Tomography (EIT) touch sensing represents a breakthrough in transparent, flexible, and cost-effective touch technology. This page explores six major application domains, compares EIT with alternative technologies, provides detailed cost-benefit analysis, and presents comprehensive performance benchmarks.</p>
+            </section>
+
+            <!-- Major Application Cases -->
+            <section id="applications">
+                <h2>🏭 Major Application Cases</h2>
+                
+                <div class="app-grid">
+                    <!-- Industrial -->
+                    <div class="app-card">
+                        <h3><span class="app-icon">🏭</span>Industrial Applications</h3>
+                        <div class="highlight-box">
+                            <strong>Key Benefits:</strong> Durability, environmental resistance, large-area coverage
+                        </div>
+                        <h4>Use Cases:</h4>
+                        <ul>
+                            <li><strong>Manufacturing Control Panels:</strong> Robust touch interfaces for harsh environments</li>
+                            <li><strong>Process Monitoring:</strong> Large-format displays with touch capability</li>
+                            <li><strong>Equipment Interfaces:</strong> Transparent overlays on machinery</li>
+                            <li><strong>Safety Systems:</strong> Reliable touch detection in critical applications</li>
+                        </ul>
+                        <h4>Advantages:</h4>
+                        <ul>
+                            <li>Resistant to dust, oil, and chemicals</li>
+                            <li>Functions with gloves and protective gear</li>
+                            <li>Low power consumption</li>
+                            <li>Wide operating temperature range (-40°C to 85°C)</li>
+                        </ul>
+                    </div>
+
+                    <!-- Medical -->
+                    <div class="app-card">
+                        <h3><span class="app-icon">🏥</span>Medical Devices</h3>
+                        <div class="highlight-box">
+                            <strong>Key Benefits:</strong> Hygiene, sterilization compatibility, precision
+                        </div>
+                        <h4>Use Cases:</h4>
+                        <ul>
+                            <li><strong>Surgical Displays:</strong> Sterile touchscreens for OR environments</li>
+                            <li><strong>Patient Monitoring:</strong> Multi-touch interfaces for vital signs</li>
+                            <li><strong>Diagnostic Equipment:</strong> Precise input for medical imaging</li>
+                            <li><strong>Rehabilitation Devices:</strong> Pressure-sensitive therapy tools</li>
+                        </ul>
+                        <h4>Advantages:</h4>
+                        <ul>
+                            <li>Compatible with sterilization procedures</li>
+                            <li>Works through protective barriers</li>
+                            <li>Biocompatible materials</li>
+                            <li>High precision for medical applications</li>
+                        </ul>
+                    </div>
+
+                    <!-- Education -->
+                    <div class="app-card">
+                        <h3><span class="app-icon">📚</span>Educational Technology</h3>
+                        <div class="highlight-box">
+                            <strong>Key Benefits:</strong> Cost-effectiveness, scalability, interactive learning
+                        </div>
+                        <h4>Use Cases:</h4>
+                        <ul>
+                            <li><strong>Interactive Whiteboards:</strong> Large-format collaborative displays</li>
+                            <li><strong>Student Tablets:</strong> Affordable touch-enabled devices</li>
+                            <li><strong>Science Labs:</strong> Interactive experiment interfaces</li>
+                            <li><strong>Art Education:</strong> Pressure-sensitive drawing surfaces</li>
+                        </ul>
+                        <h4>Advantages:</h4>
+                        <ul>
+                            <li>Significantly lower cost than capacitive alternatives</li>
+                            <li>Easy to scale for classroom deployment</li>
+                            <li>Supports multi-user collaboration</li>
+                            <li>Durable for educational environments</li>
+                        </ul>
+                    </div>
+
+                    <!-- Automotive -->
+                    <div class="app-card">
+                        <h3><span class="app-icon">🚗</span>Automotive Interfaces</h3>
+                        <div class="highlight-box">
+                            <strong>Key Benefits:</strong> Safety, integration flexibility, temperature tolerance
+                        </div>
+                        <h4>Use Cases:</h4>
+                        <ul>
+                            <li><strong>Dashboard Controls:</strong> Central console touch interfaces</li>
+                            <li><strong>Steering Wheel Buttons:</strong> Embedded touch controls</li>
+                            <li><strong>Climate Control:</strong> Intuitive HVAC interfaces</li>
+                            <li><strong>Infotainment Systems:</strong> Large-format displays with gesture support</li>
+                        </ul>
+                        <h4>Advantages:</h4>
+                        <ul>
+                            <li>Operates in extreme temperatures</li>
+                            <li>Works with driving gloves</li>
+                            <li>Integrates with curved surfaces</li>
+                            <li>Minimal driver distraction</li>
+                        </ul>
+                    </div>
+
+                    <!-- Outdoor -->
+                    <div class="app-card">
+                        <h3><span class="app-icon">🌤️</span>Outdoor & Rugged</h3>
+                        <div class="highlight-box">
+                            <strong>Key Benefits:</strong> Weather resistance, visibility, reliability
+                        </div>
+                        <h4>Use Cases:</h4>
+                        <ul>
+                            <li><strong>Kiosks & ATMs:</strong> Public access terminals</li>
+                            <li><strong>Digital Signage:</strong> Interactive outdoor displays</li>
+                            <li><strong>Military Equipment:</strong> Tactical interfaces</li>
+                            <li><strong>Marine Navigation:</strong> Waterproof touch displays</li>
+                        </ul>
+                        <h4>Advantages:</h4>
+                        <ul>
+                            <li>Fully waterproof (IP67+)</li>
+                            <li>Functions in rain, snow, and humidity</li>
+                            <li>Vandal-resistant construction</li>
+                            <li>Direct sunlight readability</li>
+                        </ul>
+                    </div>
+
+                    <!-- Gaming -->
+                    <div class="app-card">
+                        <h3><span class="app-icon">🎮</span>Gaming & Entertainment</h3>
+                        <div class="highlight-box">
+                            <strong>Key Benefits:</strong> Multi-touch, pressure sensitivity, low latency
+                        </div>
+                        <h4>Use Cases:</h4>
+                        <ul>
+                            <li><strong>Arcade Machines:</strong> Durable public gaming interfaces</li>
+                            <li><strong>VR Controllers:</strong> Transparent touch overlays</li>
+                            <li><strong>Music Production:</strong> Pressure-sensitive control surfaces</li>
+                            <li><strong>Interactive Tables:</strong> Multi-player gaming surfaces</li>
+                        </ul>
+                        <h4>Advantages:</h4>
+                        <ul>
+                            <li>Supports complex multi-touch gestures</li>
+                            <li>Pressure-sensitive input for enhanced control</li>
+                            <li>Low latency for responsive gaming</li>
+                            <li>Large-area coverage for collaborative play</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Technical Comparison -->
+            <section id="comparison">
+                <h2>⚖️ Technical Comparison: EIT vs Alternative Technologies</h2>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>EIT (This Project)</th>
+                                <th>Capacitive</th>
+                                <th>Resistive</th>
+                                <th>IR/Optical</th>
+                                <th>Surface Acoustic Wave</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Multi-Touch</strong></td>
+                                <td>✅ Excellent (10+ points)</td>
+                                <td>✅ Excellent (10+ points)</td>
+                                <td>❌ Limited (1-2 points)</td>
+                                <td>✅ Good (6+ points)</td>
+                                <td>⚠️ Limited (2-4 points)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Transparency</strong></td>
+                                <td>✅ Excellent (>90%)</td>
+                                <td>✅ Excellent (>90%)</td>
+                                <td>⚠️ Good (80-85%)</td>
+                                <td>✅ Excellent (>95%)</td>
+                                <td>✅ Excellent (>90%)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cost (per m²)</strong></td>
+                                <td>💰 $50-100</td>
+                                <td>💰💰💰 $200-500</td>
+                                <td>💰 $30-80</td>
+                                <td>💰💰 $150-300</td>
+                                <td>💰💰💰 $300-600</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Durability</strong></td>
+                                <td class="rating">⭐⭐⭐⭐⭐ (9/10)</td>
+                                <td class="rating">⭐⭐⭐⭐ (8/10)</td>
+                                <td class="rating">⭐⭐⭐ (6/10)</td>
+                                <td class="rating">⭐⭐⭐⭐ (7/10)</td>
+                                <td class="rating">⭐⭐⭐⭐⭐ (9/10)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Environmental Resistance</strong></td>
+                                <td>✅ Excellent (dust, water, oil)</td>
+                                <td>⚠️ Good (limited moisture)</td>
+                                <td>✅ Good (water, dust)</td>
+                                <td>❌ Poor (sensitive to dirt)</td>
+                                <td>⚠️ Moderate (water resistant)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Glove Operation</strong></td>
+                                <td>✅ Yes (all glove types)</td>
+                                <td>⚠️ Limited (special gloves)</td>
+                                <td>✅ Yes (all glove types)</td>
+                                <td>✅ Yes</td>
+                                <td>✅ Yes</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Power Consumption</strong></td>
+                                <td>✅ Low (50-200mW)</td>
+                                <td>✅ Low (100-300mW)</td>
+                                <td>✅ Very Low (10-50mW)</td>
+                                <td>⚠️ High (500mW-2W)</td>
+                                <td>✅ Low (100-400mW)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Touch Accuracy</strong></td>
+                                <td>±2-3mm</td>
+                                <td>±1-2mm</td>
+                                <td>±3-5mm</td>
+                                <td>±2-4mm</td>
+                                <td>±1-3mm</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Response Time</strong></td>
+                                <td>10-20ms</td>
+                                <td>5-10ms</td>
+                                <td>10-30ms</td>
+                                <td>15-30ms</td>
+                                <td>10-20ms</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Temperature Range</strong></td>
+                                <td>-40°C to +85°C</td>
+                                <td>-20°C to +70°C</td>
+                                <td>-30°C to +80°C</td>
+                                <td>-10°C to +60°C</td>
+                                <td>-20°C to +60°C</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Scalability</strong></td>
+                                <td>✅ Excellent (any size)</td>
+                                <td>⚠️ Good (limited by cost)</td>
+                                <td>✅ Excellent (any size)</td>
+                                <td>⚠️ Moderate (complex setup)</td>
+                                <td>⚠️ Good (size limited)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Pressure Sensitivity</strong></td>
+                                <td>✅ Yes (native feature)</td>
+                                <td>❌ No (requires force layer)</td>
+                                <td>✅ Yes (inherent)</td>
+                                <td>❌ No</td>
+                                <td>❌ No</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>Key Takeaways:</h4>
+                    <ul>
+                        <li><strong>Best Overall Value:</strong> EIT offers the best balance of performance, cost, and durability</li>
+                        <li><strong>Cost Leadership:</strong> 50-80% lower cost than capacitive for large-area applications</li>
+                        <li><strong>Environmental Edge:</strong> Superior performance in challenging conditions (industrial, outdoor, medical)</li>
+                        <li><strong>Unique Features:</strong> Native pressure sensitivity and exceptional environmental resistance</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Cost-Benefit Analysis -->
+            <section id="cost-analysis">
+                <h2>💰 Cost-Benefit Analysis</h2>
+
+                <div class="cost-section">
+                    <h3>Total Cost of Ownership (TCO) - 5 Year Period</h3>
+                    
+                    <div class="cost-breakdown">
+                        <div class="cost-item">
+                            <h4>EIT System</h4>
+                            <div class="cost-value">$3,200</div>
+                            <p>Initial: $2,000<br>
+                               Maintenance: $800<br>
+                               Energy: $400</p>
+                        </div>
+                        
+                        <div class="cost-item">
+                            <h4>Capacitive</h4>
+                            <div class="cost-value">$8,500</div>
+                            <p>Initial: $6,000<br>
+                               Maintenance: $1,500<br>
+                               Energy: $1,000</p>
+                        </div>
+                        
+                        <div class="cost-item">
+                            <h4>Resistive</h4>
+                            <div class="cost-value">$4,800</div>
+                            <p>Initial: $2,500<br>
+                               Maintenance: $1,800<br>
+                               Energy: $500</p>
+                        </div>
+                        
+                        <div class="cost-item">
+                            <h4>IR/Optical</h4>
+                            <div class="cost-value">$7,200</div>
+                            <p>Initial: $4,500<br>
+                               Maintenance: $2,000<br>
+                               Energy: $700</p>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <h4>TCO Comparison (5 Years)</h4>
+                        <canvas id="tcoChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="cost-section">
+                    <h3>Return on Investment (ROI) Analysis</h3>
+                    
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-label">Cost Savings vs Capacitive</div>
+                            <div class="metric-value">62%</div>
+                            <p>$5,300 over 5 years</p>
+                        </div>
+                        
+                        <div class="metric-card">
+                            <div class="metric-label">Payback Period</div>
+                            <div class="metric-value">6-9</div>
+                            <p>months</p>
+                        </div>
+                        
+                        <div class="metric-card">
+                            <div class="metric-label">Annual Savings</div>
+                            <div class="metric-value">$1,060</div>
+                            <p>per unit deployed</p>
+                        </div>
+                        
+                        <div class="metric-card">
+                            <div class="metric-label">5-Year ROI</div>
+                            <div class="metric-value">165%</div>
+                            <p>compared to alternatives</p>
+                        </div>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h4>ROI Calculation Factors:</h4>
+                        <ul>
+                            <li><strong>Initial Investment:</strong> Hardware, installation, training</li>
+                            <li><strong>Operating Costs:</strong> Power consumption, maintenance, calibration</li>
+                            <li><strong>Replacement Costs:</strong> Expected lifespan and failure rates</li>
+                            <li><strong>Productivity Gains:</strong> Improved accuracy, reduced downtime</li>
+                            <li><strong>Scalability Benefits:</strong> Lower cost per unit at scale</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="cost-section">
+                    <h3>Cost Breakdown by Application</h3>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Application</th>
+                                    <th>EIT Cost</th>
+                                    <th>Alternative Cost</th>
+                                    <th>Savings</th>
+                                    <th>Key Economic Drivers</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Industrial (per station)</strong></td>
+                                    <td>$2,500</td>
+                                    <td>$6,000</td>
+                                    <td>$3,500 (58%)</td>
+                                    <td>Durability, low maintenance</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Medical (per device)</strong></td>
+                                    <td>$3,800</td>
+                                    <td>$8,500</td>
+                                    <td>$4,700 (55%)</td>
+                                    <td>Sterilization compatibility</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Education (per classroom)</strong></td>
+                                    <td>$1,800</td>
+                                    <td>$5,500</td>
+                                    <td>$3,700 (67%)</td>
+                                    <td>Scalability, durability</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Automotive (per vehicle)</strong></td>
+                                    <td>$450</td>
+                                    <td>$1,200</td>
+                                    <td>$750 (63%)</td>
+                                    <td>Temperature tolerance</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Outdoor/Kiosk (per unit)</strong></td>
+                                    <td>$3,200</td>
+                                    <td>$7,800</td>
+                                    <td>$4,600 (59%)</td>
+                                    <td>Weather resistance</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Gaming (per station)</strong></td>
+                                    <td>$2,100</td>
+                                    <td>$4,500</td>
+                                    <td>$2,400 (53%)</td>
+                                    <td>Multi-touch, pressure sensing</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Performance Benchmarks -->
+            <section id="benchmarks">
+                <h2>📊 Performance Benchmark Tests</h2>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-label">Touch Accuracy</div>
+                        <div class="metric-value">±2.3mm</div>
+                        <p>Average positional error</p>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-label">Response Time</div>
+                        <div class="metric-value">15ms</div>
+                        <p>Average latency</p>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-label">Multi-Touch Points</div>
+                        <div class="metric-value">12+</div>
+                        <p>Simultaneous touches</p>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-label">Power Draw</div>
+                        <div class="metric-value">120mW</div>
+                        <p>Active operation</p>
+                    </div>
+                </div>
+
+                <h3>Test Category 1: Touch Accuracy Distribution</h3>
+                <div class="chart-container">
+                    <canvas id="accuracyChart"></canvas>
+                </div>
+                <div class="highlight-box">
+                    <p><strong>Test Method:</strong> 1,000 touches at predefined grid points, measured deviation from target</p>
+                    <p><strong>Results:</strong> 89% of touches within ±2mm, 96% within ±3mm</p>
+                </div>
+
+                <h3>Test Category 2: Response Time Performance</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Test Condition</th>
+                                <th>Min (ms)</th>
+                                <th>Average (ms)</th>
+                                <th>Max (ms)</th>
+                                <th>95th Percentile (ms)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Single Touch</strong></td>
+                                <td>8</td>
+                                <td>12</td>
+                                <td>18</td>
+                                <td>16</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Multi-Touch (2-5 points)</strong></td>
+                                <td>10</td>
+                                <td>15</td>
+                                <td>22</td>
+                                <td>20</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Multi-Touch (6-10 points)</strong></td>
+                                <td>12</td>
+                                <td>18</td>
+                                <td>28</td>
+                                <td>24</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Rapid Gestures</strong></td>
+                                <td>9</td>
+                                <td>14</td>
+                                <td>21</td>
+                                <td>19</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Test Category 3: Environmental Performance</h3>
+                <div class="chart-container">
+                    <canvas id="temperatureChart"></canvas>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Environmental Factor</th>
+                                <th>Test Condition</th>
+                                <th>Accuracy Impact</th>
+                                <th>Response Time Impact</th>
+                                <th>Pass/Fail</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Low Temperature</strong></td>
+                                <td>-40°C, 2 hours</td>
+                                <td>+0.5mm (±2.8mm)</td>
+                                <td>+3ms (18ms avg)</td>
+                                <td class="rating">✅ Pass</td>
+                            </tr>
+                            <tr>
+                                <td><strong>High Temperature</strong></td>
+                                <td>+85°C, 2 hours</td>
+                                <td>+0.8mm (±3.1mm)</td>
+                                <td>+2ms (17ms avg)</td>
+                                <td class="rating">✅ Pass</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Humidity</strong></td>
+                                <td>95% RH, 24 hours</td>
+                                <td>+0.2mm (±2.5mm)</td>
+                                <td>+1ms (16ms avg)</td>
+                                <td class="rating">✅ Pass</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Water Spray</strong></td>
+                                <td>IPX7 test, 30 min</td>
+                                <td>No degradation</td>
+                                <td>No degradation</td>
+                                <td class="rating">✅ Pass</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Dust Exposure</strong></td>
+                                <td>IP6X test, 8 hours</td>
+                                <td>+0.1mm (±2.4mm)</td>
+                                <td>No change</td>
+                                <td class="rating">✅ Pass</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Oil/Grease</strong></td>
+                                <td>Surface coating, 4 hours</td>
+                                <td>+0.3mm (±2.6mm)</td>
+                                <td>+1ms (16ms avg)</td>
+                                <td class="rating">✅ Pass</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Test Category 4: Durability & Longevity</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Test Type</th>
+                                <th>Test Duration</th>
+                                <th>Cycles/Touches</th>
+                                <th>Performance Degradation</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Touch Endurance</strong></td>
+                                <td>Continuous 7 days</td>
+                                <td>1,000,000 touches</td>
+                                <td>&lt;2% accuracy loss</td>
+                                <td class="rating">✅ Excellent</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Thermal Cycling</strong></td>
+                                <td>100 cycles</td>
+                                <td>-40°C to +85°C</td>
+                                <td>&lt;3% performance change</td>
+                                <td class="rating">✅ Excellent</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Mechanical Stress</strong></td>
+                                <td>10,000 flexes</td>
+                                <td>5mm bend radius</td>
+                                <td>No failures detected</td>
+                                <td class="rating">✅ Excellent</td>
+                            </tr>
+                            <tr>
+                                <td><strong>UV Exposure</strong></td>
+                                <td>1,000 hours</td>
+                                <td>UVA 340nm</td>
+                                <td>&lt;5% material yellowing</td>
+                                <td class="rating">✅ Good</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Chemical Resistance</strong></td>
+                                <td>48 hours exposure</td>
+                                <td>10 common chemicals</td>
+                                <td>No functionality loss</td>
+                                <td class="rating">✅ Excellent</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>Benchmark Summary:</h4>
+                    <ul>
+                        <li><strong>Accuracy:</strong> Consistently achieves ±2-3mm precision across all conditions</li>
+                        <li><strong>Speed:</strong> Response times competitive with capacitive technology</li>
+                        <li><strong>Reliability:</strong> Maintains performance across extreme environmental conditions</li>
+                        <li><strong>Durability:</strong> Exceeds 1 million touch cycles with minimal degradation</li>
+                        <li><strong>Overall Rating:</strong> <span class="rating">8.7/10</span> across all test categories</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Download Resources -->
+            <section id="resources">
+                <h2>📥 Download Resources</h2>
+                
+                <div class="resources-grid">
+                    <div class="resource-card">
+                        <h3>📄 Technical Whitepaper</h3>
+                        <p>Comprehensive technical documentation and implementation guide</p>
+                        <a href="#" class="download-btn">Download PDF (2.4 MB)</a>
+                    </div>
+                    
+                    <div class="resource-card">
+                        <h3>📊 Benchmark Data</h3>
+                        <p>Complete test results and performance metrics in spreadsheet format</p>
+                        <a href="#" class="download-btn">Download XLSX (450 KB)</a>
+                    </div>
+                    
+                    <div class="resource-card">
+                        <h3>🎨 Application Examples</h3>
+                        <p>Case studies and implementation examples across industries</p>
+                        <a href="#" class="download-btn">Download PDF (3.1 MB)</a>
+                    </div>
+                    
+                    <div class="resource-card">
+                        <h3>💻 Source Code</h3>
+                        <p>Complete implementation code and simulation tools</p>
+                        <a href="#" class="download-btn">View on GitHub</a>
+                    </div>
+                    
+                    <div class="resource-card">
+                        <h3>🎥 Video Demonstrations</h3>
+                        <p>Real-world demonstrations and performance comparisons</p>
+                        <a href="#" class="download-btn">Watch Videos</a>
+                    </div>
+                    
+                    <div class="resource-card">
+                        <h3>📑 BOM & Schematics</h3>
+                        <p>Bill of materials and circuit schematics for hardware implementation</p>
+                        <a href="#" class="download-btn">Download ZIP (1.8 MB)</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Citation -->
+            <section id="citation">
+                <h2>📚 Citation Information</h2>
+                
+                <h3>BibTeX Format</h3>
+                <div class="citation-box">
+                    <button class="copy-btn" onclick="copyToClipboard('bibtex')">Copy</button>
+                    <pre id="bibtex">@article{eit_touch_2026,
+  title={EIT Touch Simulator: A Comprehensive Framework for Electrical Impedance Tomography Touch Sensing},
+  author={MMLL168 and Contributors},
+  journal={GitHub Repository},
+  year={2026},
+  url={https://github.com/MMLL168/eit-touch-simulator},
+  note={Accessed: January 7, 2026}
+}</pre>
+                </div>
+
+                <h3>APA Format</h3>
+                <div class="citation-box">
+                    <button class="copy-btn" onclick="copyToClipboard('apa')">Copy</button>
+                    <pre id="apa">MMLL168. (2026). EIT Touch Simulator: A Comprehensive Framework for Electrical Impedance Tomography Touch Sensing [Computer software]. GitHub. https://github.com/MMLL168/eit-touch-simulator</pre>
+                </div>
+
+                <h3>IEEE Format</h3>
+                <div class="citation-box">
+                    <button class="copy-btn" onclick="copyToClipboard('ieee')">Copy</button>
+                    <pre id="ieee">MMLL168, "EIT Touch Simulator: A Comprehensive Framework for Electrical Impedance Tomography Touch Sensing," GitHub Repository, 2026. [Online]. Available: https://github.com/MMLL168/eit-touch-simulator. [Accessed: Jan. 7, 2026].</pre>
+                </div>
+            </section>
+
+            <!-- Summary Highlights -->
+            <section id="summary">
+                <div class="summary-highlights">
+                    <h2>🌟 Summary Highlights</h2>
+                    <div class="highlights-grid">
+                        <div class="highlight-item">
+                            <div class="value">8.7/10</div>
+                            <div class="label">Overall Rating</div>
+                        </div>
+                        <div class="highlight-item">
+                            <div class="value">6</div>
+                            <div class="label">Major Applications</div>
+                        </div>
+                        <div class="highlight-item">
+                            <div class="value">62%</div>
+                            <div class="label">Cost Savings</div>
+                        </div>
+                        <div class="highlight-item">
+                            <div class="value">±2.3mm</div>
+                            <div class="label">Touch Accuracy</div>
+                        </div>
+                        <div class="highlight-item">
+                            <div class="value">15ms</div>
+                            <div class="label">Response Time</div>
+                        </div>
+                        <div class="highlight-item">
+                            <div class="value">12+</div>
+                            <div class="label">Touch Points</div>
+                        </div>
+                        <div class="highlight-item">
+                            <div class="value">1M+</div>
+                            <div class="label">Touch Cycles</div>
+                        </div>
+                        <div class="highlight-item">
+                            <div class="value">165%</div>
+                            <div class="label">5-Year ROI</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer>
+            <p>&copy; 2026 EIT Touch Simulator Project. Licensed under MIT License.</p>
+            <p>
+                <a href="https://github.com/MMLL168/eit-touch-simulator">GitHub Repository</a> |
+                <a href="documentation.html">Documentation</a> |
+                <a href="contact.html">Contact</a>
+            </p>
+        </footer>
+    </div>
+
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    
+    <!-- Charts JavaScript -->
+    <script>
+        // TCO Comparison Chart
+        const tcoCtx = document.getElementById('tcoChart').getContext('2d');
+        new Chart(tcoCtx, {
+            type: 'bar',
+            data: {
+                labels: ['EIT System', 'Capacitive', 'Resistive', 'IR/Optical'],
+                datasets: [{
+                    label: 'Initial Cost',
+                    data: [2000, 6000, 2500, 4500],
+                    backgroundColor: 'rgba(102, 126, 234, 0.8)'
+                }, {
+                    label: 'Maintenance (5yr)',
+                    data: [800, 1500, 1800, 2000],
+                    backgroundColor: 'rgba(118, 75, 162, 0.8)'
+                }, {
+                    label: 'Energy (5yr)',
+                    data: [400, 1000, 500, 700],
+                    backgroundColor: 'rgba(237, 100, 166, 0.8)'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: { stacked: true },
+                    y: { 
+                        stacked: true,
+                        title: { display: true, text: 'Cost (USD)' }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Total Cost of Ownership - 5 Year Comparison'
+                    },
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // Touch Accuracy Distribution Chart
+        const accuracyCtx = document.getElementById('accuracyChart').getContext('2d');
+        new Chart(accuracyCtx, {
+            type: 'line',
+            data: {
+                labels: ['0-1mm', '1-2mm', '2-3mm', '3-4mm', '4-5mm', '>5mm'],
+                datasets: [{
+                    label: 'Touch Accuracy Distribution (%)',
+                    data: [45, 44, 7, 3, 0.8, 0.2],
+                    borderColor: 'rgba(102, 126, 234, 1)',
+                    backgroundColor: 'rgba(102, 126, 234, 0.2)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Percentage of Touches (%)' }
+                    },
+                    x: {
+                        title: { display: true, text: 'Error Range' }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Touch Accuracy Distribution (1,000 test touches)'
+                    }
+                }
+            }
+        });
+
+        // Temperature Impact Chart
+        const tempCtx = document.getElementById('temperatureChart').getContext('2d');
+        new Chart(tempCtx, {
+            type: 'line',
+            data: {
+                labels: ['-40°C', '-20°C', '0°C', '20°C', '40°C', '60°C', '85°C'],
+                datasets: [{
+                    label: 'Touch Accuracy (mm error)',
+                    data: [2.8, 2.5, 2.4, 2.3, 2.4, 2.6, 3.1],
+                    borderColor: 'rgba(102, 126, 234, 1)',
+                    backgroundColor: 'rgba(102, 126, 234, 0.2)',
+                    yAxisID: 'y',
+                }, {
+                    label: 'Response Time (ms)',
+                    data: [18, 16, 15, 15, 16, 16, 17],
+                    borderColor: 'rgba(118, 75, 162, 1)',
+                    backgroundColor: 'rgba(118, 75, 162, 0.2)',
+                    yAxisID: 'y1',
+                }]
+            },
+            options: {
+                responsive: true,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: { display: true, text: 'Accuracy (mm)' }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: { display: true, text: 'Response Time (ms)' },
+                        grid: {
+                            drawOnChartArea: false,
+                        },
+                    },
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Performance vs Temperature'
+                    }
+                }
+            }
+        });
+
+        // Copy to Clipboard Function
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            const text = element.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = element.parentElement.querySelector('.copy-btn');
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                alert('Failed to copy to clipboard');
+            });
+        }
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
