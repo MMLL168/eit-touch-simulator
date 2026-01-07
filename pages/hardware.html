@@ -1,983 +1,206 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hardware Documentation - EIT Touch Simulator</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            padding: 40px;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding-bottom: 20px;
-            border-bottom: 3px solid #667eea;
-        }
-
-        h1 {
-            color: #667eea;
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-
-        .subtitle {
-            color: #666;
-            font-size: 1.2em;
-        }
-
-        h2 {
-            color: #764ba2;
-            margin-top: 30px;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #e0e0e0;
-        }
-
-        h3 {
-            color: #667eea;
-            margin-top: 20px;
-            margin-bottom: 10px;
-        }
-
-        /* Layer Structure Styles */
-        .layer-structure {
-            margin: 30px 0;
-        }
-
-        .layer {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            margin: 15px 0;
-            padding: 20px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-left: 5px solid #667eea;
-        }
-
-        .layer:hover {
-            transform: translateX(10px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .layer.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            transform: scale(1.02);
-        }
-
-        .layer-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: bold;
-            font-size: 1.2em;
-        }
-
-        .layer-details {
-            display: none;
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 2px solid rgba(255,255,255,0.3);
-        }
-
-        .layer.active .layer-details {
-            display: block;
-            animation: fadeIn 0.5s;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Canvas Styles */
-        .canvas-container {
-            text-align: center;
-            margin: 30px 0;
-            padding: 20px;
-            background: #f9f9f9;
-            border-radius: 10px;
-        }
-
-        #electrodeCanvas {
-            border: 2px solid #667eea;
-            border-radius: 10px;
-            background: white;
-            max-width: 100%;
-            height: auto;
-        }
-
-        /* Calculator Styles */
-        .calculator {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            padding: 25px;
-            border-radius: 10px;
-            margin: 30px 0;
-            color: white;
-        }
-
-        .calc-input-group {
-            margin: 15px 0;
-        }
-
-        .calc-input-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        .calc-input-group input {
-            width: 100%;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            font-size: 1em;
-        }
-
-        .calc-results {
-            background: rgba(255,255,255,0.2);
-            padding: 15px;
-            border-radius: 5px;
-            margin-top: 20px;
-        }
-
-        .calc-result-item {
-            margin: 10px 0;
-            font-size: 1.1em;
-        }
-
-        /* Table Styles */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        th {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px;
-            text-align: left;
-        }
-
-        td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        tr:hover {
-            background-color: #f5f5f5;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        /* Block Diagram Styles */
-        .block-diagram {
-            background: #f9f9f9;
-            padding: 30px;
-            border-radius: 10px;
-            margin: 30px 0;
-            text-align: center;
-        }
-
-        .block {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px 30px;
-            margin: 10px;
-            border-radius: 10px;
-            font-weight: bold;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-
-        .arrow {
-            display: inline-block;
-            font-size: 2em;
-            color: #667eea;
-            margin: 0 10px;
-        }
-
-        /* Challenge Section */
-        .challenge-section {
-            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-            padding: 25px;
-            border-radius: 10px;
-            margin: 30px 0;
-        }
-
-        .challenge-item {
-            margin: 20px 0;
-            padding: 15px;
-            background: rgba(255,255,255,0.7);
-            border-radius: 5px;
-            border-left: 4px solid #f5576c;
-        }
-
-        .challenge-item h4 {
-            color: #f5576c;
-            margin-bottom: 10px;
-        }
-
-        /* BOM Section */
-        .bom-section {
-            margin: 30px 0;
-        }
-
-        .total-cost {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            font-size: 1.5em;
-            font-weight: bold;
-            margin-top: 20px;
-        }
-
-        /* Navigation */
-        .nav-links {
-            text-align: center;
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 2px solid #e0e0e0;
-        }
-
-        .nav-links a {
-            display: inline-block;
-            margin: 0 10px;
-            padding: 12px 25px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: all 0.3s;
-        }
-
-        .nav-links a:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-            }
-
-            h1 {
-                font-size: 2em;
-            }
-
-            .block {
-                display: block;
-                margin: 10px 0;
-            }
-
-            .arrow {
-                display: block;
-                transform: rotate(90deg);
-            }
-
-            table {
-                font-size: 0.9em;
-            }
-        }
-    </style>
+    <title>硬體規格 - EIT 觸控模擬器</title>
+    <link rel="stylesheet" href="../styles/main.css">
+    <link rel="stylesheet" href="../styles/hardware.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>⚡ Hardware Documentation</h1>
-            <p class="subtitle">EIT Touch Simulator - Technical Specifications & Design</p>
-        </header>
-
-        <!-- System Overview -->
-        <section>
-            <h2>📋 System Overview</h2>
-            <p>The EIT Touch Simulator hardware consists of a multi-layer conductive surface with 20 electrodes arranged in a circular configuration. The system uses electrical impedance tomography principles to detect and localize touch events through impedance measurements.</p>
-        </section>
-
-        <!-- Interactive Layer Structure -->
-        <section>
-            <h2>🔬 Interactive Layer Structure</h2>
-            <p>Click on each layer to view detailed information:</p>
-            
-            <div class="layer-structure">
-                <div class="layer" onclick="toggleLayer(this)">
-                    <div class="layer-header">
-                        <span>Layer 1: Protection Layer</span>
-                        <span>👆</span>
-                    </div>
-                    <div class="layer-details">
-                        <p><strong>Material:</strong> Polyethylene Terephthalate (PET)</p>
-                        <p><strong>Thickness:</strong> 0.125 mm (5 mil)</p>
-                        <p><strong>Properties:</strong></p>
-                        <ul>
-                            <li>High dielectric strength (7 kV/mm)</li>
-                            <li>Excellent chemical resistance</li>
-                            <li>Touch-safe surface for user interaction</li>
-                            <li>Prevents contamination of conductive layers</li>
-                            <li>Transparent for visual feedback integration</li>
-                        </ul>
-                        <p><strong>Function:</strong> Protects internal layers from physical damage, moisture, and user contact while maintaining signal integrity.</p>
-                    </div>
-                </div>
-
-                <div class="layer" onclick="toggleLayer(this)">
-                    <div class="layer-header">
-                        <span>Layer 2: Resistive Layer</span>
-                        <span>⚡</span>
-                    </div>
-                    <div class="layer-details">
-                        <p><strong>Material:</strong> Indium Tin Oxide (ITO) on PET substrate</p>
-                        <p><strong>Thickness:</strong> 0.125 mm substrate + 30 nm ITO coating</p>
-                        <p><strong>Sheet Resistance:</strong> 100 Ω/□</p>
-                        <p><strong>Properties:</strong></p>
-                        <ul>
-                            <li>Uniform conductivity across surface</li>
-                            <li>Optical transparency >85%</li>
-                            <li>Stable electrical properties</li>
-                            <li>Creates current distribution for EIT</li>
-                        </ul>
-                        <p><strong>Function:</strong> Creates a conductive medium where touch events cause measurable impedance changes. The resistive nature ensures proper current distribution for imaging.</p>
-                    </div>
-                </div>
-
-                <div class="layer" onclick="toggleLayer(this)">
-                    <div class="layer-header">
-                        <span>Layer 3: Electrode Layer</span>
-                        <span>🔌</span>
-                    </div>
-                    <div class="layer-details">
-                        <p><strong>Material:</strong> Silver-based conductive ink on PET</p>
-                        <p><strong>Electrode Count:</strong> 20 electrodes</p>
-                        <p><strong>Configuration:</strong> Circular arrangement (200mm diameter)</p>
-                        <p><strong>Electrode Specifications:</strong></p>
-                        <ul>
-                            <li>Individual electrode width: 8 mm</li>
-                            <li>Arc length per electrode: ~31.4 mm</li>
-                            <li>Area per electrode: ~251 mm²</li>
-                            <li>Conductivity: >10⁵ S/m</li>
-                            <li>Contact resistance: <1 Ω</li>
-                        </ul>
-                        <p><strong>Function:</strong> Provides injection and measurement points for EIT current patterns. The circular arrangement ensures optimal spatial resolution and uniform sensitivity.</p>
-                    </div>
-                </div>
-
-                <div class="layer" onclick="toggleLayer(this)">
-                    <div class="layer-header">
-                        <span>Layer 4: Shielding Layer</span>
-                        <span>🛡️</span>
-                    </div>
-                    <div class="layer-details">
-                        <p><strong>Material:</strong> Copper foil with grounding</p>
-                        <p><strong>Thickness:</strong> 0.035 mm (1 oz copper)</p>
-                        <p><strong>Properties:</strong></p>
-                        <ul>
-                            <li>Electromagnetic shielding effectiveness: >60 dB</li>
-                            <li>Low impedance ground plane</li>
-                            <li>Reduces environmental noise coupling</li>
-                            <li>Connected to system ground</li>
-                        </ul>
-                        <p><strong>Function:</strong> Shields the sensing layers from electromagnetic interference and provides a stable reference potential for measurements.</p>
-                    </div>
-                </div>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="../index.html">EIT 觸控模擬器</a>
             </div>
-        </section>
-
-        <!-- Electrode Configuration Canvas -->
-        <section>
-            <h2>🎯 Electrode Configuration</h2>
-            <div class="canvas-container">
-                <canvas id="electrodeCanvas" width="500" height="500"></canvas>
-                <p style="margin-top: 15px; color: #666;">20 electrodes arranged in circular pattern (200mm diameter)</p>
-            </div>
-        </section>
-
-        <!-- Electrode Design Calculator -->
-        <section>
-            <h2>🧮 Electrode Design Calculator</h2>
-            <div class="calculator">
-                <h3>Calculate Electrode Parameters</h3>
-                <div class="calc-input-group">
-                    <label for="numElectrodes">Number of Electrodes:</label>
-                    <input type="number" id="numElectrodes" value="20" min="8" max="32" onchange="calculateParams()">
-                </div>
-                <div class="calc-input-group">
-                    <label for="diameter">Diameter (mm):</label>
-                    <input type="number" id="diameter" value="200" min="50" max="500" onchange="calculateParams()">
-                </div>
-                <div class="calc-input-group">
-                    <label for="electrodeWidth">Electrode Width (mm):</label>
-                    <input type="number" id="electrodeWidth" value="8" min="1" max="20" onchange="calculateParams()">
-                </div>
-                <div class="calc-input-group">
-                    <label for="current">Injection Current (µA):</label>
-                    <input type="number" id="current" value="100" min="1" max="1000" onchange="calculateParams()">
-                </div>
-                <div class="calc-results">
-                    <div class="calc-result-item">Arc Length per Electrode: <strong id="arcLength">31.42</strong> mm</div>
-                    <div class="calc-result-item">Electrode Area: <strong id="area">251.3</strong> mm²</div>
-                    <div class="calc-result-item">Current Density: <strong id="density">0.398</strong> µA/mm²</div>
-                    <div class="calc-result-item">Angular Spacing: <strong id="angle">18</strong>°</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Block Diagram -->
-        <section>
-            <h2>📊 System Block Diagram</h2>
-            <div class="block-diagram">
-                <div class="block">DAC<br>(AD5383)</div>
-                <span class="arrow">→</span>
-                <div class="block">Current Source<br>(HOWLAND)</div>
-                <span class="arrow">→</span>
-                <div class="block">Switching Matrix<br>(ADG2188)</div>
-                <span class="arrow">→</span>
-                <div class="block">Electrode Array<br>(20 Channels)</div>
-                <span class="arrow">→</span>
-                <div class="block">Differential Amp<br>(INA128)</div>
-                <span class="arrow">→</span>
-                <div class="block">ADC<br>(AD7606)</div>
-                <span class="arrow">→</span>
-                <div class="block">MCU<br>(STM32F407)</div>
-            </div>
-        </section>
-
-        <!-- DAQ Specifications -->
-        <section>
-            <h2>📡 Data Acquisition Specifications</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Component</th>
-                        <th>Specification</th>
-                        <th>Value</th>
-                        <th>Notes</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>DAC</td>
-                        <td>Resolution</td>
-                        <td>32-bit</td>
-                        <td>AD5383, 32-channel</td>
-                    </tr>
-                    <tr>
-                        <td>ADC</td>
-                        <td>Resolution</td>
-                        <td>16-bit</td>
-                        <td>AD7606, 8-channel simultaneous</td>
-                    </tr>
-                    <tr>
-                        <td>Sample Rate</td>
-                        <td>Maximum</td>
-                        <td>200 kSPS</td>
-                        <td>Per channel</td>
-                    </tr>
-                    <tr>
-                        <td>Current Source</td>
-                        <td>Range</td>
-                        <td>0-1 mA</td>
-                        <td>Programmable Howland circuit</td>
-                    </tr>
-                    <tr>
-                        <td>Current Source</td>
-                        <td>Accuracy</td>
-                        <td>±0.1%</td>
-                        <td>With calibration</td>
-                    </tr>
-                    <tr>
-                        <td>Voltage Measurement</td>
-                        <td>Range</td>
-                        <td>±10 V</td>
-                        <td>Differential input</td>
-                    </tr>
-                    <tr>
-                        <td>Input Impedance</td>
-                        <td>Minimum</td>
-                        <td>10 MΩ</td>
-                        <td>INA128 instrumentation amp</td>
-                    </tr>
-                    <tr>
-                        <td>Noise Floor</td>
-                        <td>RMS</td>
-                        <td><100 µV</td>
-                        <td>At 1 kHz bandwidth</td>
-                    </tr>
-                    <tr>
-                        <td>CMRR</td>
-                        <td>Minimum</td>
-                        <td>100 dB</td>
-                        <td>At DC to 60 Hz</td>
-                    </tr>
-                    <tr>
-                        <td>Frame Rate</td>
-                        <td>Typical</td>
-                        <td>50 fps</td>
-                        <td>Full measurement cycle</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <!-- Switching Matrix -->
-        <section>
-            <h2>🔀 Switching Matrix Configuration</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Parameter</th>
-                        <th>Specification</th>
-                        <th>Details</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>IC Type</td>
-                        <td>ADG2188</td>
-                        <td>8×8 crosspoint switch matrix</td>
-                    </tr>
-                    <tr>
-                        <td>Configuration</td>
-                        <td>3× ADG2188</td>
-                        <td>Total 24 switchable channels (20 used)</td>
-                    </tr>
-                    <tr>
-                        <td>On Resistance</td>
-                        <td>5 Ω typical</td>
-                        <td>Minimizes signal attenuation</td>
-                    </tr>
-                    <tr>
-                        <td>Switching Time</td>
-                        <td>150 ns</td>
-                        <td>Fast pattern switching</td>
-                    </tr>
-                    <tr>
-                        <td>Crosstalk</td>
-                        <td>-80 dB</td>
-                        <td>At 1 MHz</td>
-                    </tr>
-                    <tr>
-                        <td>Control Interface</td>
-                        <td>SPI</td>
-                        <td>Synchronized with MCU</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <!-- Material Properties -->
-        <section>
-            <h2>🧪 Material Properties</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Material</th>
-                        <th>Property</th>
-                        <th>Value</th>
-                        <th>Application</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>ITO Film</td>
-                        <td>Sheet Resistance</td>
-                        <td>100 Ω/□</td>
-                        <td>Resistive sensing layer</td>
-                    </tr>
-                    <tr>
-                        <td>ITO Film</td>
-                        <td>Transmittance</td>
-                        <td>>85%</td>
-                        <td>Optical clarity</td>
-                    </tr>
-                    <tr>
-                        <td>Silver Ink</td>
-                        <td>Resistivity</td>
-                        <td><10 µΩ·cm</td>
-                        <td>Electrode traces</td>
-                    </tr>
-                    <tr>
-                        <td>PET Substrate</td>
-                        <td>Thickness</td>
-                        <td>0.125 mm</td>
-                        <td>Structural support</td>
-                    </tr>
-                    <tr>
-                        <td>PET Substrate</td>
-                        <td>Dielectric Constant</td>
-                        <td>3.2</td>
-                        <td>Insulation</td>
-                    </tr>
-                    <tr>
-                        <td>Copper Shield</td>
-                        <td>Thickness</td>
-                        <td>35 µm</td>
-                        <td>EMI shielding</td>
-                    </tr>
-                    <tr>
-                        <td>Adhesive</td>
-                        <td>Type</td>
-                        <td>Acrylic PSA</td>
-                        <td>Layer bonding</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <!-- Design Challenges -->
-        <section>
-            <h2>⚠️ Design Challenges & Solutions</h2>
-            <div class="challenge-section">
-                <div class="challenge-item">
-                    <h4>Challenge 1: Signal-to-Noise Ratio</h4>
-                    <p><strong>Problem:</strong> Touch events cause small impedance changes (~1-5%) that are difficult to detect in the presence of noise.</p>
-                    <p><strong>Solution:</strong> Implemented high CMRR instrumentation amplifiers (INA128), proper grounding with shielding layer, and differential measurement techniques. Added averaging of multiple frames (5-10) to improve SNR by √N.</p>
-                </div>
-
-                <div class="challenge-item">
-                    <h4>Challenge 2: Current Source Stability</h4>
-                    <p><strong>Problem:</strong> Variations in current injection affect measurement accuracy and reconstruction quality.</p>
-                    <p><strong>Solution:</strong> Used precision Howland current source with 0.1% accuracy, temperature-compensated voltage reference (ADR4540), and real-time current monitoring with feedback correction.</p>
-                </div>
-
-                <div class="challenge-item">
-                    <h4>Challenge 3: Electrode Contact Impedance</h4>
-                    <p><strong>Problem:</strong> High or variable contact impedance between electrodes and resistive layer causes measurement errors.</p>
-                    <p><strong>Solution:</strong> Used large electrode area (251 mm²), silver-based conductive ink with low contact resistance (<1 Ω), and conductive adhesive for reliable bonding. Implemented calibration routine to measure and compensate for contact impedance variations.</p>
-                </div>
-
-                <div class="challenge-item">
-                    <h4>Challenge 4: Electromagnetic Interference</h4>
-                    <p><strong>Problem:</strong> Environmental EMI (50/60 Hz power line, switching noise) couples into sensitive measurement circuits.</p>
-                    <p><strong>Solution:</strong> Copper shielding layer (>60 dB attenuation), star grounding topology, differential measurements, and notch filtering at power line frequencies.</p>
-                </div>
-
-                <div class="challenge-item">
-                    <h4>Challenge 5: Reconstruction Artifacts</h4>
-                    <p><strong>Problem:</strong> Inverse problem in EIT is ill-posed, leading to artifacts and poor spatial resolution.</p>
-                    <p><strong>Solution:</strong> Implemented EIDORS reconstruction with Tikhonov regularization, used 20 electrodes (higher than typical 16) for better resolution, and applied spatial smoothing filters with prior anatomical constraints.</p>
-                </div>
-
-                <div class="challenge-item">
-                    <h4>Challenge 6: Measurement Speed vs. Quality Trade-off</h4>
-                    <p><strong>Problem:</strong> Need high frame rate for touch responsiveness but also high SNR for accuracy.</p>
-                    <p><strong>Solution:</strong> Implemented adaptive measurement strategy: fast single-frame mode (50 fps) for touch detection, switched to averaged multi-frame mode (10 fps) for precise localization. Used adjacent current injection pattern (faster) instead of opposite injection.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Bill of Materials -->
-        <section class="bom-section">
-            <h2>💰 Bill of Materials (BOM)</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Item</th>
-                        <th>Part Number</th>
-                        <th>Description</th>
-                        <th>Qty</th>
-                        <th>Unit Price</th>
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>MCU</td>
-                        <td>STM32F407VGT6</td>
-                        <td>ARM Cortex-M4, 168 MHz</td>
-                        <td>1</td>
-                        <td>$12.50</td>
-                        <td>$12.50</td>
-                    </tr>
-                    <tr>
-                        <td>DAC</td>
-                        <td>AD5383</td>
-                        <td>32-bit, 32-channel DAC</td>
-                        <td>1</td>
-                        <td>$47.80</td>
-                        <td>$47.80</td>
-                    </tr>
-                    <tr>
-                        <td>ADC</td>
-                        <td>AD7606</td>
-                        <td>16-bit, 8-channel simultaneous ADC</td>
-                        <td>1</td>
-                        <td>$24.50</td>
-                        <td>$24.50</td>
-                    </tr>
-                    <tr>
-                        <td>Switch Matrix</td>
-                        <td>ADG2188</td>
-                        <td>8×8 crosspoint switch</td>
-                        <td>3</td>
-                        <td>$18.90</td>
-                        <td>$56.70</td>
-                    </tr>
-                    <tr>
-                        <td>Instrumentation Amp</td>
-                        <td>INA128</td>
-                        <td>Precision, low-noise</td>
-                        <td>4</td>
-                        <td>$4.25</td>
-                        <td>$17.00</td>
-                    </tr>
-                    <tr>
-                        <td>Op-Amp</td>
-                        <td>OPA4140</td>
-                        <td>Quad precision op-amp</td>
-                        <td>3</td>
-                        <td>$3.80</td>
-                        <td>$11.40</td>
-                    </tr>
-                    <tr>
-                        <td>Voltage Reference</td>
-                        <td>ADR4540</td>
-                        <td>4.096V precision reference</td>
-                        <td>2</td>
-                        <td>$6.20</td>
-                        <td>$12.40</td>
-                    </tr>
-                    <tr>
-                        <td>ITO Film</td>
-                        <td>Custom</td>
-                        <td>100 Ω/□, 200×200mm</td>
-                        <td>1</td>
-                        <td>$45.00</td>
-                        <td>$45.00</td>
-                    </tr>
-                    <tr>
-                        <td>Electrode Layer</td>
-                        <td>Custom</td>
-                        <td>Silver ink, printed pattern</td>
-                        <td>1</td>
-                        <td>$35.00</td>
-                        <td>$35.00</td>
-                    </tr>
-                    <tr>
-                        <td>PET Films</td>
-                        <td>Various</td>
-                        <td>0.125mm substrate layers</td>
-                        <td>3</td>
-                        <td>$8.00</td>
-                        <td>$24.00</td>
-                    </tr>
-                    <tr>
-                        <td>Copper Foil</td>
-                        <td>Standard</td>
-                        <td>35µm shielding layer</td>
-                        <td>1</td>
-                        <td>$12.00</td>
-                        <td>$12.00</td>
-                    </tr>
-                    <tr>
-                        <td>PCB</td>
-                        <td>Custom</td>
-                        <td>4-layer, 150×100mm</td>
-                        <td>1</td>
-                        <td>$85.00</td>
-                        <td>$85.00</td>
-                    </tr>
-                    <tr>
-                        <td>Connectors</td>
-                        <td>Various</td>
-                        <td>FFC, headers, USB</td>
-                        <td>1 set</td>
-                        <td>$22.00</td>
-                        <td>$22.00</td>
-                    </tr>
-                    <tr>
-                        <td>Passive Components</td>
-                        <td>Various</td>
-                        <td>Resistors, capacitors, etc.</td>
-                        <td>1 set</td>
-                        <td>$18.00</td>
-                        <td>$18.00</td>
-                    </tr>
-                    <tr>
-                        <td>Power Supply</td>
-                        <td>Various</td>
-                        <td>±15V, +5V, +3.3V regulators</td>
-                        <td>1 set</td>
-                        <td>$15.00</td>
-                        <td>$15.00</td>
-                    </tr>
-                    <tr>
-                        <td>Enclosure</td>
-                        <td>Custom</td>
-                        <td>3D printed or machined</td>
-                        <td>1</td>
-                        <td>$35.00</td>
-                        <td>$35.00</td>
-                    </tr>
-                    <tr>
-                        <td>Assembly & Testing</td>
-                        <td>-</td>
-                        <td>Labor and QC</td>
-                        <td>1</td>
-                        <td>$80.00</td>
-                        <td>$80.00</td>
-                    </tr>
-                </tbody>
-            </table>
-            <div class="total-cost">
-                Estimated Total Cost: $553.30
-            </div>
-            <p style="margin-top: 20px; color: #666; text-align: center;">
-                <em>Note: Prices are estimates based on quantity 1-10 units. Bulk pricing and alternative components may reduce costs significantly.</em>
-            </p>
-        </section>
-
-        <!-- Navigation -->
-        <div class="nav-links">
-            <a href="../index.html">🏠 Home</a>
-            <a href="overview.html">📖 Overview</a>
-            <a href="software.html">💻 Software</a>
-            <a href="api.html">🔌 API Reference</a>
+            <ul class="nav-menu">
+                <li><a href="../index.html">首頁</a></li>
+                <li><a href="simulator.html">模擬器</a></li>
+                <li><a href="hardware.html" class="active">硬體</a></li>
+                <li><a href="about.html">關於</a></li>
+            </ul>
         </div>
-    </div>
+    </nav>
 
-    <script>
-        // Layer Toggle Functionality
-        function toggleLayer(element) {
-            const allLayers = document.querySelectorAll('.layer');
-            allLayers.forEach(layer => {
-                if (layer !== element) {
-                    layer.classList.remove('active');
-                }
-            });
-            element.classList.toggle('active');
-        }
+    <main class="hardware-content">
+        <section class="hero-section">
+            <h1>硬體規格</h1>
+            <p class="subtitle">探索驅動我們的 EIT 觸控模擬器的技術規格</p>
+        </section>
 
-        // Draw Electrode Configuration
-        function drawElectrodes() {
-            const canvas = document.getElementById('electrodeCanvas');
-            const ctx = canvas.getContext('2d');
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            const radius = 180;
-            const numElectrodes = 20;
-            const electrodeWidth = 15;
+        <section class="specs-section">
+            <div class="spec-card">
+                <div class="spec-icon">⚡</div>
+                <h2>處理器</h2>
+                <div class="spec-details">
+                    <p><strong>型號：</strong>STM32F407VGT6</p>
+                    <p><strong>架構：</strong>ARM Cortex-M4</p>
+                    <p><strong>時脈速度：</strong>168 MHz</p>
+                    <p><strong>快閃記憶體：</strong>1 MB</p>
+                    <p><strong>SRAM：</strong>192 KB</p>
+                </div>
+            </div>
 
-            // Clear canvas
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            <div class="spec-card">
+                <div class="spec-icon">🔌</div>
+                <h2>電極陣列</h2>
+                <div class="spec-details">
+                    <p><strong>總電極數：</strong>32 個電極</p>
+                    <p><strong>配置：</strong>4x8 矩陣</p>
+                    <p><strong>材料：</strong>銅箔</p>
+                    <p><strong>間距：</strong>2.5 mm</p>
+                    <p><strong>尺寸：</strong>20mm x 20mm</p>
+                </div>
+            </div>
 
-            // Draw background circle
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-            ctx.fillStyle = '#f0f0f0';
-            ctx.fill();
-            ctx.strokeStyle = '#667eea';
-            ctx.lineWidth = 2;
-            ctx.stroke();
+            <div class="spec-card">
+                <div class="spec-icon">📊</div>
+                <h2>資料採集</h2>
+                <div class="spec-details">
+                    <p><strong>ADC 解析度：</strong>12 位元</p>
+                    <p><strong>採樣率：</strong>最高 2.4 MSPS</p>
+                    <p><strong>通道數：</strong>16 個多工通道</p>
+                    <p><strong>電壓範圍：</strong>0-3.3V</p>
+                    <p><strong>資料傳輸：</strong>USB 2.0</p>
+                </div>
+            </div>
 
-            // Draw electrodes
-            for (let i = 0; i < numElectrodes; i++) {
-                const angle = (i * 2 * Math.PI) / numElectrodes - Math.PI / 2;
-                const x = centerX + radius * Math.cos(angle);
-                const y = centerY + radius * Math.sin(angle);
+            <div class="spec-card">
+                <div class="spec-icon">🔧</div>
+                <h2>電源需求</h2>
+                <div class="spec-details">
+                    <p><strong>輸入電壓：</strong>5V DC</p>
+                    <p><strong>電流消耗：</strong>最大 500 mA</p>
+                    <p><strong>電源介面：</strong>USB Type-C</p>
+                    <p><strong>功耗：</strong>典型值 2.5W</p>
+                </div>
+            </div>
 
-                // Draw electrode
-                ctx.beginPath();
-                ctx.arc(x, y, electrodeWidth, 0, 2 * Math.PI);
-                
-                // Gradient fill
-                const gradient = ctx.createRadialGradient(x, y, 0, x, y, electrodeWidth);
-                gradient.addColorStop(0, '#667eea');
-                gradient.addColorStop(1, '#764ba2');
-                ctx.fillStyle = gradient;
-                ctx.fill();
-                
-                ctx.strokeStyle = '#333';
-                ctx.lineWidth = 2;
-                ctx.stroke();
+            <div class="spec-card">
+                <div class="spec-icon">📏</div>
+                <h2>實體尺寸</h2>
+                <div class="spec-details">
+                    <p><strong>PCB 尺寸：</strong>100mm x 80mm</p>
+                    <p><strong>厚度：</strong>1.6mm</p>
+                    <p><strong>重量：</strong>約 150g</p>
+                    <p><strong>外殼：</strong>3D 列印 ABS 塑膠</p>
+                </div>
+            </div>
 
-                // Draw electrode number
-                ctx.fillStyle = 'white';
-                ctx.font = 'bold 12px Arial';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText((i + 1).toString(), x, y);
-            }
+            <div class="spec-card">
+                <div class="spec-icon">🌡️</div>
+                <h2>環境規格</h2>
+                <div class="spec-details">
+                    <p><strong>操作溫度：</strong>0°C 至 50°C</p>
+                    <p><strong>儲存溫度：</strong>-20°C 至 70°C</p>
+                    <p><strong>濕度：</strong>10% 至 90% 非凝結</p>
+                    <p><strong>認證：</strong>CE、FCC、RoHS</p>
+                </div>
+            </div>
+        </section>
 
-            // Draw center information
-            ctx.fillStyle = '#667eea';
-            ctx.font = 'bold 16px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('EIT Sensor', centerX, centerY - 20);
-            ctx.font = '14px Arial';
-            ctx.fillText('200mm diameter', centerX, centerY);
-            ctx.fillText('20 electrodes', centerX, centerY + 20);
-        }
+        <section class="comparison-section">
+            <h2>技術比較</h2>
+            <div class="table-container">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>規格</th>
+                            <th>我們的系統</th>
+                            <th>傳統 EIT</th>
+                            <th>優勢</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>電極數量</td>
+                            <td>32</td>
+                            <td>16-32</td>
+                            <td>高解析度成像</td>
+                        </tr>
+                        <tr>
+                            <td>採樣率</td>
+                            <td>2.4 MSPS</td>
+                            <td>1 MSPS</td>
+                            <td>更快的資料採集</td>
+                        </tr>
+                        <tr>
+                            <td>解析度</td>
+                            <td>12 位元</td>
+                            <td>10-12 位元</td>
+                            <td>更精確的測量</td>
+                        </tr>
+                        <tr>
+                            <td>處理速度</td>
+                            <td>168 MHz</td>
+                            <td>72-120 MHz</td>
+                            <td>即時處理</td>
+                        </tr>
+                        <tr>
+                            <td>連接性</td>
+                            <td>USB 2.0</td>
+                            <td>USB 1.1/2.0</td>
+                            <td>更快的資料傳輸</td>
+                        </tr>
+                        <tr>
+                            <td>成本</td>
+                            <td>低</td>
+                            <td>高</td>
+                            <td>教育用途實惠</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
 
-        // Calculator Functions
-        function calculateParams() {
-            const numElectrodes = parseFloat(document.getElementById('numElectrodes').value);
-            const diameter = parseFloat(document.getElementById('diameter').value);
-            const electrodeWidth = parseFloat(document.getElementById('electrodeWidth').value);
-            const current = parseFloat(document.getElementById('current').value);
+        <section class="features-section">
+            <h2>主要特點</h2>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <h3>模組化設計</h3>
+                    <p>易於維護和升級的元件，具備可更換的電極陣列和模組化 PCB 設計。</p>
+                </div>
+                <div class="feature-item">
+                    <h3>即時處理</h3>
+                    <p>採用先進的 ARM Cortex-M4 處理器，進行即時資料處理和影像重建。</p>
+                </div>
+                <div class="feature-item">
+                    <h3>低功耗</h3>
+                    <td>優化的功耗管理，實現延長的操作時間和降低的熱量產生。</p>
+                </div>
+                <div class="feature-item">
+                    <h3>USB 連接</h3>
+                    <p>使用標準 USB Type-C 連接，輕鬆連接任何電腦進行資料採集。</p>
+                </div>
+                <div class="feature-item">
+                    <h3>高精度</h3>
+                    <p>12 位元 ADC 提供高精度測量，適用於詳細的阻抗成像。</p>
+                </div>
+                <div class="feature-item">
+                    <h3>開源</h3>
+                    <p>完全開源的硬體和韌體，供教育和研究目的使用。</p>
+                </div>
+            </div>
+        </section>
 
-            // Calculate parameters
-            const circumference = Math.PI * diameter;
-            const arcLength = circumference / numElectrodes;
-            const area = arcLength * electrodeWidth;
-            const currentDensity = current / area;
-            const angle = 360 / numElectrodes;
+        <section class="download-section">
+            <h2>技術文件</h2>
+            <p>下載詳細的技術文件、電路圖和設計文件。</p>
+            <div class="download-buttons">
+                <a href="#" class="btn btn-primary">下載電路圖</a>
+                <a href="#" class="btn btn-secondary">下載資料表</a>
+                <a href="#" class="btn btn-secondary">查看 GitHub</a>
+            </div>
+        </section>
+    </main>
 
-            // Update results
-            document.getElementById('arcLength').textContent = arcLength.toFixed(2);
-            document.getElementById('area').textContent = area.toFixed(1);
-            document.getElementById('density').textContent = currentDensity.toFixed(3);
-            document.getElementById('angle').textContent = angle.toFixed(1);
-        }
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 EIT 觸控模擬器專案。保留所有權利。</p>
+            <p>基於 STM32F407 的電阻抗斷層成像系統</p>
+        </div>
+    </footer>
 
-        // Initialize on page load
-        window.onload = function() {
-            drawElectrodes();
-            calculateParams();
-        };
-
-        // Make canvas responsive
-        window.addEventListener('resize', function() {
-            const canvas = document.getElementById('electrodeCanvas');
-            const container = canvas.parentElement;
-            const maxWidth = container.offsetWidth - 40;
-            
-            if (maxWidth < 500) {
-                canvas.style.width = maxWidth + 'px';
-                canvas.style.height = maxWidth + 'px';
-            } else {
-                canvas.style.width = '500px';
-                canvas.style.height = '500px';
-            }
-        });
-    </script>
+    <script src="../scripts/main.js"></script>
 </body>
 </html>
