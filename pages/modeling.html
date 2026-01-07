@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>數學建模與影像重建 - EIT觸控感測系統</title>
+    
+    <!-- MathJax 數學公式支持 -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+* {margin:0;padding:0;box-sizing:border-box;}body{font-family:'Microsoft JhengHei','Segoe UI',Arial,sans-serif;line-height:1.6;color:#2c3e50;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);padding:20px;}.container{max-width:1200px;margin:0 auto;background:white;border-radius:15px;padding:40px;box-shadow:0 10px 50px rgba(0,0,0,0.3);}header{text-align:center;margin-bottom:40px;padding-bottom:20px;border-bottom:4px solid #667eea;}h1{font-size:36px;color:#667eea;margin-bottom:10px;}.subtitle{font-size:18px;color:#7f8c8d;}nav{background:#34495e;border-radius:8px;padding:15px;margin-bottom:30px;}nav a{color:white;text-decoration:none;padding:10px 20px;margin:0 5px;border-radius:5px;transition:background 0.3s;display:inline-block;}nav a:hover{background:#667eea;}h2{font-size:28px;color:#2c3e50;margin:40px 0 20px 0;padding-bottom:10px;border-bottom:3px solid #3498db;}h3{font-size:22px;color:#34495e;margin:30px 0 15px 0;}h4{font-size:18px;color:#7f8c8d;margin:20px 0 10px 0;}p{margin-bottom:15px;text-align:justify;}.problem-flow{display:grid;grid-template-columns:1fr auto 1fr;gap:20px;align-items:center;margin:30px 0;}.problem-box{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;padding:30px;border-radius:10px;text-align:center;font-size:20px;font-weight:bold;box-shadow:0 5px 15px rgba(0,0,0,0.2);}.arrow-icon{font-size:36px;color:#3498db;}.equation-box{background:white;border-left:4px solid #3498db;padding:20px;margin:20px 0;border-radius:5px;box-shadow:0 2px 5px rgba(0,0,0,0.1);}.equation-box h4{color:#3498db;margin-bottom:10px;}.step-card{background:#ecf0f1;padding:15px 20px;margin:10px 0;border-radius:8px;border-left:4px solid #e74c3c;}.step-card strong{color:#e74c3c;}table{width:100%;border-collapse:collapse;margin:20px 0;box-shadow:0 2px 5px rgba(0,0,0,0.1);}th{background:#34495e;color:white;padding:12px;text-align:left;}td{padding:10px 12px;border-bottom:1px solid #ecf0f1;}tr:nth-child(even){background:#f8f9fa;}tr:hover{background:#e8f4f8;}.algo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;margin:30px 0;}.algo-card{background:white;border:2px solid #3498db;border-radius:10px;padding:20px;box-shadow:0 4px 10px rgba(0,0,0,0.1);transition:transform 0.3s;}.algo-card:hover{transform:translateY(-5px);box-shadow:0 6px 15px rgba(0,0,0,0.2);}.algo-card h4{color:#3498db;margin-bottom:15px;}.metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin:20px 0;}.metric-card{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;padding:20px;border-radius:10px;text-align:center;box-shadow:0 4px 10px rgba(0,0,0,0.2);}.metric-value{font-size:32px;font-weight:bold;margin-bottom:10px;}.metric-label{font-size:14px;opacity:0.9;}.canvas-container{background:#f8f9fa;padding:20px;border-radius:10px;margin:20px 0;text-align:center;}.canvas-container canvas{border:2px solid #bdc3c7;border-radius:5px;background:white;}.canvas-caption{margin-top:10px;font-size:14px;color:#7f8c8d;}.code-block{background:#2d2d2d;color:#f8f8f2;padding:20px;border-radius:8px;overflow-x:auto;margin:20px 0;font-family:'Courier New',monospace;line-height:1.5;}.code-comment{color:#75715e;}.code-keyword{color:#66d9ef;font-weight:bold;}.code-function{color:#a6e22e;}.code-string{color:#e6db74;}.code-number{color:#ae81ff;}.slider-container{margin:30px 0;padding:20px;background:#ecf0f1;border-radius:10px;}.slider-label{font-weight:bold;margin-bottom:10px;display:block;}.slider{width:100%;height:8px;border-radius:5px;background:#d3d3d3;outline:none;-webkit-appearance:none;}.slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:20px;height:20px;border-radius:50%;background:#3498db;cursor:pointer;}.slider::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#3498db;cursor:pointer;}.slider-value{text-align:center;font-size:24px;font-weight:bold;color:#3498db;margin:15px 0;}ul{margin:15px 0 15px 30px;}li{margin-bottom:8px;}@media (max-width:768px){.container{padding:20px;}h1{font-size:28px;}.problem-flow{grid-template-columns:1fr;}.arrow-icon{transform:rotate(90deg);}nav a{display:block;margin:5px 0;}}
+    </style>
+</head>
+<body>
+<div class="container">
+<header>
+<h1>🧮 數學建模與影像重建</h1>
+<p class="subtitle">電阻抗層析成像 (EIT) 觸控感測系統完整技術文件</p>
+</header>
+<nav>
+<a href="../index.html">🏠 返回主頁</a>
+<a href="#forward">正向問題</a>
+<a href="#inverse">逆問題</a>
+<a href="#jacobian">Jacobian矩陣</a>
+<a href="#regularization">正則化</a>
+<a href="#algorithms">演算法</a>
+<a href="#case-study">案例分析</a>
+<a href="#eidors">EIDORS</a>
+</nav>
+<section id="forward">
+<h2>1. 正向問題與有限元素法 (FEM)</h2>
+<h3>1.1 控制方程</h3>
+<p>電阻抗層析成像的正向問題描述在已知導電率分布 σ(x,y) 的情況下，計算邊界電壓分布。系統滿足拉普拉斯方程：</p>
+<div class="equation-box">
+<h4>拉普拉斯方程</h4>
+\[ \nabla \cdot (\sigma \nabla \phi) = 0 \]
+<p>其中 φ 為電位，σ 為導電率分布</p>
+</div>
+<h3>1.2 邊界條件</h3>
+<div class="step-card">
+<strong>Dirichlet 邊界條件（電流注入）：</strong>在電流注入電極處：\[ \sigma \frac{\partial \phi}{\partial n} = I \]
+</div>
+<div class="step-card">
+<strong>Neumann 邊界條件（測量電極）：</strong>在測量電極處：\[ \phi = V_{meas} \]
+</div>
+<h3>1.3 FEM 離散化</h3>
+<p>有限元素法將連續問題轉換為離散系統。首先推導弱形式：</p>
+<div class="equation-box">
+<h4>弱形式推導</h4>
+\[ \int_{\Omega} \nabla w \cdot \sigma \nabla \phi \, d\Omega = \int_{\Gamma} w \cdot I \, d\Gamma \]
+<p>其中 w 為測試函數</p>
+</div>
+<p>離散化後得到剛度矩陣形式：</p>
+<div class="equation-box">
+<h4>剛度矩陣方程</h4>
+\[ \mathbf{K}(\sigma) \phi = \mathbf{I} \]
+<p>K 為剛度矩陣，φ 為節點電位向量，I 為電流向量</p>
+</div>
+<h3>1.4 網格生成與視覺化</h3>
+<div class="canvas-container">
+<canvas id="meshCanvas" width="500" height="500"></canvas>
+<p class="canvas-caption"><strong>FEM 三角形網格：</strong>包含 1000-5000 個三角形元素，電極附近採用高密度網格</p>
+</div>
+<table>
+<thead>
+<tr><th>網格參數</th><th>典型值</th><th>說明</th></tr>
+</thead>
+<tbody>
+<tr><td>元素數量</td><td>1000-5000</td><td>三角形元素總數</td></tr>
+<tr><td>節點數量</td><td>500-2500</td><td>網格節點總數</td></tr>
+<tr><td>電極附近密度</td><td>5-10倍</td><td>相對於中心區域</td></tr>
+<tr><td>最大元素大小</td><td>10mm</td><td>在中心區域</td></tr>
+</tbody>
+</table>
+</section>
+<section id="inverse">
+<h2>2. 逆問題深度解析</h2>
+<div class="problem-flow">
+<div class="problem-box">正向問題<br>σ → V</div>
+<div class="arrow-icon">⇄</div>
+<div class="problem-box">逆問題<br>V → σ</div>
+</div>
+<h3>2.1 問題定義</h3>
+<p>逆問題的目標是從邊界電壓測量值 V<sub>meas</sub> 重建內部導電率分布 σ。這是一個最小化問題：</p>
+<div class="equation-box">
+<h4>目標函數</h4>
+\[ \min_{\sigma} \| \mathbf{V}(\sigma) - \mathbf{V}_{meas} \|^2 \]
+<p>尋找使模擬電壓與測量電壓差異最小的導電率分布</p>
+</div>
+<h3>2.2 病態性質三大特徵</h3>
+<div class="algo-grid">
+<div class="algo-card">
+<h4>1. 解的存在性</h4>
+<p>不是所有測量數據都對應物理可實現的導電率分布，測量噪聲可能導致無解。</p>
+</div>
+<div class="algo-card">
+<h4>2. 解的唯一性</h4>
+<p>多個不同的導電率分布可能產生相似的邊界電壓，特別是在遠離電極的區域。</p>
+</div>
+<div class="algo-card">
+<h4>3. 解的穩定性</h4>
+<p>測量數據的微小變化可能導致重建結果的劇烈波動，Condition number &gt; 10<sup>6</sup>。</p>
+</div>
+</div>
+<h3>2.3 線性化近似</h3>
+<p>為了簡化求解，我們對非線性問題進行線性化。假設導電率變化較小：</p>
+<div class="equation-box">
+<h4>一階泰勒展開</h4>
+\[ \Delta \mathbf{V} \approx \mathbf{J} \Delta \sigma \]
+<p>其中 J 為 Jacobian 矩陣，Δσ 為導電率變化量</p>
+</div>
+<div class="step-card">
+<strong>小阻抗變化假設：</strong>線性化要求 |Δσ|/σ₀ ≪ 1，通常適用於觸控檢測（約 5-15% 變化）
+</div>
+</section>
+<section id="jacobian">
+<h2>3. Jacobian 靈敏度矩陣詳解</h2>
+<h3>3.1 數學定義</h3>
+<div class="equation-box">
+<h4>Jacobian 矩陣</h4>
+\[ J_{ij} = \frac{\partial V_i}{\partial \sigma_j} \]
+<p>表示第 j 個元素的導電率變化對第 i 個電壓測量的影響</p>
+</div>
+<h3>3.2 矩陣特性</h3>
+<table>
+<thead>
+<tr><th>特性</th><th>典型值 (SEEIT 20電極)</th><th>意義</th></tr>
+</thead>
+<tbody>
+<tr><td>矩陣維度</td><td>19 × 2500</td><td>19 個獨立測量，2500 個元素</td></tr>
+<tr><td>秩 (Rank)</td><td>≤ 19</td><td>嚴重欠定系統</td></tr>
+<tr><td>條件數</td><td>10<sup>6</sup> - 10<sup>8</sup></td><td>極度病態</td></tr>
+<tr><td>非零元素比例</td><td>~80%</td><td>稠密矩陣</td></tr>
+</tbody>
+</table>
+<h3>3.3 擾動法計算</h3>
+<div class="code-block">
+<span class="code-keyword">function</span> <span class="code-function">J</span> = <span class="code-function">calculateJacobian</span>(fmdl, sigma0, delta)
+    <span class="code-comment">% 擾動法計算 Jacobian 矩陣</span>
+    <span class="code-comment">% fmdl: 正向模型</span>
+    <span class="code-comment">% sigma0: 基準導電率</span>
+    <span class="code-comment">% delta: 擾動量 (通常 1%)</span>
+    
+    n_elem = length(sigma0);
+    V0 = fwd_solve(fmdl, sigma0);  <span class="code-comment">% 基準電壓</span>
+    J = zeros(length(V0), n_elem);
+    
+    <span class="code-keyword">for</span> i = <span class="code-number">1</span>:n_elem
+        sigma_pert = sigma0;
+        sigma_pert(i) = sigma0(i) * (<span class="code-number">1</span> + delta);
+        V_pert = fwd_solve(fmdl, sigma_pert);
+        J(:,i) = (V_pert - V0) / (sigma0(i) * delta);
+    <span class="code-keyword">end</span>
+<span class="code-keyword">end</span>
+</div>
+<h3>3.4 靈敏度分佈視覺化</h3>
+<div class="canvas-container">
+<canvas id="jacobianCanvas" width="500" height="500"></canvas>
+<p class="canvas-caption"><strong>Jacobian 靈敏度熱圖：</strong>邊緣區域（紅色）靈敏度高，中心區域（藍色）靈敏度低</p>
+</div>
+</section>
+<section id="regularization">
+<h2>4. 正則化技術完整說明</h2>
+<h3>4.1 Tikhonov 正則化</h3>
+<p>最常用的正則化方法，通過加入懲罰項穩定解：</p>
+<div class="equation-box">
+<h4>正則化目標函數</h4>
+\[ \min_{\Delta\sigma} \left( \|\mathbf{J}\Delta\sigma - \Delta\mathbf{V}\|^2 + \lambda^2 \|\mathbf{R}\Delta\sigma\|^2 \right) \]
+<p>λ 為正則化參數，R 為正則化矩陣（通常為單位矩陣或梯度算子）</p>
+</div>
+<div class="equation-box">
+<h4>解析解</h4>
+\[ \Delta\sigma = (\mathbf{J}^T \mathbf{J} + \lambda^2 \mathbf{R}^T \mathbf{R})^{-1} \mathbf{J}^T \Delta\mathbf{V} \]
+</div>
+<h3>4.2 L-Curve 方法</h3>
+<p>自動選擇最佳正則化參數的方法：</p>
+<div class="canvas-container">
+<canvas id="lcurveCanvas" width="600" height="400"></canvas>
+<p class="canvas-caption"><strong>L-Curve 圖：</strong>對數坐標下的 L 形曲線，拐角位置對應最佳 λ 值</p>
+</div>
+<h3>4.3 互動式參數調整</h3>
+<div class="slider-container">
+<label class="slider-label">正則化參數 λ：</label>
+<input type="range" class="slider" id="lambdaSlider" min="-4" max="0" step="0.1" value="-2" oninput="updateLambda(this.value)">
+<div class="slider-value" id="lambdaValue">λ = 0.01</div>
+</div>
+<div class="metrics-grid">
+<div class="metric-card">
+<div class="metric-value" id="fittingError">12.5%</div>
+<div class="metric-label">擬合誤差</div>
+</div>
+<div class="metric-card">
+<div class="metric-value" id="smoothness">0.85</div>
+<div class="metric-label">平滑度</div>
+</div>
+<div class="metric-card">
+<div class="metric-value" id="resolution">7.2mm</div>
+<div class="metric-label">空間解析度</div>
+</div>
+</div>
+<h3>4.4 四種正則化方法對比</h3>
+<table>
+<thead>
+<tr><th>方法</th><th>數學形式</th><th>優點</th><th>缺點</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Tikhonov (L2)</strong></td><td>λ²||Δσ||²</td><td>計算簡單，收斂快</td><td>過度平滑，邊緣模糊</td></tr>
+<tr><td><strong>Total Variation</strong></td><td>λ||∇Δσ||₁</td><td>保留邊緣特徵</td><td>計算複雜，參數敏感</td></tr>
+<tr><td><strong>NOSER</strong></td><td>λ²diag(J^T J)</td><td>考慮靈敏度分佈</td><td>中心區域解析度低</td></tr>
+<tr><td><strong>Truncated SVD</strong></td><td>截斷小奇異值</td><td>自適應正則化</td><td>選擇截斷點困難</td></tr>
+</tbody>
+</table>
+</section>
+<section id="algorithms">
+<h2>5. 重建演算法詳細比較</h2>
+<h3>5.1 線性一步法 (Linear One-Step)</h3>
+<p>最簡單的重建演算法，假設線性關係直接求解：</p>
+<div class="equation-box">
+<h4>一步法公式</h4>
+\[ \Delta\sigma = (\mathbf{J}^T \mathbf{J} + \lambda^2 \mathbf{I})^{-1} \mathbf{J}^T \Delta\mathbf{V} \]
+</div>
+<div class="code-block">
+<span class="code-keyword">function</span> <span class="code-function">delta_sigma</span> = <span class="code-function">linearOneStep</span>(J, deltaV, lambda)
+    <span class="code-comment">% 線性一步法重建</span>
+    JtJ = J' * J;
+    reg_matrix = JtJ + lambda^<span class="code-number">2</span> * eye(size(JtJ));
+    delta_sigma = reg_matrix \ (J' * deltaV);
+<span class="code-keyword">end</span>
+</div>
+<h3>5.2 迭代高斯-牛頓法 (Gauss-Newton)</h3>
+<p>考慮非線性效應的迭代求解：</p>
+<div class="equation-box">
+<h4>迭代更新公式</h4>
+\[ \sigma_{k+1} = \sigma_k + \alpha \cdot (\mathbf{J}_k^T \mathbf{J}_k + \lambda^2 \mathbf{I})^{-1} \mathbf{J}_k^T (\mathbf{V}_{meas} - \mathbf{V}_k) \]
+<p>α 為步長參數 (0.5-1.0)，k 為迭代次數</p>
+</div>
+<div class="step-card">
+<strong>收斂條件：</strong>當 ||V<sub>k</sub> - V<sub>meas</sub>|| &lt; ε 或達到最大迭代次數（通常 5-10 次）
+</div>
+<h3>5.3 共軛梯度法 (Conjugate Gradient)</h3>
+<p>內存高效的迭代方法，特別適合大規模問題：</p>
+<div class="step-card"><strong>步驟 1：</strong>初始化 r₀ = J<sup>T</sup>(V<sub>meas</sub> - V₀)，p₀ = r₀</div>
+<div class="step-card"><strong>步驟 2：</strong>計算步長 α<sub>k</sub> = (r<sub>k</sub><sup>T</sup>r<sub>k</sub>) / (p<sub>k</sub><sup>T</sup>Ap<sub>k</sub>)</div>
+<div class="step-card"><strong>步驟 3：</strong>更新解 σ<sub>k+1</sub> = σ<sub>k</sub> + α<sub>k</sub>p<sub>k</sub></div>
+<div class="step-card"><strong>步驟 4：</strong>更新殘差 r<sub>k+1</sub> = r<sub>k</sub> - α<sub>k</sub>Ap<sub>k</sub></div>
+<div class="step-card"><strong>步驟 5：</strong>計算 β<sub>k</sub> = (r<sub>k+1</sub><sup>T</sup>r<sub>k+1</sub>) / (r<sub>k</sub><sup>T</sup>r<sub>k</sub>)</div>
+<div class="step-card"><strong>步驟 6：</strong>更新搜尋方向 p<sub>k+1</sub> = r<sub>k+1</sub> + β<sub>k</sub>p<sub>k</sub>，返回步驟 2</div>
+<h3>5.4 性能對比</h3>
+<div class="algo-grid">
+<div class="algo-card">
+<h4>線性一步法</h4>
+<ul>
+<li><strong>計算時間：</strong>&lt; 1 ms</li>
+<li><strong>精度：</strong>中等 (5-8mm)</li>
+<li><strong>適用：</strong>即時應用</li>
+</ul>
+</div>
+<div class="algo-card">
+<h4>高斯-牛頓法</h4>
+<ul>
+<li><strong>計算時間：</strong>10-50 ms</li>
+<li><strong>精度：</strong>高 (3-5mm)</li>
+<li><strong>適用：</strong>高精度需求</li>
+</ul>
+</div>
+<div class="algo-card">
+<h4>共軛梯度法</h4>
+<ul>
+<li><strong>計算時間：</strong>5-30 ms</li>
+<li><strong>精度：</strong>中高 (4-6mm)</li>
+<li><strong>適用：</strong>大規模網格</li>
+</ul>
+</div>
+</div>
+<table>
+<thead>
+<tr><th>特性</th><th>線性一步法</th><th>高斯-牛頓法</th><th>共軛梯度法</th></tr>
+</thead>
+<tbody>
+<tr><td>矩陣求逆</td><td>1 次</td><td>5-10 次</td><td>0 次（隱式）</td></tr>
+<tr><td>正向求解</td><td>0 次</td><td>5-10 次</td><td>0 次</td></tr>
+<tr><td>內存需求</td><td>O(n²)</td><td>O(n²)</td><td>O(n)</td></tr>
+<tr><td>並行化</td><td>困難</td><td>中等</td><td>容易</td></tr>
+</tbody>
+</table>
+</section>
+<section id="case-study">
+<h2>6. 實際案例分析</h2>
+<h3>6.1 單點觸控重建流程</h3>
+<div class="canvas-container">
+<canvas id="touchFlowCanvas" width="800" height="200"></canvas>
+<p class="canvas-caption"><strong>完整重建流程：</strong>測量 → Jacobian 計算 → 正則化求解 → 影像重建</p>
+</div>
+<h3>6.2 定位精度指標</h3>
+<div class="metrics-grid">
+<div class="metric-card"><div class="metric-value">±3mm</div><div class="metric-label">邊緣區域誤差</div></div>
+<div class="metric-card"><div class="metric-value">±8mm</div><div class="metric-label">中心區域誤差</div></div>
+<div class="metric-card"><div class="metric-value">±5mm</div><div class="metric-label">平均誤差</div></div>
+<div class="metric-card"><div class="metric-value">50fps</div><div class="metric-label">重建幀率</div></div>
+</div>
+<h3>6.3 誤差來源分析</h3>
+<table>
+<thead>
+<tr><th>誤差來源</th><th>貢獻比例</th><th>改善方法</th></tr>
+</thead>
+<tbody>
+<tr><td>測量噪聲</td><td>40%</td><td>多次平均、硬體濾波</td></tr>
+<tr><td>模型誤差</td><td>30%</td><td>精確建模、校正</td></tr>
+<tr><td>線性化誤差</td><td>20%</td><td>非線性迭代方法</td></tr>
+<tr><td>正則化偏差</td><td>10%</td><td>自適應參數選擇</td></tr>
+</tbody>
+</table>
+<h3>6.4 系統性能總結</h3>
+<ul>
+<li><strong>定位精度：</strong>邊緣區域可達 ±3mm，中心區域約 ±8mm</li>
+<li><strong>響應速度：</strong>50fps 重建速率，滿足即時互動需求</li>
+<li><strong>空間解析度：</strong>可分辨 15mm 以上間距的多點觸控</li>
+<li><strong>多點能力：</strong>理論上可同時檢測 3-5 個觸控點</li>
+</ul>
+</section>
+<section id="eidors">
+<h2>7. EIDORS 工具箱整合</h2>
+<h3>7.1 完整重建流程代碼</h3>
+<div class="code-block">
+<span class="code-comment">%% EIT 觸控重建完整流程</span>
+<span class="code-comment">% 1. 建立模型</span>
+fmdl = <span class="code-function">mk_common_model</span>(<span class="code-string">'c2c2'</span>, <span class="code-number">20</span>);  <span class="code-comment">% 20 電極圓形模型</span>
+fmdl.stimulation = <span class="code-function">mk_stim_patterns</span>(<span class="code-number">20</span>, <span class="code-number">1</span>, [<span class="code-number">0</span>,<span class="code-number">1</span>], [<span class="code-number">0</span>,<span class="code-number">1</span>], {}, <span class="code-number">1</span>);
+
+<span class="code-comment">% 2. 建立逆向模型</span>
+imdl = <span class="code-function">mk_common_model</span>(<span class="code-string">'c2c2'</span>, <span class="code-number">20</span>);
+imdl.reconst_type = <span class="code-string">'difference'</span>;
+imdl.jacobian_bkgnd.value = <span class="code-number">1</span>;
+imdl.hyperparameter.value = <span class="code-number">0.01</span>;  <span class="code-comment">% λ 參數</span>
+
+<span class="code-comment">% 3. 生成基準圖像</span>
+homog = <span class="code-function">mk_image</span>(fmdl, <span class="code-number">1</span>);
+vh = <span class="code-function">fwd_solve</span>(homog);
+
+<span class="code-comment">% 4. 模擬觸控（在位置 [0.5, 0] 處）</span>
+touch = homog;
+select = <span class="code-function">sqrt</span>((fmdl.elems(:,<span class="code-number">1</span>)-<span class="code-number">0.5</span>).^<span class="code-number">2</span> + fmdl.elems(:,<span class="code-number">2</span>).^<span class="code-number">2</span>) &lt; <span class="code-number">0.1</span>;
+touch.elem_data(select) = <span class="code-number">1.2</span>;  <span class="code-comment">% 20% 阻抗增加</span>
+vi = <span class="code-function">fwd_solve</span>(touch);
+
+<span class="code-comment">% 5. 重建影像</span>
+img = <span class="code-function">inv_solve</span>(imdl, vh, vi);
+
+<span class="code-comment">% 6. 提取觸控座標</span>
+[max_val, max_idx] = <span class="code-function">max</span>(img.elem_data);
+touch_x = <span class="code-function">mean</span>(fmdl.nodes(fmdl.elems(max_idx,:), <span class="code-number">1</span>));
+touch_y = <span class="code-function">mean</span>(fmdl.nodes(fmdl.elems(max_idx,:), <span class="code-number">2</span>));
+
+<span class="code-comment">% 7. 視覺化</span>
+<span class="code-function">show_fem</span>(img);
+<span class="code-function">title</span>(<span class="code-function">sprintf</span>(<span class="code-string">'觸控位置: (%.2f, %.2f)'</span>, touch_x, touch_y));
+</div>
+<h3>7.2 常用函式表格</h3>
+<table>
+<thead>
+<tr><th>函式名稱</th><th>功能</th><th>主要參數</th></tr>
+</thead>
+<tbody>
+<tr><td><code>mk_common_model</code></td><td>建立標準模型</td><td>形狀類型、電極數量</td></tr>
+<tr><td><code>fwd_solve</code></td><td>正向求解</td><td>模型、導電率分布</td></tr>
+<tr><td><code>inv_solve</code></td><td>逆向重建</td><td>逆向模型、基準/測量電壓</td></tr>
+<tr><td><code>calc_jacobian</code></td><td>計算 Jacobian</td><td>正向模型</td></tr>
+<tr><td><code>mk_image</code></td><td>建立影像結構</td><td>模型、導電率值</td></tr>
+<tr><td><code>show_fem</code></td><td>視覺化 FEM 結果</td><td>影像結構</td></tr>
+</tbody>
+</table>
+<h3>7.3 進階應用</h3>
+<ul>
+<li><strong>自定義網格：</strong>使用 <code>netgen</code> 或 <code>distmesh</code> 生成高品質網格</li>
+<li><strong>時間序列分析：</strong>處理連續觸控追蹤</li>
+<li><strong>多物理耦合：</strong>結合溫度、壓力效應</li>
+<li><strong>3D 擴展：</strong>體積式 EIT 成像</li>
+</ul>
+</section>
+<footer style="margin-top:60px;padding-top:30px;border-top:2px solid #ecf0f1;text-align:center;color:#7f8c8d;">
+<p>&copy; 2026 EIT Touch Simulator | Mathematical Modeling & Image Reconstruction</p>
+<p><a href="../index.html" style="color:#3498db;text-decoration:none;">🏠 返回主頁</a></p>
+</footer>
+</div>
+<script>
+window.onload=function(){drawMesh();drawJacobian();drawLCurve();drawTouchFlow();updateLambda(-2);};function drawMesh(){const canvas=document.getElementById('meshCanvas');if(!canvas)return;const ctx=canvas.getContext('2d');const centerX=canvas.width/2;const centerY=canvas.height/2;const radius=200;ctx.clearRect(0,0,canvas.width,canvas.height);ctx.beginPath();ctx.arc(centerX,centerY,radius,0,2*Math.PI);ctx.fillStyle='#f8f9fa';ctx.fill();ctx.strokeStyle='#34495e';ctx.lineWidth=2;ctx.stroke();const layers=8;const segments=20;ctx.strokeStyle='#bdc3c7';ctx.lineWidth=0.5;for(let i=0;i<segments;i++){const angle=(i*2*Math.PI)/segments;ctx.beginPath();ctx.moveTo(centerX,centerY);ctx.lineTo(centerX+radius*Math.cos(angle),centerY+radius*Math.sin(angle));ctx.stroke();}for(let i=1;i<=layers;i++){const r=(radius/layers)*i;ctx.beginPath();ctx.arc(centerX,centerY,r,0,2*Math.PI);ctx.stroke();}const numElectrodes=20;for(let i=0;i<numElectrodes;i++){const angle=(i*2*Math.PI)/numElectrodes-Math.PI/2;const ex=centerX+radius*Math.cos(angle);const ey=centerY+radius*Math.sin(angle);ctx.beginPath();ctx.arc(ex,ey,8,0,2*Math.PI);ctx.fillStyle='#3498db';ctx.fill();ctx.strokeStyle='#2980b9';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='white';ctx.font='bold 10px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(i+1,ex,ey);}}function drawJacobian(){const canvas=document.getElementById('jacobianCanvas');if(!canvas)return;const ctx=canvas.getContext('2d');const width=canvas.width;const height=canvas.height;const centerX=width/2;const centerY=height/2;const radius=200;const imageData=ctx.createImageData(width,height);for(let y=0;y<height;y++){for(let x=0;x<width;x++){const dx=x-centerX;const dy=y-centerY;const dist=Math.sqrt(dx*dx+dy*dy);const idx=(y*width+x)*4;if(dist>radius){imageData.data[idx]=240;imageData.data[idx+1]=240;imageData.data[idx+2]=240;imageData.data[idx+3]=255;}else{const sensitivity=Math.pow(dist/radius,2);const r=Math.floor(sensitivity*255);const g=Math.floor((1-Math.abs(sensitivity-0.5)*2)*255);const b=Math.floor((1-sensitivity)*255);imageData.data[idx]=r;imageData.data[idx+1]=g;imageData.data[idx+2]=b;imageData.data[idx+3]=255;}}}ctx.putImageData(imageData,0,0);const numElectrodes=20;for(let i=0;i<numElectrodes;i++){const angle=(i*2*Math.PI)/numElectrodes-Math.PI/2;const ex=centerX+radius*Math.cos(angle);const ey=centerY+radius*Math.sin(angle);ctx.beginPath();ctx.arc(ex,ey,6,0,2*Math.PI);ctx.fillStyle='#34495e';ctx.fill();ctx.strokeStyle='white';ctx.lineWidth=2;ctx.stroke();}ctx.font='12px Arial';ctx.fillStyle='#2c3e50';ctx.textAlign='center';ctx.fillText('高靈敏度',centerX+radius+40,centerY-80);ctx.fillText('低靈敏度',centerX+radius+40,centerY+80);}function drawLCurve(){const canvas=document.getElementById('lcurveCanvas');if(!canvas)return;const ctx=canvas.getContext('2d');const width=canvas.width;const height=canvas.height;ctx.clearRect(0,0,width,height);ctx.fillStyle='white';ctx.fillRect(0,0,width,height);const margin={top:40,right:40,bottom:60,left:80};const plotWidth=width-margin.left-margin.right;const plotHeight=height-margin.top-margin.bottom;const numPoints=30;const lambdaValues=[];const residuals=[];const regularizations=[];for(let i=0;i<numPoints;i++){const lambda=Math.pow(10,-4+(i/numPoints)*4);lambdaValues.push(lambda);const res=1/(1+10*lambda);const reg=lambda/(1+0.1*lambda);residuals.push(Math.log10(res));regularizations.push(Math.log10(reg));}const optimalIdx=15;ctx.strokeStyle='#2c3e50';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(margin.left,margin.top);ctx.lineTo(margin.left,height-margin.bottom);ctx.lineTo(width-margin.right,height-margin.bottom);ctx.stroke();ctx.strokeStyle='#3498db';ctx.lineWidth=3;ctx.beginPath();for(let i=0;i<numPoints;i++){const x=margin.left+((regularizations[i]+4)/4)*plotWidth;const y=height-margin.bottom-((residuals[i]+4)/4)*plotHeight;if(i===0){ctx.moveTo(x,y);}else{ctx.lineTo(x,y);}}ctx.stroke();const optX=margin.left+((regularizations[optimalIdx]+4)/4)*plotWidth;const optY=height-margin.bottom-((residuals[optimalIdx]+4)/4)*plotHeight;ctx.beginPath();ctx.arc(optX,optY,8,0,2*Math.PI);ctx.fillStyle='#e74c3c';ctx.fill();ctx.strokeStyle='white';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='#2c3e50';ctx.font='bold 14px Arial';ctx.textAlign='center';ctx.fillText('||RΔσ||² (正則化項)',width/2,height-10);ctx.save();ctx.translate(20,height/2);ctx.rotate(-Math.PI/2);ctx.fillText('||JΔσ - ΔV||² (擬合誤差)',0,0);ctx.restore();ctx.font='bold 16px Arial';ctx.fillText('L-Curve 正則化參數選擇',width/2,25);ctx.font='12px Arial';ctx.fillStyle='#e74c3c';ctx.fillText('最佳 λ',optX,optY-15);}function drawTouchFlow(){const canvas=document.getElementById('touchFlowCanvas');if(!canvas)return;const ctx=canvas.getContext('2d');const width=canvas.width;const height=canvas.height;ctx.clearRect(0,0,width,height);const stages=[{label:'電壓測量',icon:'📊',color:'#3498db'},{label:'Jacobian',icon:'🔢',color:'#9b59b6'},{label:'正則化求解',icon:'⚙️',color:'#e67e22'},{label:'影像重建',icon:'🖼️',color:'#2ecc71'}];const boxWidth=150;const boxHeight=100;const spacing=(width-stages.length*boxWidth)/(stages.length+1);stages.forEach((stage,i)=>{const x=spacing+i*(boxWidth+spacing);const y=(height-boxHeight)/2;ctx.fillStyle=stage.color;ctx.fillRect(x,y,boxWidth,boxHeight);ctx.strokeStyle='#2c3e50';ctx.lineWidth=2;ctx.strokeRect(x,y,boxWidth,boxHeight);ctx.font='32px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(stage.icon,x+boxWidth/2,y+30);ctx.fillStyle='white';ctx.font='bold 14px Arial';ctx.fillText(stage.label,x+boxWidth/2,y+70);if(i<stages.length-1){const arrowX=x+boxWidth+spacing/2;const arrowY=height/2;ctx.strokeStyle='#2c3e50';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x+boxWidth+10,arrowY);ctx.lineTo(arrowX-10,arrowY);ctx.stroke();ctx.beginPath();ctx.moveTo(arrowX-10,arrowY);ctx.lineTo(arrowX-20,arrowY-8);ctx.lineTo(arrowX-20,arrowY+8);ctx.closePath();ctx.fillStyle='#2c3e50';ctx.fill();}});}function updateLambda(value){const lambda=Math.pow(10,parseFloat(value));document.getElementById('lambdaValue').textContent='λ = '+lambda.toExponential(2);const fittingError=(15+20*lambda*100).toFixed(1);const smoothness=(0.95-lambda*50).toFixed(2);const resolution=(5+lambda*500).toFixed(1);document.getElementById('fittingError').textContent=fittingError+'%';document.getElementById('smoothness').textContent=smoothness;document.getElementById('resolution').textContent=resolution+'mm';}
+</script>
+</body>
+</html>
