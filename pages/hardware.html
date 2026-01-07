@@ -1,332 +1,1032 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hardware Setup - EIT Touch Simulator</title>
+    <title>硬體架構 - EIT 觸控模擬器</title>
     <link rel="stylesheet" href="../assets/css/main.css">
     <link rel="stylesheet" href="../assets/css/navigation.css">
-    <link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico">
+    <style>
+        .hardware-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .section h3 {
+            color: #34495e;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        /* Layer Structure Styles */
+        .layer-structure {
+            position: relative;
+            margin: 30px 0;
+        }
+
+        .layer-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .layer-btn {
+            padding: 10px 20px;
+            border: 2px solid #3498db;
+            background: white;
+            color: #3498db;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .layer-btn.active {
+            background: #3498db;
+            color: white;
+        }
+
+        .layer-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+        }
+
+        .layer-display {
+            position: relative;
+            height: 400px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f8f9fa;
+        }
+
+        .layer {
+            position: absolute;
+            width: 100%;
+            left: 0;
+            transition: all 0.5s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            padding: 20px;
+            display: none;
+        }
+
+        .layer.active {
+            opacity: 1;
+            transform: translateY(0);
+            display: block;
+        }
+
+        .layer-content {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            height: 100%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .layer-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .info-item {
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+        }
+
+        .info-item label {
+            font-weight: bold;
+            color: #555;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .info-item span {
+            color: #2c3e50;
+        }
+
+        /* Electrode Configuration Styles */
+        .electrode-config {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        @media (max-width: 768px) {
+            .electrode-config {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .canvas-container {
+            text-align: center;
+        }
+
+        #electrodeCanvas {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            max-width: 100%;
+            height: auto;
+            background: white;
+        }
+
+        .electrode-params {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .param-group {
+            margin-bottom: 15px;
+        }
+
+        .param-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .param-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .param-group output {
+            display: block;
+            margin-top: 5px;
+            color: #3498db;
+            font-weight: bold;
+        }
+
+        /* Block Diagram Styles */
+        .block-diagram {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .diagram-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .diagram-block {
+            background: white;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            padding: 20px;
+            min-width: 150px;
+            text-align: center;
+            position: relative;
+        }
+
+        .diagram-block h4 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+        }
+
+        .diagram-block p {
+            margin: 0;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .diagram-arrow {
+            font-size: 24px;
+            color: #3498db;
+        }
+
+        /* Table Styles */
+        .specs-table, .bom-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .specs-table th, .specs-table td,
+        .bom-table th, .bom-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        .specs-table th, .bom-table th {
+            background: #3498db;
+            color: white;
+            font-weight: 600;
+        }
+
+        .specs-table tr:nth-child(even),
+        .bom-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .specs-table tr:hover,
+        .bom-table tr:hover {
+            background: #e8f4f8;
+        }
+
+        /* Challenge Styles */
+        .challenges {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .challenge-card {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            border-radius: 5px;
+            padding: 20px;
+        }
+
+        .challenge-card h4 {
+            margin-top: 0;
+            color: #856404;
+        }
+
+        .challenge-card p {
+            margin-bottom: 10px;
+            color: #856404;
+        }
+
+        .challenge-card .solution {
+            background: #d1ecf1;
+            border-left: 3px solid #17a2b8;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 3px;
+        }
+
+        .challenge-card .solution strong {
+            color: #0c5460;
+        }
+
+        /* Calculator Styles */
+        .calculator {
+            background: #e8f4f8;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .calc-result {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            border-left: 4px solid #28a745;
+        }
+
+        .calc-result h4 {
+            margin-top: 0;
+            color: #155724;
+        }
+
+        .highlight {
+            background: #d4edda;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+            color: #155724;
+        }
+    </style>
 </head>
 <body>
-    <!-- Navigation Bar -->
-    <nav class="navbar">
+    <nav class="main-nav">
         <div class="nav-container">
             <div class="nav-brand">
-                <img src="../assets/images/logo.png" alt="EIT Logo" class="nav-logo">
-                <span>EIT Touch Simulator</span>
+                <a href="../index.html">EIT 觸控模擬器</a>
             </div>
-            <button class="nav-toggle" aria-label="Toggle navigation">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
             <ul class="nav-menu">
-                <li><a href="../index.html">Home</a></li>
-                <li><a href="hardware.html" class="active">Hardware</a></li>
-                <li><a href="software.html">Software</a></li>
-                <li><a href="documentation.html">Documentation</a></li>
-                <li><a href="about.html">About</a></li>
+                <li><a href="../index.html">首頁</a></li>
+                <li><a href="hardware.html" class="active">硬體架構</a></li>
+                <li><a href="theory.html">理論原理</a></li>
+                <li><a href="math.html">數學建模</a></li>
+                <li><a href="deep-learning.html">深度學習</a></li>
+                <li><a href="simulation.html">互動模擬</a></li>
+                <li><a href="applications.html">應用案例</a></li>
+                <li><a href="faq.html">FAQ</a></li>
             </ul>
+            <div class="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="container">
-            <h1 class="hero-title">Hardware Setup</h1>
-            <p class="hero-subtitle">Complete guide to assembling and configuring your EIT Touch Simulator hardware</p>
-        </div>
-    </section>
+    <main class="hardware-container">
+        <header style="text-align: center; margin-bottom: 40px;">
+            <h1 style="color: #2c3e50; margin-bottom: 10px;">硬體架構設計</h1>
+            <p style="color: #7f8c8d; font-size: 18px;">EIT 觸控感測系統的物理層設計與實作</p>
+        </header>
 
-    <!-- Main Content -->
-    <main class="container">
-        <!-- Overview Section -->
-        <section class="content-section">
-            <h2 class="section-title">Hardware Overview</h2>
-            <div class="card">
-                <p>The EIT Touch Simulator hardware consists of several key components that work together to create an interactive electrical impedance tomography system. This guide will walk you through the complete assembly and configuration process.</p>
-            </div>
-        </section>
-
-        <!-- Components Section -->
-        <section class="content-section">
-            <h2 class="section-title">Required Components</h2>
-            <div class="grid-3">
-                <div class="card">
-                    <h3>Microcontroller</h3>
-                    <ul>
-                        <li>Arduino Mega 2560 or compatible</li>
-                        <li>USB cable for programming</li>
-                        <li>Power supply (7-12V DC)</li>
-                    </ul>
-                </div>
-                <div class="card">
-                    <h3>Touch Sensors</h3>
-                    <ul>
-                        <li>16x capacitive touch sensors</li>
-                        <li>Copper electrodes or conductive fabric</li>
-                        <li>Shielded cables</li>
-                    </ul>
-                </div>
-                <div class="card">
-                    <h3>Display & Interface</h3>
-                    <ul>
-                        <li>LCD display (optional)</li>
-                        <li>Status LEDs</li>
-                        <li>Reset button</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-
-        <!-- Assembly Steps Section -->
-        <section class="content-section">
-            <h2 class="section-title">Assembly Instructions</h2>
+        <!-- Layer Structure Section -->
+        <section class="section">
+            <h2>🏗️ 四層結構設計</h2>
+            <p>EIT 觸控面板採用四層堆疊結構，每層都扮演著關鍵角色，確保系統的準確性與穩定性。</p>
             
-            <div class="card">
-                <h3>Step 1: Prepare the Circuit Board</h3>
-                <p>Start by laying out your circuit board or breadboard. Ensure you have adequate space for all components and proper organization of wiring.</p>
-                <div class="info-box">
-                    <strong>Tip:</strong> Use a breadboard layout planning tool to visualize your circuit before assembly.
+            <div class="layer-structure">
+                <div class="layer-controls">
+                    <button class="layer-btn active" data-layer="0">保護層</button>
+                    <button class="layer-btn" data-layer="1">電阻層</button>
+                    <button class="layer-btn" data-layer="2">電極層</button>
+                    <button class="layer-btn" data-layer="3">屏蔽層</button>
                 </div>
-            </div>
 
-            <div class="card">
-                <h3>Step 2: Install the Microcontroller</h3>
-                <p>Mount the Arduino Mega 2560 securely on your board. Ensure all pins are accessible and the USB port is easily reachable for programming.</p>
-                <ul>
-                    <li>Secure the Arduino using standoffs or mounting brackets</li>
-                    <li>Verify power connections (GND and VCC)</li>
-                    <li>Test with a simple LED blink program</li>
-                </ul>
-            </div>
+                <div class="layer-display">
+                    <div class="layer active" id="layer-0">
+                        <div class="layer-content">
+                            <h3 style="color: #3498db;">第一層：保護層</h3>
+                            <p>提供物理保護並作為使用者接觸介面</p>
+                            <div class="layer-info">
+                                <div class="info-item">
+                                    <label>材料：</label>
+                                    <span>聚碳酸酯 (Polycarbonate)</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>厚度：</label>
+                                    <span>1-2 mm</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>特性：</label>
+                                    <span>高透明度、耐刮擦</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>功能：</label>
+                                    <span>保護內部元件、提供觸控介面</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-            <div class="card">
-                <h3>Step 3: Connect Touch Sensors</h3>
-                <p>Wire the capacitive touch sensors to the Arduino's analog inputs. Use shielded cables to minimize electromagnetic interference.</p>
-                <div class="code-block">
-                    <strong>Pin Mapping:</strong><br>
-                    Sensor 1-8:  A0-A7<br>
-                    Sensor 9-16: A8-A15<br>
-                    Ground: Common GND
-                </div>
-            </div>
+                    <div class="layer" id="layer-1">
+                        <div class="layer-content">
+                            <h3 style="color: #e74c3c;">第二層：電阻層</h3>
+                            <p>導電介質，形成電流分佈場域</p>
+                            <div class="layer-info">
+                                <div class="info-item">
+                                    <label>材料：</label>
+                                    <span>導電橡膠或導電薄膜</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>電阻率：</label>
+                                    <span>10² - 10⁴ Ω·cm</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>厚度：</label>
+                                    <span>0.5-1 mm</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>均勻度：</label>
+                                    <span>±5% 以內</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-            <div class="card">
-                <h3>Step 4: Install Electrodes</h3>
-                <p>Arrange the 16 electrodes in a circular pattern around the sensing area. Ensure even spacing and secure mounting.</p>
-                <ul>
-                    <li>Recommended diameter: 20-30 cm</li>
-                    <li>Electrode spacing: 22.5° apart (360°/16)</li>
-                    <li>Use conductive adhesive or soldering</li>
-                </ul>
-            </div>
+                    <div class="layer" id="layer-2">
+                        <div class="layer-content">
+                            <h3 style="color: #f39c12;">第三層：電極層</h3>
+                            <p>電流注入與電壓測量的關鍵介面</p>
+                            <div class="layer-info">
+                                <div class="info-item">
+                                    <label>電極數量：</label>
+                                    <span>16-32 個</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>配置：</label>
+                                    <span>圓周均勻分佈</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>材料：</label>
+                                    <span>銀 (Ag) 或銅 (Cu)</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>尺寸：</label>
+                                    <span>3-5 mm 直徑</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-            <div class="card">
-                <h3>Step 5: Wire the Display (Optional)</h3>
-                <p>Connect an LCD display for real-time status monitoring and debugging information.</p>
-                <div class="code-block">
-                    <strong>I2C LCD Connections:</strong><br>
-                    SDA: Pin 20<br>
-                    SCL: Pin 21<br>
-                    VCC: 5V<br>
-                    GND: GND
-                </div>
-            </div>
-
-            <div class="card">
-                <h3>Step 6: Add Status LEDs</h3>
-                <p>Install status LEDs to indicate power, data transmission, and error states.</p>
-                <ul>
-                    <li>Power LED (Green): Pin 13 through 220Ω resistor</li>
-                    <li>Activity LED (Blue): Pin 12 through 220Ω resistor</li>
-                    <li>Error LED (Red): Pin 11 through 220Ω resistor</li>
-                </ul>
-            </div>
-        </section>
-
-        <!-- Wiring Diagram Section -->
-        <section class="content-section">
-            <h2 class="section-title">Wiring Diagram</h2>
-            <div class="card">
-                <div class="diagram-placeholder">
-                    <p><strong>Schematic Overview</strong></p>
-                    <p>A detailed wiring diagram should be placed here showing all connections between the Arduino, sensors, and peripherals.</p>
-                    <div class="info-box">
-                        <strong>Note:</strong> Download the complete wiring diagram from the Documentation page or GitHub repository.
+                    <div class="layer" id="layer-3">
+                        <div class="layer-content">
+                            <h3 style="color: #95a5a6;">第四層：屏蔽層</h3>
+                            <p>隔離外部電磁干擾，提升信號品質</p>
+                            <div class="layer-info">
+                                <div class="info-item">
+                                    <label>材料：</label>
+                                    <span>銅箔或鋁箔</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>厚度：</label>
+                                    <span>0.05-0.1 mm</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>接地：</label>
+                                    <span>系統地連接</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>屏蔽效能：</label>
+                                    <span>> 40 dB</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Calibration Section -->
-        <section class="content-section">
-            <h2 class="section-title">Calibration & Testing</h2>
-            <div class="grid-2">
-                <div class="card">
-                    <h3>Initial Calibration</h3>
-                    <ol>
-                        <li>Power on the system without any touch input</li>
-                        <li>Allow 30 seconds for baseline stabilization</li>
-                        <li>Run the calibration routine from the software</li>
-                        <li>Test each electrode individually</li>
-                        <li>Verify signal quality and noise levels</li>
-                    </ol>
+        <!-- Electrode Configuration Section -->
+        <section class="section">
+            <h2>⚡ 電極配置設計</h2>
+            
+            <div class="electrode-config">
+                <div class="canvas-container">
+                    <h3>20 電極圓形陣列</h3>
+                    <canvas id="electrodeCanvas" width="400" height="400"></canvas>
                 </div>
-                <div class="card">
-                    <h3>Testing Procedures</h3>
-                    <ol>
-                        <li>Perform single-touch tests on each electrode</li>
-                        <li>Test multi-touch detection (2-5 simultaneous touches)</li>
-                        <li>Verify data transmission to computer</li>
-                        <li>Check visualization output</li>
-                        <li>Document any anomalies or issues</li>
-                    </ol>
+
+                <div class="electrode-params">
+                    <h3>電極設計計算器</h3>
+                    
+                    <div class="param-group">
+                        <label for="numElectrodes">電極數量：</label>
+                        <input type="range" id="numElectrodes" min="8" max="32" value="20" step="4">
+                        <output for="numElectrodes" id="numElectrodesValue">20</output>
+                    </div>
+
+                    <div class="param-group">
+                        <label for="panelRadius">面板半徑 (mm)：</label>
+                        <input type="range" id="panelRadius" min="50" max="200" value="100" step="10">
+                        <output for="panelRadius" id="panelRadiusValue">100</output>
+                    </div>
+
+                    <div class="param-group">
+                        <label for="electrodeSize">電極直徑 (mm)：</label>
+                        <input type="range" id="electrodeSize" min="2" max="8" value="4" step="0.5">
+                        <output for="electrodeSize" id="electrodeSizeValue">4</output>
+                    </div>
+
+                    <div class="calc-result">
+                        <h4>計算結果</h4>
+                        <p><strong>電極間距：</strong> <span id="calcSpacing" class="highlight">-</span></p>
+                        <p><strong>角度間隔：</strong> <span id="calcAngle" class="highlight">-</span></p>
+                        <p><strong>有效感測區域：</strong> <span id="calcArea" class="highlight">-</span></p>
+                        <p><strong>空間解析度：</strong> <span id="calcResolution" class="highlight">-</span></p>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- Troubleshooting Section -->
-        <section class="content-section">
-            <h2 class="section-title">Troubleshooting</h2>
-            <div class="card">
-                <h3>Common Issues and Solutions</h3>
-                
-                <div class="troubleshoot-item">
-                    <h4>Problem: Sensors not responding</h4>
-                    <p><strong>Solutions:</strong></p>
-                    <ul>
-                        <li>Check all wire connections and solder joints</li>
-                        <li>Verify power supply voltage (should be 5V at sensor pins)</li>
-                        <li>Ensure proper grounding of the system</li>
-                        <li>Test sensors individually with a multimeter</li>
+        <!-- System Block Diagram -->
+        <section class="section">
+            <h2>📊 系統方塊圖</h2>
+            
+            <div class="block-diagram">
+                <div class="diagram-flow">
+                    <div class="diagram-block">
+                        <h4>電流源</h4>
+                        <p>AC 激發信號<br>10-100 kHz<br>1-5 mA</p>
+                    </div>
+                    <span class="diagram-arrow">→</span>
+                    <div class="diagram-block">
+                        <h4>電極陣列</h4>
+                        <p>16-32 電極<br>圓周分佈<br>注入/測量</p>
+                    </div>
+                    <span class="diagram-arrow">→</span>
+                    <div class="diagram-block">
+                        <h4>電阻層</h4>
+                        <p>導電介質<br>電流分佈<br>阻抗變化</p>
+                    </div>
+                    <span class="diagram-arrow">→</span>
+                    <div class="diagram-block">
+                        <h4>信號調理</h4>
+                        <p>放大<br>濾波<br>解調</p>
+                    </div>
+                    <span class="diagram-arrow">→</span>
+                    <div class="diagram-block">
+                        <h4>ADC</h4>
+                        <p>16-24 bit<br>多通道<br>同步採樣</p>
+                    </div>
+                    <span class="diagram-arrow">→</span>
+                    <div class="diagram-block">
+                        <h4>處理單元</h4>
+                        <p>微控制器<br>影像重建<br>觸控定位</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3>關鍵子系統</h3>
+            <div class="layer-info">
+                <div class="info-item">
+                    <label>電流驅動器</label>
+                    <span>Howland 電流源，輸出阻抗 > 1MΩ</span>
+                </div>
+                <div class="info-item">
+                    <label>差分放大器</label>
+                    <span>增益 40-60 dB，CMRR > 80 dB</span>
+                </div>
+                <div class="info-item">
+                    <label>解調電路</label>
+                    <span>同步解調，提取幅值與相位</span>
+                </div>
+                <div class="info-item">
+                    <label>多工器</label>
+                    <span>16:1 或 32:1 類比多工器</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Data Acquisition Specs -->
+        <section class="section">
+            <h2>📈 資料擷取規格</h2>
+            
+            <table class="specs-table">
+                <thead>
+                    <tr>
+                        <th>參數</th>
+                        <th>規格</th>
+                        <th>說明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>採樣率</td>
+                        <td>10-100 kSPS</td>
+                        <td>每通道採樣速度</td>
+                    </tr>
+                    <tr>
+                        <td>解析度</td>
+                        <td>16-24 bit</td>
+                        <td>ADC 位元數</td>
+                    </tr>
+                    <tr>
+                        <td>通道數</td>
+                        <td>16-32</td>
+                        <td>同步採樣通道</td>
+                    </tr>
+                    <tr>
+                        <td>輸入範圍</td>
+                        <td>±5 V</td>
+                        <td>差分輸入範圍</td>
+                    </tr>
+                    <tr>
+                        <td>動態範圍</td>
+                        <td>> 80 dB</td>
+                        <td>信號雜訊比</td>
+                    </tr>
+                    <tr>
+                        <td>頻寬</td>
+                        <td>DC - 200 kHz</td>
+                        <td>類比頻寬</td>
+                    </tr>
+                    <tr>
+                        <td>幀率</td>
+                        <td>10-50 fps</td>
+                        <td>完整掃描速度</td>
+                    </tr>
+                    <tr>
+                        <td>延遲</td>
+                        <td>< 50 ms</td>
+                        <td>系統響應時間</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- BOM (Bill of Materials) -->
+        <section class="section">
+            <h2>🛠️ 物料清單 (BOM)</h2>
+            
+            <table class="bom-table">
+                <thead>
+                    <tr>
+                        <th>類別</th>
+                        <th>元件</th>
+                        <th>規格/型號</th>
+                        <th>數量</th>
+                        <th>備註</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>主控制器</td>
+                        <td>微控制器</td>
+                        <td>STM32F4 / ESP32</td>
+                        <td>1</td>
+                        <td>ARM Cortex-M4, 168 MHz</td>
+                    </tr>
+                    <tr>
+                        <td>電流源</td>
+                        <td>運算放大器</td>
+                        <td>OPA4134 / AD8606</td>
+                        <td>2</td>
+                        <td>低雜訊、高精度</td>
+                    </tr>
+                    <tr>
+                        <td>信號調理</td>
+                        <td>儀表放大器</td>
+                        <td>INA128 / AD620</td>
+                        <td>8</td>
+                        <td>高 CMRR</td>
+                    </tr>
+                    <tr>
+                        <td>資料擷取</td>
+                        <td>ADC</td>
+                        <td>ADS1256 (24-bit)</td>
+                        <td>2</td>
+                        <td>Δ-Σ ADC</td>
+                    </tr>
+                    <tr>
+                        <td>多工器</td>
+                        <td>類比開關</td>
+                        <td>ADG1606 / CD4067</td>
+                        <td>2</td>
+                        <td>16:1 多工器</td>
+                    </tr>
+                    <tr>
+                        <td>感測面板</td>
+                        <td>導電橡膠</td>
+                        <td>定製, 10³ Ω·cm</td>
+                        <td>1</td>
+                        <td>200×200 mm</td>
+                    </tr>
+                    <tr>
+                        <td>電極</td>
+                        <td>銀電極</td>
+                        <td>4 mm 直徑</td>
+                        <td>20</td>
+                        <td>均勻分佈</td>
+                    </tr>
+                    <tr>
+                        <td>保護層</td>
+                        <td>PC 板</td>
+                        <td>1.5 mm 厚</td>
+                        <td>1</td>
+                        <td>透明聚碳酸酯</td>
+                    </tr>
+                    <tr>
+                        <td>屏蔽層</td>
+                        <td>銅箔</td>
+                        <td>0.1 mm 厚</td>
+                        <td>1</td>
+                        <td>接地屏蔽</td>
+                    </tr>
+                    <tr>
+                        <td>電源</td>
+                        <td>穩壓器</td>
+                        <td>LM7805 / LM7905</td>
+                        <td>2</td>
+                        <td>±5V 供電</td>
+                    </tr>
+                    <tr>
+                        <td>被動元件</td>
+                        <td>電阻/電容</td>
+                        <td>1% 精度</td>
+                        <td>若干</td>
+                        <td>濾波與調理電路</td>
+                    </tr>
+                    <tr>
+                        <td>連接器</td>
+                        <td>FPC 連接器</td>
+                        <td>20-pin</td>
+                        <td>2</td>
+                        <td>電極連接</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Technical Challenges -->
+        <section class="section">
+            <h2>⚠️ 技術挑戰與解決方案</h2>
+            
+            <div class="challenges">
+                <div class="challenge-card">
+                    <h4>1. 信號雜訊比</h4>
+                    <p>微弱電壓信號（μV 級）易受環境雜訊干擾</p>
+                    <div class="solution">
+                        <strong>解決方案：</strong>
+                        <ul>
+                            <li>差分測量降低共模干擾</li>
+                            <li>屏蔽層隔離外部電磁場</li>
+                            <li>同步解調提升 SNR</li>
+                            <li>多次平均濾除雜訊</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="challenge-card">
+                    <h4>2. 電極接觸阻抗</h4>
+                    <p>電極與導電層接觸不良導致測量誤差</p>
+                    <div class="solution">
+                        <strong>解決方案：</strong>
+                        <ul>
+                            <li>使用導電膠固定電極</li>
+                            <li>四線制測量消除接觸阻抗</li>
+                            <li>定期校準補償漂移</li>
+                            <li>表面處理提升導電性</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="challenge-card">
+                    <h4>3. 空間解析度</h4>
+                    <p>有限電極數限制了重建影像的精細度</p>
+                    <div class="solution">
+                        <strong>解決方案：</strong>
+                        <li>增加電極數量（32 電極）</li>
+                            <li>優化電極配置模式</li>
+                            <li>深度學習超解析度</li>
+                            <li>多頻測量增加資訊</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="challenge-card">
+                    <h4>4. 系統校準</h4>
+                    <p>元件誤差與環境變化影響測量準確性</p>
+                    <div class="solution">
+                        <strong>解決方案：</strong>
+                        <ul>
+                            <li>出廠前精確校準</li>
+                            <li>儲存參考測量值</li>
+                            <li>溫度補償演算法</li>
+                            <li>定期自動校準</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="challenge-card">
+                    <h4>5. 即時處理</h4>
+                    <p>影像重建計算複雜，延遲影響使用體驗</p>
+                    <div class="solution">
+                        <strong>解決方案：</strong>
+                        <ul>
+                            <li>優化演算法效率</li>
+                            <li>硬體加速（GPU/FPGA）</li>
+                            <li>簡化重建模型</li>
+                            <li>平行處理架構</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="challenge-card">
+                    <h4>6. 材料選擇</h4>
+                    <p>導電層需平衡導電性、均勻性與耐用性</p>
+                    <div class="solution">
+                        <strong>解決方案：</strong>
+                        <ul>
+                            <li>測試多種導電材料</li>
+                            <li>複合材料設計</li>
+                            <li>嚴格品質控制</li>
+                            <li>壽命測試驗證</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Design Considerations -->
+        <section class="section">
+            <h2>💡 設計考量重點</h2>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                <div style="padding: 20px; background: #e8f4f8; border-radius: 8px; border-left: 4px solid #3498db;">
+                    <h4 style="margin-top: 0; color: #2c3e50;">機械設計</h4>
+                    <ul style="color: #555;">
+                        <li>層與層之間的精確對齊</li>
+                        <li>均勻的壓合力分佈</li>
+                        <li>熱膨脹係數匹配</li>
+                        <li>防水防塵設計 (IP65)</li>
+                        <li>模組化維修設計</li>
                     </ul>
                 </div>
 
-                <div class="troubleshoot-item">
-                    <h4>Problem: Noisy or unstable readings</h4>
-                    <p><strong>Solutions:</strong></p>
-                    <ul>
-                        <li>Use shielded cables for sensor connections</li>
-                        <li>Add capacitors (0.1μF) across power lines</li>
-                        <li>Increase distance from power supplies and motors</li>
-                        <li>Implement software filtering (moving average)</li>
+                <div style="padding: 20px; background: #fef5e7; border-radius: 8px; border-left: 4px solid #f39c12;">
+                    <h4 style="margin-top: 0; color: #2c3e50;">電氣設計</h4>
+                    <ul style="color: #555;">
+                        <li>低雜訊 PCB 佈局</li>
+                        <li>差分對走線匹配</li>
+                        <li>多層板星型接地</li>
+                        <li>電源去耦合設計</li>
+                        <li>ESD 保護電路</li>
                     </ul>
                 </div>
 
-                <div class="troubleshoot-item">
-                    <h4>Problem: Inconsistent touch detection</h4>
-                    <p><strong>Solutions:</strong></p>
-                    <ul>
-                        <li>Recalibrate the baseline values</li>
-                        <li>Adjust sensitivity thresholds in software</li>
-                        <li>Check for damaged or corroded electrodes</li>
-                        <li>Ensure proper electrode-to-skin contact</li>
+                <div style="padding: 20px; background: #e8f8f5; border-radius: 8px; border-left: 4px solid #1abc9c;">
+                    <h4 style="margin-top: 0; color: #2c3e50;">軟體設計</h4>
+                    <ul style="color: #555;">
+                        <li>即時作業系統 (RTOS)</li>
+                        <li>DMA 高效資料傳輸</li>
+                        <li>中斷驅動架構</li>
+                        <li>錯誤檢測與恢復</li>
+                        <li>韌體升級機制</li>
                     </ul>
                 </div>
 
-                <div class="troubleshoot-item">
-                    <h4>Problem: No serial communication</h4>
-                    <p><strong>Solutions:</strong></p>
-                    <ul>
-                        <li>Verify USB cable connection</li>
-                        <li>Check correct COM port selection in software</li>
-                        <li>Ensure Arduino drivers are properly installed</li>
-                        <li>Test with Arduino IDE Serial Monitor first</li>
+                <div style="padding: 20px; background: #fdeef4; border-radius: 8px; border-left: 4px solid #e74c3c;">
+                    <h4 style="margin-top: 0; color: #2c3e50;">測試驗證</h4>
+                    <ul style="color: #555;">
+                        <li>單元測試與整合測試</li>
+                        <li>環境測試 (-10°C ~ 60°C)</li>
+                        <li>EMI/EMC 認證</li>
+                        <li>壽命測試 (10萬次觸控)</li>
+                        <li>精度與重複性驗證</li>
                     </ul>
                 </div>
             </div>
         </section>
 
-        <!-- Safety Guidelines Section -->
-        <section class="content-section">
-            <h2 class="section-title">Safety Guidelines</h2>
-            <div class="card warning-box">
-                <h3>⚠️ Important Safety Information</h3>
-                <ul>
-                    <li><strong>Electrical Safety:</strong> Always disconnect power before making circuit modifications</li>
-                    <li><strong>Grounding:</strong> Ensure proper grounding to prevent electric shock</li>
-                    <li><strong>Voltage Limits:</strong> Do not exceed 12V DC input to the Arduino</li>
-                    <li><strong>Heat Management:</strong> Provide adequate ventilation for all components</li>
-                    <li><strong>ESD Protection:</strong> Use anti-static precautions when handling electronics</li>
-                    <li><strong>Medical Use:</strong> This is a simulator for research/educational purposes only, not approved for medical use</li>
-                </ul>
-            </div>
-        </section>
-
-        <!-- Maintenance Section -->
-        <section class="content-section">
-            <h2 class="section-title">Maintenance & Care</h2>
-            <div class="grid-2">
-                <div class="card">
-                    <h3>Regular Maintenance</h3>
-                    <ul>
-                        <li>Clean electrodes weekly with isopropyl alcohol</li>
-                        <li>Inspect wiring for damage or wear monthly</li>
-                        <li>Re-calibrate sensors if performance degrades</li>
-                        <li>Update firmware as new versions are released</li>
-                        <li>Keep backup of calibration settings</li>
-                    </ul>
-                </div>
-                <div class="card">
-                    <h3>Storage Guidelines</h3>
-                    <ul>
-                        <li>Store in a dry, dust-free environment</li>
-                        <li>Disconnect power when not in use for extended periods</li>
-                        <li>Protect from direct sunlight and extreme temperatures</li>
-                        <li>Cover sensitive components to prevent oxidation</li>
-                        <li>Document any modifications or repairs</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-
-        <!-- Next Steps Section -->
-        <section class="content-section">
-            <h2 class="section-title">Next Steps</h2>
-            <div class="card">
-                <p>Once your hardware is assembled and tested, proceed to the Software Setup page to install and configure the data acquisition and visualization software.</p>
-                <div class="button-group">
-                    <a href="software.html" class="btn btn-primary">Software Setup →</a>
-                    <a href="documentation.html" class="btn btn-secondary">View Documentation</a>
-                </div>
-            </div>
-        </section>
+        <!-- Navigation -->
+        <div style="display: flex; justify-content: space-between; margin-top: 40px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+            <a href="../index.html" style="color: #3498db; text-decoration: none; font-weight: 500;">← 返回首頁</a>
+            <a href="theory.html" style="color: #3498db; text-decoration: none; font-weight: 500;">理論原理 →</a>
+        </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>EIT Touch Simulator</h3>
-                    <p>An open-source project for educational electrical impedance tomography.</p>
-                </div>
-                <div class="footer-section">
-                    <h3>Quick Links</h3>
-                    <ul>
-                        <li><a href="../index.html">Home</a></li>
-                        <li><a href="hardware.html">Hardware</a></li>
-                        <li><a href="software.html">Software</a></li>
-                        <li><a href="documentation.html">Documentation</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3>Resources</h3>
-                    <ul>
-                        <li><a href="https://github.com/MMLL168/eit-touch-simulator" target="_blank">GitHub Repository</a></li>
-                        <li><a href="about.html">About the Project</a></li>
-                        <li><a href="documentation.html">API Reference</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2026 EIT Touch Simulator Project. Open Source under MIT License.</p>
-            </div>
-        </div>
+    <footer style="background: #2c3e50; color: white; text-align: center; padding: 30px 20px; margin-top: 50px;">
+        <p>&copy; 2026 EIT 觸控模擬器專案 | 教育用途</p>
+        <p style="margin-top: 10px; color: #95a5a6;">
+            <a href="https://github.com/MMLL168/eit-touch-simulator" style="color: #3498db; text-decoration: none;">GitHub Repository</a>
+        </p>
     </footer>
 
-    <script src="../assets/js/navigation.js"></script>
+    <script>
+        // Layer Toggle Functionality
+        const layerButtons = document.querySelectorAll('.layer-btn');
+        const layers = document.querySelectorAll('.layer');
+
+        layerButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const layerIndex = button.getAttribute('data-layer');
+                
+                // Update button states
+                layerButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                // Update layer visibility
+                layers.forEach(layer => layer.classList.remove('active'));
+                document.getElementById(`layer-${layerIndex}`).classList.add('active');
+            });
+        });
+
+        // Electrode Canvas Drawing
+        const canvas = document.getElementById('electrodeCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        function drawElectrodeArray() {
+            const numElectrodes = parseInt(document.getElementById('numElectrodes').value);
+            const panelRadius = parseInt(document.getElementById('panelRadius').value);
+            const electrodeSize = parseFloat(document.getElementById('electrodeSize').value);
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const scale = canvas.width / 250; // Scale factor
+            const drawRadius = panelRadius * scale;
+            const electrodeRadius = (electrodeSize / 2) * scale;
+            
+            // Draw panel outline
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, drawRadius, 0, 2 * Math.PI);
+            ctx.strokeStyle = '#3498db';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Draw conductive area
+            ctx.fillStyle = 'rgba(52, 152, 219, 0.1)';
+            ctx.fill();
+            
+            // Draw electrodes
+            for (let i = 0; i < numElectrodes; i++) {
+                const angle = (2 * Math.PI * i) / numElectrodes - Math.PI / 2;
+                const x = centerX + drawRadius * Math.cos(angle);
+                const y = centerY + drawRadius * Math.sin(angle);
+                
+                // Draw electrode
+                ctx.beginPath();
+                ctx.arc(x, y, electrodeRadius, 0, 2 * Math.PI);
+                ctx.fillStyle = '#f39c12';
+                ctx.fill();
+                ctx.strokeStyle = '#e67e22';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                
+                // Draw electrode number
+                ctx.fillStyle = '#2c3e50';
+                ctx.font = '10px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText((i + 1).toString(), x, y);
+                
+                // Draw connection line
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                const lineX = centerX + (drawRadius + 20) * Math.cos(angle);
+                const lineY = centerY + (drawRadius + 20) * Math.sin(angle);
+                ctx.lineTo(lineX, lineY);
+                ctx.strokeStyle = '#95a5a6';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
+            
+            // Draw center marker
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 3, 0, 2 * Math.PI);
+            ctx.fillStyle = '#e74c3c';
+            ctx.fill();
+            
+            // Update calculations
+            updateCalculations(numElectrodes, panelRadius, electrodeSize);
+        }
+        
+        function updateCalculations(numElectrodes, panelRadius, electrodeSize) {
+            // Calculate spacing
+            const circumference = 2 * Math.PI * panelRadius;
+            const spacing = circumference / numElectrodes;
+            document.getElementById('calcSpacing').textContent = spacing.toFixed(2) + ' mm';
+            
+            // Calculate angle
+            const angle = 360 / numElectrodes;
+            document.getElementById('calcAngle').textContent = angle.toFixed(2) + '°';
+            
+            // Calculate area
+            const area = Math.PI * Math.pow(panelRadius, 2);
+            document.getElementById('calcArea').textContent = (area / 100).toFixed(2) + ' cm²';
+            
+            // Estimate resolution
+            const resolution = Math.sqrt(area / numElectrodes);
+            document.getElementById('calcResolution').textContent = '~' + resolution.toFixed(1) + ' mm';
+        }
+        
+        // Parameter change listeners
+        document.getElementById('numElectrodes').addEventListener('input', (e) => {
+            document.getElementById('numElectrodesValue').textContent = e.target.value;
+            drawElectrodeArray();
+        });
+        
+        document.getElementById('panelRadius').addEventListener('input', (e) => {
+            document.getElementById('panelRadiusValue').textContent = e.target.value;
+            drawElectrodeArray();
+        });
+        
+        document.getElementById('electrodeSize').addEventListener('input', (e) => {
+            document.getElementById('electrodeSizeValue').textContent = e.target.value;
+            drawElectrodeArray();
+        });
+        
+        // Initial draw
+        drawElectrodeArray();
+
+        // Mobile Navigation Toggle
+        const navToggle = document.querySelector('.nav-toggle');
+        const navMenu = document.querySelector('.nav-menu');
+        
+        if (navToggle) {
+            navToggle.addEventListener('click', () => {
+                navMenu.classList.toggle('active');
+                navToggle.classList.toggle('active');
+            });
+        }
+    </script>
 </body>
 </html>
