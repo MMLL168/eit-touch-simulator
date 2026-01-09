@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://mmll168.github.io/eit-touch-simulator/sitemap.xml
